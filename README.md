@@ -1,8 +1,13 @@
-# marshmallow_dataclass
-[![Build Status](https://travis-ci.org/lovasoa/marshmallow_dataclass.svg?branch=master)](https://travis-ci.org/lovasoa/marshmallow_dataclass)
-[![PyPI version](https://badge.fury.io/py/marshmallow-dataclass.svg)](https://badge.fury.io/py/marshmallow-dataclass)
+# marshmallow_attrs
+[![Build Status](https://travis-ci.org/adamboche/marshmallow_attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow_attrs)
+[![PyPI version](https://badge.fury.io/py/marshmallow-attrs.svg)](https://badge.fury.io/py/marshmallow-attrs)
+
+
 
 Automatic generation of [marshmallow](https://marshmallow.readthedocs.io/) schemas from dataclasses.
+
+This package is based on [marshmallow-dataclass](https://github.com/lovasoa/marshmallow_dataclass).
+
 
 Specifying a schema to which your data should conform is very useful, both for (de)serialization and for documentation.
 However, using schemas in python often means having both a class to represent your data and a class to represent its schema, which means duplicated code that could fall out of sync. With the new features of python 3.6, types can be defined for class members, and that allows libraries like this one to generate schemas automatically.
@@ -12,7 +17,7 @@ An use case would be to document APIs (with [flasgger](https://github.com/rochac
 ## How to use
 
 You simply import
-[`marshmallow_dataclass.dataclass`](https://lovasoa.github.io/marshmallow_dataclass/html/marshmallow_dataclass.html#marshmallow_dataclass.dataclass)
+[`marshmallow_attrs.dataclass`](https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass)
 instead of
 [`dataclasses.dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass).
 It adds a `Schema` property to the generated class,
@@ -27,8 +32,8 @@ you can add them using the `metadata` argument of the
 function.
 
 ```python
-from dataclasses import field
-from marshmallow_dataclass import dataclass # Importing from marshmallow_dataclass instead of dataclasses
+import attr
+from marshmallow_attrs import dataclass # Importing from marshmallow_attrs instead of attrs
 import marshmallow.validate
 from typing import List, Optional
 
@@ -63,29 +68,31 @@ you have to apply to your existing code is update the
 However, as the `.Schema` property is added dynamically,
 it can confuse type checkers.
 If you want to avoid that, you can also use the standard
-`dataclass` decorator, and generate the schema manually
+`attr.s` decorator, and generate the schema manually
 using
-[`class_schema`](https://lovasoa.github.io/marshmallow_dataclass/html/marshmallow_dataclass.html#marshmallow_dataclass.class_schema)
+[`class_schema`](https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.class_schema)
 :
 
 ```python
-from dataclasses import dataclass
-from datetime import datetime
-import marshmallow_dataclass
+import attr
 
-@dataclass
+
+from datetime import datetime
+import marshmallow_attrs
+
+@attr.dataclass
 class Person:
     name: str
     birth: datetime
 
-PersonSchema = marshmallow_dataclass.class_schema(Person)
+PersonSchema = marshmallow_attrs.class_schema(Person)
 ```
 
 You can also declare the schema as a
 [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar):
 
 ```python
-from marshmallow_dataclass import dataclass
+from marshmallow_attrs import dataclass
 from marshmallow import Schema
 from typing import ClassVar, Type
 
@@ -101,7 +108,7 @@ You can specify the
 just as you would in a marshmallow Schema:
 
 ```python
-from marshmallow_dataclass import dataclass
+from marshmallow_attrs import dataclass
 
 @dataclass
 class Point:
@@ -112,16 +119,16 @@ class Point:
 ```
 
 ## Installation
-This package [is hosted on pypi](https://pypi.org/project/marshmallow-dataclass/) :
+This package [is hosted on pypi](https://pypi.org/project/marshmallow-attrs/) :
 
 ```shell
-pipenv install marshmallow-dataclass
+pip install marshmallow-attrs
 ```
 
 ## Documentation
 
 The project documentation is hosted on github pages:
- - [documentation](https://lovasoa.github.io/marshmallow_dataclass/).
+ - [documentation](https://adamboche.github.io/marshmallow_attrs/).
 
 ## Usage warning
 
@@ -129,3 +136,8 @@ This library depends on python's standard
 [typing](https://docs.python.org/3/library/typing.html)
 library, which is
 [provisional](https://docs.python.org/3/glossary.html#term-provisional-api).
+
+
+## Credits
+
+This package is based on [marshmallow-dataclass](https://github.com/lovasoa/marshmallow_dataclass).
