@@ -140,4 +140,4 @@ library, which is
 
 ## Credits
 
-This package is based on [marshmallow-attrs](https://github.com/lovasoa/marshmallow_dataclass).
+This package is based on [marshmallow-dataclass](https://github.com/lovasoa/marshmallow_dataclass).
