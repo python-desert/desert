@@ -26,24 +26,36 @@ Full example::
 
     @dataclass
     class User:
-      birth: datetime.date = field(metadata= {
-        "required": True # A parameter to pass to marshmallow's field
+      birth: datetime.date = attr.ib(metadata= {
+        "required": True # A parameter to pass to marshmallow's attr.ib
       })
-      website:str = field(metadata = {
+      website:str = attr.ib(metadata = {
         "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
       })
       Schema: ClassVar[Type[Schema]] = Schema # For the type checker
 """
-from enum import Enum, EnumMeta
-import dataclasses
-import inspect
-
-import marshmallow
-import datetime
-import uuid
-import decimal
-from typing import Dict, Type, List, Callable, cast, Tuple, ClassVar, Optional, Any, Mapping, NewType
 import collections.abc
+import dataclasses
+import datetime
+import decimal
+import inspect
+import uuid
+from enum import Enum
+from enum import EnumMeta
+from typing import Any
+from typing import Callable
+from typing import ClassVar
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import NewType
+from typing import Optional
+from typing import Tuple
+from typing import Type
+from typing import cast
+
+import attr
+import marshmallow
 import typing_inspect
 
 
@@ -62,7 +74,7 @@ NoneType = type(None)
 # decorator is being called with parameters or not.
 def dataclass(_cls: type = None, *, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False) -> type:
     """
-    This decorator does the same as dataclasses.dataclass, but also applies :func:`add_schema`.
+    This decorator does the same as attr.dataclass, but also applies :func:`add_schema`.
     It adds a `.Schema` attribute to the class object
 
     >>> @dataclass
@@ -81,7 +93,7 @@ def dataclass(_cls: type = None, *, repr=True, eq=True, order=False, unsafe_hash
     >>> Point.Schema(strict=True).load({'x':0, 'y':0}).data # This line can be statically type checked
     Point(x=0.0, y=0.0)
     """
-    dc = dataclasses.dataclass(_cls, repr=repr, eq=eq, order=order, unsafe_hash=unsafe_hash, frozen=frozen)
+    dc = attr.dataclass(_cls, repr=repr, eq=eq, order=order, unsafe_hash=unsafe_hash, frozen=frozen)
     return add_schema(dc) if _cls else lambda cls: add_schema(dc(cls))
 
 
@@ -91,7 +103,7 @@ def add_schema(clazz: type) -> type:
     It uses :func:`class_schema` internally.
 
     >>> @add_schema
-    ... @dataclasses.dataclass
+    ... @attr.dataclass
     ... class Artist:
     ...    name: str
     >>> artist, err = Artist.Schema(strict=True).loads('{"name": "Ramirez"}')
@@ -119,21 +131,21 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     ``marshmallow_field`` key in the metadata dictionary.
 
     >>> Meters = NewType('Meters', float)
-    >>> @dataclasses.dataclass()
+    >>> @attr.dataclass()
     ... class Building:
     ...   height: Optional[Meters]
-    ...   name: str = dataclasses.field(default="anonymous")
+    ...   name: str = attr.ib(default="anonymous")
     ...   class Meta: # marshmallow meta attributes are supported
     ...     ordered = True
     ...
     >>> class_schema(Building) # Returns a marshmallow schema class (not an instance)
     <class 'marshmallow.schema.Building'>
 
-    >>> @dataclasses.dataclass()
+    >>> @attr.dataclass()
     ... class City:
-    ...   name: str = dataclasses.field(metadata={'required':True})
-    ...   best_building: Building # Reference to another dataclasses. A schema will be created for it too.
-    ...   other_buildings: List[Building] = dataclasses.field(default_factory=lambda: [])
+    ...   name: str = attr.ib(metadata={'required':True})
+    ...   best_building: Building # Reference to another attr. A schema will be created for it too.
+    ...   other_buildings: List[Building] = attr.ib(factory=lambda: [])
     ...
     >>> citySchema = class_schema(City)(strict=True)
     >>> city, _ = citySchema.load({"name":"Paris", "best_building": {"name": "Eiffel Tower"}})
@@ -149,10 +161,10 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     >>> city_json # We get an OrderedDict because we specified order = True in the Meta class
     OrderedDict([('height', None), ('name', 'Eiffel Tower')])
 
-    >>> @dataclasses.dataclass()
+    >>> @attr.dataclass()
     ... class Person:
-    ...   name: str = dataclasses.field(default="Anonymous")
-    ...   friends: List['Person'] = dataclasses.field(default_factory=lambda:[]) # Recursive field
+    ...   name: str = attr.ib(default="Anonymous")
+    ...   friends: List['Person'] = attr.ib(factory=lambda:[]) # Recursive field
     ...
     >>> person, _ = class_schema(Person)(strict=True).load({
     ...     "friends": [{"name": "Roger Boucher"}]
@@ -160,10 +172,10 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     >>> person
     Person(name='Anonymous', friends=[Person(name='Roger Boucher', friends=[])])
 
-    >>> @dataclasses.dataclass()
+    >>> @attr.dataclass()
     ... class C:
-    ...   important: int = dataclasses.field(init=True, default=0)
-    ...   unimportant: int = dataclasses.field(init=False, default=0) # Only fields that are in the __init__ method will be added:
+    ...   important: int = attr.ib(init=True, default=0)
+    ...   unimportant: int = attr.ib(init=False, default=0) # Only fields that are in the __init__ method will be added:
     ...
     >>> c, _ = class_schema(C)(strict=True).load({
     ...     "important": 9, # This field will be imported
@@ -172,10 +184,10 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     >>> c
     C(important=9, unimportant=0)
 
-    >>> @dataclasses.dataclass
+    >>> @attr.dataclass
     ... class Website:
-    ...  url:str = dataclasses.field(metadata = {
-    ...    "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
+    ...  url:str = attr.ib(metadata = {
+    ...    "marshmallow_field": marshmallow.ibs.Url() # Custom marshmallow field
     ...  })
     ...
     >>> class_schema(Website)(strict=True).load({"url": "I am not a good URL !"})
@@ -183,7 +195,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
         ...
     marshmallow.exceptions.ValidationError: {'url': ['Not a valid URL.']}
 
-    >>> @dataclasses.dataclass
+    >>> @attr.dataclass
     ... class NeverValid:
     ...     @marshmallow.validates_schema
     ...     def validate(self, data):
@@ -202,10 +214,10 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
 
     try:
         # noinspection PyDataclass
-        fields: Tuple[dataclasses.Field] = dataclasses.fields(clazz)
+        fields: Tuple[attr.ib] = attr.ibs(clazz)
     except TypeError:  # Not a dataclass
         try:
-            return class_schema(dataclasses.dataclass(clazz))
+            return class_schema(attr.dataclass(clazz))
         except Exception:
             raise TypeError(f"{getattr(clazz, '__name__', repr(clazz))} is not a dataclass and cannot be turned into one.")
 
@@ -221,7 +233,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     return cast(Type[marshmallow.Schema], schema_class)
 
 
-_native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
+_native_to_marshmallow: Dict[type, Type[marshmallow.ibs.Field]] = {
     int: marshmallow.fields.Integer,
     float: marshmallow.fields.Float,
     str: marshmallow.fields.String,
@@ -333,7 +345,7 @@ def field_for_schema(
         import marshmallow_enum
         return marshmallow_enum.EnumField(typ, **metadata)
 
-    # Nested dataclasses
+    # Nested attr
     forward_reference = getattr(typ, '__forward_arg__', None)
     nested = forward_reference or class_schema(typ)
     return marshmallow.fields.Nested(nested, **metadata)
@@ -348,16 +360,16 @@ def _base_schema(clazz: type) -> Type[marshmallow.Schema]:
     return BaseSchema
 
 
-def _get_field_default(field: dataclasses.Field):
+def _get_field_default(field: attr.ib):
     """
     Return a marshmallow default value given a dataclass default value
 
-    >>> _get_field_default(dataclasses.field())
+    >>> _get_field_default(attr.ib())
     <marshmallow.missing>
     """
-    if field.default_factory is not dataclasses.MISSING:
-        return field.default_factory
-    elif field.default is dataclasses.MISSING:
+    if field.factory is not attr.MISSING:
+        return field.factory
+    elif field.default is attr.MISSING:
         return marshmallow.missing
     return field.default
 
