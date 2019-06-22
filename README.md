@@ -1,5 +1,5 @@
 # marshmallow_attrs
-[![Build Status](https://travis-ci.org/lovasoa/marshmallow_attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow_attrs)
+[![Build Status](https://travis-ci.org/adamboche/marshmallow_attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow_attrs)
 [![PyPI version](https://badge.fury.io/py/marshmallow-attrs.svg)](https://badge.fury.io/py/marshmallow-attrs)
 
 Automatic generation of [marshmallow](https://marshmallow.readthedocs.io/) schemas from dataclasses.
@@ -12,7 +12,7 @@ An use case would be to document APIs (with [flasgger](https://github.com/rochac
 ## How to use
 
 You simply import
-[`marshmallow_attrs.dataclass`](https://lovasoa.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass)
+[`marshmallow_attrs.dataclass`](https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass)
 instead of
 [`dataclasses.dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass).
 It adds a `Schema` property to the generated class,
@@ -65,7 +65,7 @@ it can confuse type checkers.
 If you want to avoid that, you can also use the standard
 `attr.s` decorator, and generate the schema manually
 using
-[`class_schema`](https://lovasoa.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.class_schema)
+[`class_schema`](https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.class_schema)
 :
 
 ```python
@@ -123,7 +123,7 @@ pip install marshmallow-attrs
 ## Documentation
 
 The project documentation is hosted on github pages:
- - [documentation](https://lovasoa.github.io/marshmallow_attrs/).
+ - [documentation](https://adamboche.github.io/marshmallow_attrs/).
 
 ## Usage warning
 
