@@ -39,7 +39,7 @@ default_context:
     project_name:              'marshmallow-attrs'
     project_short_description: 'Marshmallow schemas for attrs classes'
     release_date:              'today'
-    repo_name:                 'python-marshmallow-attrs'
+    repo_name:                 'marshmallow-attrs'
     requiresio:                'no'
     scrutinizer:               'no'
     sphinx_docs:               'yes'

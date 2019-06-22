@@ -16,26 +16,26 @@ Overview
       - | |version| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
 
-.. |docs| image:: https://readthedocs.org/projects/python-marshmallow-attrs/badge/?style=flat
-    :target: https://readthedocs.org/projects/python-marshmallow-attrs
+.. |docs| image:: https://readthedocs.org/projects/marshmallow-attrs/badge/?style=flat
+    :target: https://readthedocs.org/projects/marshmallow-attrs
     :alt: Documentation Status
 
 
-.. |travis| image:: https://travis-ci.org/adamboche/python-marshmallow-attrs.svg?branch=master
+.. |travis| image:: https://travis-ci.org/adamboche/marshmallow-attrs.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/adamboche/python-marshmallow-attrs
+    :target: https://travis-ci.org/adamboche/marshmallow-attrs
 
-.. |codecov| image:: https://codecov.io/github/adamboche/python-marshmallow-attrs/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/github/adamboche/marshmallow-attrs/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/adamboche/python-marshmallow-attrs
+    :target: https://codecov.io/github/adamboche/marshmallow-attrs
 
 .. |version| image:: https://img.shields.io/pypi/v/marshmallow-attrs.svg
     :alt: PyPI Package latest release
     :target: https://pypi.org/pypi/marshmallow-attrs
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/adamboche/python-marshmallow-attrs/v0.1.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/adamboche/marshmallow-attrs/v0.1.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/adamboche/python-marshmallow-attrs/compare/v0.1.0...master
+    :target: https://github.com/adamboche/marshmallow-attrs/compare/v0.1.0...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/marshmallow-attrs.svg
     :alt: PyPI Wheel
@@ -67,7 +67,7 @@ Documentation
 =============
 
 
-https://python-marshmallow-attrs.readthedocs.io/
+https://marshmallow-attrs.readthedocs.io/
 
 
 Development
