@@ -1,6 +1,6 @@
-# marshmallow_dataclass
-[![Build Status](https://travis-ci.org/lovasoa/marshmallow_dataclass.svg?branch=master)](https://travis-ci.org/lovasoa/marshmallow_dataclass)
-[![PyPI version](https://badge.fury.io/py/marshmallow-dataclass.svg)](https://badge.fury.io/py/marshmallow-dataclass)
+# marshmallow_attrs
+[![Build Status](https://travis-ci.org/lovasoa/marshmallow_attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow_attrs)
+[![PyPI version](https://badge.fury.io/py/marshmallow-attrs.svg)](https://badge.fury.io/py/marshmallow-attrs)
 
 Automatic generation of [marshmallow](https://marshmallow.readthedocs.io/) schemas from dataclasses.
 
@@ -12,7 +12,7 @@ An use case would be to document APIs (with [flasgger](https://github.com/rochac
 ## How to use
 
 You simply import
-[`marshmallow_dataclass.dataclass`](https://lovasoa.github.io/marshmallow_dataclass/html/marshmallow_dataclass.html#marshmallow_dataclass.dataclass)
+[`marshmallow_attrs.dataclass`](https://lovasoa.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass)
 instead of
 [`dataclasses.dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass).
 It adds a `Schema` property to the generated class,
@@ -65,7 +65,7 @@ it can confuse type checkers.
 If you want to avoid that, you can also use the standard
 `attr.s` decorator, and generate the schema manually
 using
-[`class_schema`](https://lovasoa.github.io/marshmallow_dataclass/html/marshmallow_dataclass.html#marshmallow_dataclass.class_schema)
+[`class_schema`](https://lovasoa.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.class_schema)
 :
 
 ```python
@@ -73,21 +73,21 @@ import attr
 
 
 from datetime import datetime
-import marshmallow_dataclass
+import marshmallow_attrs
 
 @attr.dataclass
 class Person:
     name: str
     birth: datetime
 
-PersonSchema = marshmallow_dataclass.class_schema(Person)
+PersonSchema = marshmallow_attrs.class_schema(Person)
 ```
 
 You can also declare the schema as a
 [`ClassVar`](https://docs.python.org/3/library/typing.html#typing.ClassVar):
 
 ```python
-from marshmallow_dataclass import dataclass
+from marshmallow_attrs import dataclass
 from marshmallow import Schema
 from typing import ClassVar, Type
 
@@ -103,7 +103,7 @@ You can specify the
 just as you would in a marshmallow Schema:
 
 ```python
-from marshmallow_dataclass import dataclass
+from marshmallow_attrs import dataclass
 
 @dataclass
 class Point:
@@ -114,16 +114,16 @@ class Point:
 ```
 
 ## Installation
-This package [is hosted on pypi](https://pypi.org/project/marshmallow-dataclass/) :
+This package [is hosted on pypi](https://pypi.org/project/marshmallow-attrs/) :
 
 ```shell
-pip install marshmallow-dataclass
+pip install marshmallow-attrs
 ```
 
 ## Documentation
 
 The project documentation is hosted on github pages:
- - [documentation](https://lovasoa.github.io/marshmallow_dataclass/).
+ - [documentation](https://lovasoa.github.io/marshmallow_attrs/).
 
 ## Usage warning
 
@@ -135,4 +135,4 @@ library, which is
 
 ## Credits
 
-This package is based on [marshmallow-dataclass](https://github.com/lovasoa/marshmallow_dataclass).
+This package is based on [marshmallow-attrs](https://github.com/lovasoa/marshmallow_dataclass).
