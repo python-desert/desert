@@ -1,5 +1,5 @@
 # marshmallow_attrs
-[![Build Status](https://travis-ci.org/adamboche/marshmallow_attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow_attrs)
+[![Build Status](https://travis-ci.org/adamboche/marshmallow-attrs.svg?branch=master)](https://travis-ci.org/adamboche/marshmallow-attrs)
 [![PyPI version](https://badge.fury.io/py/marshmallow-attrs.svg)](https://badge.fury.io/py/marshmallow-attrs)
 
 
