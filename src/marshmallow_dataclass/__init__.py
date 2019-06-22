@@ -34,16 +34,27 @@ Full example::
       })
       Schema: ClassVar[Type[Schema]] = Schema # For the type checker
 """
-from enum import Enum, EnumMeta
+import collections.abc
 import dataclasses
+import datetime
+import decimal
 import inspect
+import uuid
+from enum import Enum
+from enum import EnumMeta
+from typing import Any
+from typing import Callable
+from typing import ClassVar
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import NewType
+from typing import Optional
+from typing import Tuple
+from typing import Type
+from typing import cast
 
 import marshmallow
-import datetime
-import uuid
-import decimal
-from typing import Dict, Type, List, Callable, cast, Tuple, ClassVar, Optional, Any, Mapping, NewType
-import collections.abc
 import typing_inspect
 
 

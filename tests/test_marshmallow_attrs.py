@@ -1,5 +1,5 @@
-from marshmallow_attrs import main
+import marshmallow_attrs
 
 
-def test_main():
+def test_init():
     pass
