@@ -19,7 +19,7 @@ An use case would be to document APIs (with [flasgger](https://github.com/rochac
 You simply import
 [`marshmallow_attrs.dataclass`](https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass)
 instead of
-[`dataclasses.dataclass`](https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass).
+[`attr.dataclass`](http://attrs.org).
 It adds a `Schema` property to the generated class,
 containing a marshmallow
 [Schema](https://marshmallow.readthedocs.io/en/2.x-line/api_reference.html#marshmallow.Schema)
@@ -28,7 +28,7 @@ class.
 If you need to specify custom properties on your marshmallow fields
 (such as `attribute`, `error`, `validate`, `required`, `dump_only`, `error_messages`, `description` ...)
 you can add them using the `metadata` argument of the
-[`field`](https://docs.python.org/3/library/dataclasses.html#dataclasses.field)
+[`attr.ib`](http://www.attrs.org/en/stable/api.html#attr.ib)
 function.
 
 ```python
