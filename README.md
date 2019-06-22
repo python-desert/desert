@@ -27,8 +27,8 @@ you can add them using the `metadata` argument of the
 function.
 
 ```python
-from dataclasses import field
-from marshmallow_dataclass import dataclass # Importing from marshmallow_dataclass instead of dataclasses
+import attr
+from marshmallow_attrs import dataclass # Importing from marshmallow_attrs instead of attrs
 import marshmallow.validate
 from typing import List, Optional
 
@@ -63,17 +63,19 @@ you have to apply to your existing code is update the
 However, as the `.Schema` property is added dynamically,
 it can confuse type checkers.
 If you want to avoid that, you can also use the standard
-`dataclass` decorator, and generate the schema manually
+`attr.s` decorator, and generate the schema manually
 using
 [`class_schema`](https://lovasoa.github.io/marshmallow_dataclass/html/marshmallow_dataclass.html#marshmallow_dataclass.class_schema)
 :
 
 ```python
-from dataclasses import dataclass
+import attr
+
+
 from datetime import datetime
 import marshmallow_dataclass
 
-@dataclass
+@attr.dataclass
 class Person:
     name: str
     birth: datetime
@@ -115,7 +117,7 @@ class Point:
 This package [is hosted on pypi](https://pypi.org/project/marshmallow-dataclass/) :
 
 ```shell
-pipenv install marshmallow-dataclass
+pip install marshmallow-dataclass
 ```
 
 ## Documentation
