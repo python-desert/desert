@@ -44,7 +44,7 @@ setup(
     ),
     author="Adam Boche",
     author_email="adamboche@users.noreply.github.com",
-    url="https://github.com/adamboche/python-marshmallow-attrs",
+    url="https://github.com/adamboche/marshmallow-attrs",
     packages=find_packages("src"),
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
