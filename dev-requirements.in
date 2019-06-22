@@ -15,3 +15,4 @@ isort
 mypy
 pytest-sphinx
 towncrier
+sphinx-autodoc-typehints
