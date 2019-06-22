@@ -33,7 +33,7 @@ except FileNotFoundError:
 # Enable code coverage for C code: we can't use CFLAGS=-coverage in tox.ini, since that may mess with compiling
 setup(
     name="marshmallow-attrs",
-    version="0.1.0",
+    version="0.1.1",
     description="Marshmallow schemas for attrs classes",
     long_description="%s\n%s"
     % (
