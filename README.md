@@ -131,3 +131,8 @@ This library depends on python's standard
 [typing](https://docs.python.org/3/library/typing.html)
 library, which is
 [provisional](https://docs.python.org/3/glossary.html#term-provisional-api).
+
+
+## Credits
+
+This package is based on [marshmallow-dataclass](https://github.com/lovasoa/marshmallow_dataclass).
