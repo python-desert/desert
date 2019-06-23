@@ -186,7 +186,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     >>> @attr.dataclass
     ... class Website:
     ...  url:str = attr.ib(metadata = {
-    ...    "marshmallow_field": marshmallow.ibs.Url() # Custom marshmallow field
+    ...    "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
     ...  })
     ...
     >>> class_schema(Website)(strict=True).load({"url": "I am not a good URL !"})
@@ -213,7 +213,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
 
     try:
         # noinspection PyDataclass
-        fields: Tuple[attr.ib] = attr.ibs(clazz)
+        fields: Tuple[attr.ib] = attr.ib(clazz)
     except TypeError:  # Not a dataclass
         try:
             return class_schema(attr.dataclass(clazz))
@@ -232,7 +232,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     return cast(Type[marshmallow.Schema], schema_class)
 
 
-_native_to_marshmallow: Dict[type, Type[marshmallow.ibs.Field]] = {
+_native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
     int: marshmallow.fields.Integer,
     float: marshmallow.fields.Float,
     str: marshmallow.fields.String,
