@@ -40,14 +40,14 @@ from typing import List, Optional
 @dataclass
 class Building:
   # The field metadata is used to instantiate the marshmallow field
-  height: float = field(metadata={'validate': marshmallow.validate.Range(min=0)})
-  name: str = field(default="anonymous")
+  height: float = attr.ib(metadata={'validate': marshmallow.validate.Range(min=0)})
+  name: str = attr.ib(default="anonymous")
 
 
 @dataclass
 class City:
   name: Optional[str]
-  buildings: List[Building] = field(default_factory=lambda: [])
+  buildings: List[Building] = attr.ib(factory=lambda: [])
 
 # City.Schema contains a marshmallow schema class
 city, _ = City.Schema().load({
