@@ -71,7 +71,7 @@ NoneType = type(None)
 # _cls should never be specified by keyword, so start it with an
 # underscore.  The presence of _cls is used to detect if this
 # decorator is being called with parameters or not.
-def dataclass(_cls: type = None, *, repr=True, eq=True, order=False, unsafe_hash=False, frozen=False) -> type:
+def dataclass(_cls: type = None, *, these=None, repr_ns=None, repr=True, cmp=True, hash=None, init=True, slots=False, frozen=False, weakref_slot=True, str=False, kw_only=False, cache_hash=False, auto_exc=False) -> type:
     """
     This decorator does the same as attr.dataclass, but also applies :func:`add_schema`.
     It adds a `.Schema` attribute to the class object
@@ -83,7 +83,7 @@ def dataclass(_cls: type = None, *, repr=True, eq=True, order=False, unsafe_hash
     <class 'marshmallow.schema.Artist'>
 
     >>> from marshmallow import Schema
-    >>> @dataclass(order=True) # preserve field order
+    >>> @dataclass
     ... class Point:
     ...   x:float
     ...   y:float
@@ -92,7 +92,7 @@ def dataclass(_cls: type = None, *, repr=True, eq=True, order=False, unsafe_hash
     >>> Point.Schema(strict=True).load({'x':0, 'y':0}).data # This line can be statically type checked
     Point(x=0.0, y=0.0)
     """
-    dc = attr.dataclass(_cls, repr=repr, eq=eq, order=order, unsafe_hash=unsafe_hash, frozen=frozen)
+    dc = attr.dataclass(_cls, these=these, repr_ns=repr_ns, repr=repr, cmp=cmp, hash=hash, init=init, slots=slots, frozen=frozen,weakref_slot=weakref_slot,str=str, kw_only=kw_only, cache_hash=cache_hash, auto_exc=auto_exc)
     return add_schema(dc) if _cls else lambda cls: add_schema(dc(cls))
 
 
@@ -144,10 +144,10 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     ... class City:
     ...   name: str = attr.ib(metadata={'required':True})
     ...   best_building: Building # Reference to another attr. A schema will be created for it too.
-    ...   other_buildings: List[Building] = attr.ib(factory=lambda: [])
+    ...   other_buildings: List[Building] = attr.ib(factory=list)
     ...
     >>> citySchema = class_schema(City)(strict=True)
-    >>> city, _ = citySchema.load({"name":"Paris", "best_building": {"name": "Eiffel Tower"}})
+    >>> city, _ = citySchema.load({"name":"Paris", "best_building": {"name": "Eiffel Tower"}, "other_buildings": []})
     >>> city
     City(name='Paris', best_building=Building(height=None, name='Eiffel Tower'), other_buildings=[])
 
@@ -163,7 +163,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     >>> @attr.dataclass()
     ... class Person:
     ...   name: str = attr.ib(default="Anonymous")
-    ...   friends: List['Person'] = attr.ib(factory=lambda:[]) # Recursive field
+    ...   friends: List['Person'] = attr.ib(factory=list) # Recursive field
     ...
     >>> person, _ = class_schema(Person)(strict=True).load({
     ...     "friends": [{"name": "Roger Boucher"}]
@@ -213,7 +213,7 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
 
     try:
         # noinspection PyDataclass
-        fields: Tuple[attr.ib] = attr.ib(clazz)
+        fields: Tuple[attr.ib] = attr.fields(clazz)
     except TypeError:  # Not a dataclass
         try:
             return class_schema(attr.dataclass(clazz))
@@ -363,12 +363,15 @@ def _get_field_default(field: attr.ib):
     """
     Return a marshmallow default value given a dataclass default value
 
-    >>> _get_field_default(attr.ib())
+    >>> @dataclass
+    ... class A:
+    ...     x: int = attr.ib()
+    >>> _get_field_default(attr.fields(A).x)
     <marshmallow.missing>
     """
-    if field.factory is not attr.MISSING:
-        return field.factory
-    elif field.default is attr.MISSING:
+    if isinstance(field.default, attr.Factory):
+        return field.default.factory
+    elif field.default is attr.NOTHING:
         return marshmallow.missing
     return field.default
 
