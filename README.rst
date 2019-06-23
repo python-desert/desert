@@ -95,7 +95,7 @@ Usage
 =====
 
 You simply import
-```marshmallow_attrs.dataclass`` <https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.dataclass>`__
+```marshmallow_attrs.dataclass``
 instead of ```attr.dataclass`` <http://attrs.org>`__. It adds a
 ``Schema`` property to the generated class, containing a marshmallow
 `Schema <https://marshmallow.readthedocs.io/en/2.x-line/api_reference.html#marshmallow.Schema>`__
@@ -144,7 +144,7 @@ apply to your existing code is update the ``dataclass`` import.
 However, as the ``.Schema`` property is added dynamically, it can
 confuse type checkers. If you want to avoid that, you can also use the
 standard ``attr.s`` decorator, and generate the schema manually using
-```class_schema`` <https://adamboche.github.io/marshmallow_attrs/html/marshmallow_attrs.html#marshmallow_attrs.class_schema>`__
+``class_schema``
 :
 
 .. code:: python
