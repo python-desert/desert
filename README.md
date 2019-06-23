@@ -127,8 +127,8 @@ pip install marshmallow-attrs
 
 ## Documentation
 
-The project documentation is hosted on github pages:
- - [documentation](https://adamboche.github.io/marshmallow_attrs/).
+The project documentation is hosted on readthedocs:
+- [documentation](https://readthedocs.org/marshmallow_attrs).
 
 ## Usage warning
 
