@@ -402,9 +402,3 @@ def _get_field_default(field: attr.ib):
     elif field.default is attr.NOTHING:
         return marshmallow.missing
     return field.default
-
-
-if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod(verbose=True)
