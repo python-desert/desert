@@ -35,12 +35,12 @@ install:
     set -ex
     if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
         (cd $HOME
-         wget https://bitbucket.org/pypy/pypy/downloads/pypy3-v6.0.0-linux64.tar.bz2
-         tar xf pypy3-*.tar.bz2
-         pypy3-*/bin/pypy3 -m ensurepip
-         pypy3-*/bin/pypy3 -m pip install -U virtualenv)
-        export PATH=$(echo $HOME/pypy3-*/bin):$PATH
-        export TOXPYTHON=$(echo $HOME/pypy3-*/bin/pypy3)
+         wget https://bitbucket.org/pypy/pypy/downloads/pypy3.6-v7.1.1-linux64.tar.bz2
+         tar xf pypy3*.tar.bz2
+         pypy3*/bin/pypy3 -m ensurepip
+         pypy3*/bin/pypy3 -m pip install -U virtualenv)
+        export PATH=$(echo $HOME/pypy3*/bin):$PATH
+        export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
     fi
     set +x
 script:
