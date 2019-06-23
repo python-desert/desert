@@ -7,7 +7,7 @@ It takes a python class, and generates a marshmallow schema for it.
 Simple example::
 
     from marshmallow import Schema
-    from marshmallow_dataclass import dataclass
+    from marshmallow_attrs import dataclass
 
     @dataclass
     class Point:
@@ -21,7 +21,7 @@ Full example::
 
     from marshmallow import Schema
     from dataclasses import field
-    from marshmallow_dataclass import dataclass
+    from marshmallow_attrs import dataclass
     import datetime
 
     @dataclass

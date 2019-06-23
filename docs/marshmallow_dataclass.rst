@@ -8,13 +8,13 @@ Table of contents
 .. autosummary::
      :toctree: stubs
 
-     marshmallow_dataclass.dataclass
-     marshmallow_dataclass.class_schema
+     marshmallow_attrs.dataclass
+     marshmallow_attrs.class_schema
 
 Module
 ------
 
-.. automodule:: marshmallow_dataclass
+.. automodule:: marshmallow_attrs
     :members:
     :undoc-members:
     :show-inheritance:
