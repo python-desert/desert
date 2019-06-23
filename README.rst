@@ -56,11 +56,11 @@ Marshmallow schemas for attrs classes
 
 
 Automatic generation of
-`marshmallow <https://marshmallow.readthedocs.io/>`__ schemas from
+`marshmallow <https://marshmallow.readthedocs.io/>`_ schemas from
 dataclasses.
 
 This package is based on
-`marshmallow-dataclass <https://github.com/lovasoa/marshmallow_dataclass>`__.
+`marshmallow-dataclass <https://github.com/lovasoa/marshmallow_dataclass>`_.
 
 Specifying a schema to which your data should conform is very useful,
 both for (de)serialization and for documentation. However, using schemas
@@ -71,7 +71,7 @@ defined for class members, and that allows libraries like this one to
 generate schemas automatically.
 
 An use case would be to document APIs (with
-`flasgger <https://github.com/rochacbruno/flasgger#flasgger>`__, for
+`flasgger <https://github.com/rochacbruno/flasgger#flasgger>`_, for
 instance) in a way that allows you to statically check that the code
 matches the documentation.
 
@@ -96,16 +96,16 @@ Usage
 
 You simply import
 ```marshmallow_attrs.dataclass``
-instead of ```attr.dataclass`` <http://attrs.org>`__. It adds a
+instead of `attr.dataclass <http://attrs.org>`_. It adds a
 ``Schema`` property to the generated class, containing a marshmallow
-`Schema <https://marshmallow.readthedocs.io/en/2.x-line/api_reference.html#marshmallow.Schema>`__
+`Schema <https://marshmallow.readthedocs.io/en/2.x-line/api_reference.html#marshmallow.Schema>`_
 class.
 
 If you need to specify custom properties on your marshmallow fields
 (such as ``attribute``, ``error``, ``validate``, ``required``,
 ``dump_only``, ``error_messages``, ``description`` ...) you can add them
 using the ``metadata`` argument of the
-```attr.ib`` <http://www.attrs.org/en/stable/api.html#attr.ib>`__
+`attr.ib <http://www.attrs.org/en/stable/api.html#attr.ib>`_
 function.
 
 .. code:: python
@@ -163,7 +163,7 @@ standard ``attr.s`` decorator, and generate the schema manually using
     PersonSchema = marshmallow_attrs.class_schema(Person)
 
 You can also declare the schema as a
-```ClassVar`` <https://docs.python.org/3/library/typing.html#typing.ClassVar>`__:
+`ClassVar <https://docs.python.org/3/library/typing.html#typing.ClassVar>`_:
 
 .. code:: python
 
@@ -178,7 +178,7 @@ You can also declare the schema as a
       Schema: ClassVar[Type[Schema]] = Schema
 
 You can specify the
-```Meta`` <https://marshmallow.readthedocs.io/en/3.0/api_reference.html#marshmallow.Schema.Meta>`__
+`Meta <https://marshmallow.readthedocs.io/en/3.0/api_reference.html#marshmallow.Schema.Meta>`_
 just as you would in a marshmallow Schema:
 
 .. code:: python
@@ -196,7 +196,7 @@ Installation
 ------------
 
 This package `is hosted on
-pypi <https://pypi.org/project/marshmallow-attrs/>`__ :
+pypi <https://pypi.org/project/marshmallow-attrs/>`_ :
 
 .. code:: shell
 
@@ -205,22 +205,22 @@ pypi <https://pypi.org/project/marshmallow-attrs/>`__ :
 Documentation
 -------------
 
-The project documentation is hosted on readthedocs: -
-`documentation <https://marshmallow-attrs.readthedocs.org>`__.
+The project documentation is hosted on
+`readthedocs <https://marshmallow-attrs.readthedocs.org>`_.
 
 Usage warning
 -------------
 
 This library depends on python's standard
-`typing <https://docs.python.org/3/library/typing.html>`__ library,
+`typing <https://docs.python.org/3/library/typing.html>`_ library,
 which is
-`provisional <https://docs.python.org/3/glossary.html#term-provisional-api>`__.
+`provisional <https://docs.python.org/3/glossary.html#term-provisional-api>`_.
 
 Credits
 -------
 
 This package is based on
-`marshmallow-dataclass <https://github.com/lovasoa/marshmallow_dataclass>`__.
+`marshmallow-dataclass <https://github.com/lovasoa/marshmallow_dataclass>`_.
 
 .. |Build Status| image:: https://travis-ci.org/adamboche/marshmallow-attrs.svg?branch=master
    :target: https://travis-ci.org/adamboche/marshmallow-attrs
