@@ -58,12 +58,7 @@ import marshmallow
 import typing_inspect
 
 
-__all__ = [
-    'dataclass',
-    'add_schema',
-    'class_schema',
-    'field_for_schema'
-]
+__all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 
 NoneType = type(None)
 
@@ -71,7 +66,23 @@ NoneType = type(None)
 # _cls should never be specified by keyword, so start it with an
 # underscore.  The presence of _cls is used to detect if this
 # decorator is being called with parameters or not.
-def dataclass(_cls: type = None, *, these=None, repr_ns=None, repr=True, cmp=True, hash=None, init=True, slots=False, frozen=False, weakref_slot=True, str=False, kw_only=False, cache_hash=False, auto_exc=False) -> type:
+def dataclass(
+    _cls: type = None,
+    *,
+    these=None,
+    repr_ns=None,
+    repr=True,
+    cmp=True,
+    hash=None,
+    init=True,
+    slots=False,
+    frozen=False,
+    weakref_slot=True,
+    str=False,
+    kw_only=False,
+    cache_hash=False,
+    auto_exc=False,
+) -> type:
     """
     This decorator does the same as attr.dataclass, but also applies :func:`add_schema`.
     It adds a `.Schema` attribute to the class object
@@ -92,7 +103,22 @@ def dataclass(_cls: type = None, *, these=None, repr_ns=None, repr=True, cmp=Tru
     >>> Point.Schema(strict=True).load({'x':0, 'y':0}).data # This line can be statically type checked
     Point(x=0.0, y=0.0)
     """
-    dc = attr.dataclass(_cls, these=these, repr_ns=repr_ns, repr=repr, cmp=cmp, hash=hash, init=init, slots=slots, frozen=frozen,weakref_slot=weakref_slot,str=str, kw_only=kw_only, cache_hash=cache_hash, auto_exc=auto_exc)
+    dc = attr.dataclass(
+        _cls,
+        these=these,
+        repr_ns=repr_ns,
+        repr=repr,
+        cmp=cmp,
+        hash=hash,
+        init=init,
+        slots=slots,
+        frozen=frozen,
+        weakref_slot=weakref_slot,
+        str=str,
+        kw_only=kw_only,
+        cache_hash=cache_hash,
+        auto_exc=auto_exc,
+    )
     return add_schema(dc) if _cls else lambda cls: add_schema(dc(cls))
 
 
@@ -218,14 +244,20 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
         try:
             return class_schema(attr.dataclass(clazz))
         except Exception:
-            raise TypeError(f"{getattr(clazz, '__name__', repr(clazz))} is not a dataclass and cannot be turned into one.")
+            raise TypeError(
+                f"{getattr(clazz, '__name__', repr(clazz))} is not a dataclass and cannot be turned into one."
+            )
 
     # Copy all public members of the dataclass to the schema
-    attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith('_')}
+    attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
     # Update the schema members to contain marshmallow fields instead of dataclass fields
     attributes.update(
-        (field.name, field_for_schema(field.type, _get_field_default(field), field.metadata))
-        for field in fields if field.init
+        (
+            field.name,
+            field_for_schema(field.type, _get_field_default(field), field.metadata),
+        )
+        for field in fields
+        if field.init
     )
 
     schema_class = type(clazz.__name__, (_base_schema(clazz),), attributes)
@@ -248,9 +280,7 @@ _native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
 
 
 def field_for_schema(
-        typ: type,
-        default=marshmallow.missing,
-        metadata: Mapping[str, Any] = None
+    typ: type, default=marshmallow.missing, metadata: Mapping[str, Any] = None
 ) -> marshmallow.fields.Field:
     """
     Get a marshmallow Field corresponding to the given python type.
@@ -294,13 +324,13 @@ def field_for_schema(
     """
 
     metadata = {} if metadata is None else dict(metadata)
-    metadata.setdefault('required', True)
+    metadata.setdefault("required", True)
     if default is not marshmallow.missing:
-        metadata.setdefault('default', default)
-        metadata.setdefault('missing', default)
+        metadata.setdefault("default", default)
+        metadata.setdefault("missing", default)
 
     # If the field was already defined by the user
-    predefined_field = metadata.get('marshmallow_field')
+    predefined_field = metadata.get("marshmallow_field")
     if predefined_field:
         return predefined_field
 
@@ -313,39 +343,37 @@ def field_for_schema(
 
     if origin in (list, List):
         list_elements_type = typing_inspect.get_args(typ, True)[0]
-        return marshmallow.fields.List(
-            field_for_schema(list_elements_type),
-            **metadata
-        )
+        return marshmallow.fields.List(field_for_schema(list_elements_type), **metadata)
     elif origin in (dict, Dict):
         key_type, value_type = typing_inspect.get_args(typ, True)
         return marshmallow.fields.Dict(
             keys=field_for_schema(key_type),
             values=field_for_schema(value_type),
-            **metadata
+            **metadata,
         )
     elif origin in (collections.abc.Callable, Callable):
         return marshmallow.fields.Function(**metadata)
     elif typing_inspect.is_optional_type(typ):
         subtyp = next(t for t in typing_inspect.get_args(typ) if t is not NoneType)
         # Treat optional types as types with a None default
-        metadata['default'] = metadata.get('default', None)
-        metadata['missing'] = metadata.get('missing', None)
-        metadata['required'] = False
+        metadata["default"] = metadata.get("default", None)
+        metadata["missing"] = metadata.get("missing", None)
+        metadata["required"] = False
         return field_for_schema(subtyp, metadata=metadata)
     # typing.NewType returns a function with a __supertype__ attribute
-    newtype_supertype = getattr(typ, '__supertype__', None)
+    newtype_supertype = getattr(typ, "__supertype__", None)
     if newtype_supertype and inspect.isfunction(typ):
-        metadata.setdefault('description', typ.__name__)
+        metadata.setdefault("description", typ.__name__)
         return field_for_schema(newtype_supertype, metadata=metadata, default=default)
 
     # enumerations
     if type(typ) is EnumMeta:
         import marshmallow_enum
+
         return marshmallow_enum.EnumField(typ, **metadata)
 
     # Nested attr
-    forward_reference = getattr(typ, '__forward_arg__', None)
+    forward_reference = getattr(typ, "__forward_arg__", None)
     nested = forward_reference or class_schema(typ)
     return marshmallow.fields.Nested(nested, **metadata)
 

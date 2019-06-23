@@ -2,7 +2,6 @@ import attr
 import marshmallow
 import pytest
 
-
 import marshmallow_attrs
 
 
