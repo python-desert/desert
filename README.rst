@@ -71,7 +71,7 @@ defined for class members, and that allows libraries like this one to
 generate schemas automatically.
 
 An use case would be to document APIs (with
-`flasgger <https://github.com/rochacbruno/flasgger#flasgger>`_, for
+`flasgger <https://github.com/rochacbruno/flasgger>`_, for
 instance) in a way that allows you to statically check that the code
 matches the documentation.
 
