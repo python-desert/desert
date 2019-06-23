@@ -35,7 +35,6 @@ Full example::
       Schema: ClassVar[Type[Schema]] = Schema # For the type checker
 """
 import collections.abc
-import dataclasses
 import datetime
 import decimal
 import inspect
