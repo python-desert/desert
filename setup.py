@@ -45,7 +45,7 @@ setup(
         ),
         re.sub(":[a-z]+:`~?(.*?)`", r"``\1``", read("CHANGELOG.rst")),
     ),
-    author="Adam Boche",
+    author="Desert contributors",
     author_email="python-desert@users.noreply.github.com",
     url="https://github.com/python-desert/desert",
     packages=find_packages("src"),
