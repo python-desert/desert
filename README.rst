@@ -73,6 +73,8 @@ To use Desert in a project:
 
 .. code-block:: python
 
+
+
         from dataclasses import dataclass
 
         # Or using attrs
@@ -81,7 +83,6 @@ To use Desert in a project:
         from typing import List
 
 	import desert
-
 
         @dataclass
         class Person:
@@ -93,14 +94,14 @@ To use Desert in a project:
             passengers: List[Person]
 
         # Load some simple data types.
-        data = {'passengers': [{'name': 'Alice': 'age': 21}, {'name': 'Bob', 'age': 22}]}
+        data = {'passengers': [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]}
 
 
         # Create a schema for the Car object.
         schema = desert.schema(Car)
 
         # Load the data.
-        car = schema.load(car)
+        car = schema.load(data)
         assert car == Car(passengers=[Person(name='Alice', age=21), Person(name='Bob', age=22)])
 
 
