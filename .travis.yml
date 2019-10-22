@@ -18,9 +18,6 @@ matrix:
       sudo: required
       env:
         - TOXENV=py37,report,codecov
-    - python: 'pypy3'
-      env:
-        - TOXENV=pypy3,report,codecov
 before_install:
   - python --version
   - uname -a
