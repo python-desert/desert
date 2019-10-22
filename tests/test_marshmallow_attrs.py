@@ -1,3 +1,4 @@
+import dataclasses
 import typing as t
 
 import attr
@@ -7,12 +8,14 @@ import pytest
 import desert
 
 
-def test_init():
-    pass
+@pytest.fixture(name="dataclass", params=[attr.dataclass, dataclasses.dataclass])
+def dataclass_param(request):
+    """Parametrize over both implementations of the @dataclass decorator."""
+    return request.param
 
 
-def test_simple():
-    @attr.dataclass
+def test_simple(dataclass):
+    @dataclass
     class A:
         x: int = attr.ib()
 
@@ -21,8 +24,8 @@ def test_simple():
     assert data == A(x=5)
 
 
-def test_validation():
-    @attr.dataclass
+def test_validation(dataclass):
+    @dataclass
     class A:
         x: int = attr.ib()
 
@@ -31,7 +34,7 @@ def test_validation():
         schema.load({"y": 5})
 
 
-def test_not_a_dataclass():
+def test_not_a_dataclass(dataclass):
     """Raises when object is not a dataclass."""
 
     class A:
@@ -41,8 +44,8 @@ def test_not_a_dataclass():
         desert.schema_class(A)
 
 
-def test_set_default():
-    @attr.dataclass
+def test_set_default(dataclass):
+    @dataclass
     class A:
         x: int = attr.ib(default=1)
 
@@ -51,8 +54,8 @@ def test_set_default():
     assert data == A(1)
 
 
-def test_list():
-    @attr.dataclass
+def test_list(dataclass):
+    @dataclass
     class A:
         y: t.List[int] = attr.ib(factory=list)
 
@@ -61,8 +64,8 @@ def test_list():
     assert data == A([1])
 
 
-def test_dict():
-    @attr.dataclass
+def test_dict(dataclass):
+    @dataclass
     class A:
         y: t.Dict[int, int] = attr.ib(factory=dict)
 
@@ -72,12 +75,12 @@ def test_dict():
     assert data == A({1: 2, 3: 4})
 
 
-def test_nested():
-    @attr.dataclass
+def test_nested(dataclass):
+    @dataclass
     class A:
         x: int
 
-    @attr.dataclass
+    @dataclass
     class B:
         y: A
 
@@ -86,8 +89,8 @@ def test_nested():
     assert data == B(A(5))
 
 
-def test_optional():
-    @attr.dataclass
+def test_optional(dataclass):
+    @dataclass
     class A:
         x: t.Optional[int]
 
