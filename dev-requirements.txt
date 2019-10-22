@@ -25,6 +25,8 @@ isort==4.3.20
 jinja2==2.10.1            # via towncrier
 lazy-object-proxy==1.4.1  # via astroid
 markupsafe==1.1.1         # via jinja2
+marshmallow-union==0.1.10
+marshmallow==3.2.1        # via marshmallow-union
 mccabe==0.6.1             # via pylint
 more-itertools==7.0.0     # via pytest
 mypy-extensions==0.4.1    # via mypy
@@ -56,4 +58,4 @@ wrapt==1.11.2             # via astroid
 zipp==0.5.1               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.0.1        # via tox
+# setuptools==41.4.0        # via tox
