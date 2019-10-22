@@ -5,3 +5,30 @@ Usage
 .. include:: ../README.rst
     :start-after: start-basic-usage
     :end-before: end-basic-usage
+
+
+Use custom marshmallow fields like this.
+
+.. testcode::
+
+     from dataclasses import dataclass, field
+     import datetime
+
+     import desert
+     import marshmallow
+
+
+     @dataclass
+     class A:
+         x: str = field(
+             metadata={"desert": {"marshmallow_field": marshmallow.fields.NaiveDateTime()}}
+         )
+
+
+     timestring = "2019-10-21T10:25:00"
+     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
+     schema = desert.schema(A)
+
+     assert schema.load({"x": timestring}) == A(x=dt)
+
+.. testoutput::

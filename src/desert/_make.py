@@ -85,42 +85,6 @@ __all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 NoneType = type(None)
 
 
-# _cls should never be specified by keyword, so start it with an
-# underscore.  The presence of _cls is used to detect if this
-# decorator is being called with parameters or not.
-def dataclass(
-    _cls: type = None,
-    *,
-    repr=True,
-    eq=True,
-    order=False,
-    unsafe_hash=False,
-    frozen=False,
-) -> type:
-    """
-    This decorator does the same as dataclasses.dataclass, but also applies :func:`add_schema`.
-    It adds a `.Schema` attribute to the class object
-    >>> @dataclass
-    ... class Artist:
-    ...    name: str
-    >>> Artist.Schema
-    <class 'marshmallow.schema.Artist'>
-    >>> from marshmallow import Schema
-    >>> @dataclass(order=True) # preserve field order
-    ... class Point:
-    ...   x:float
-    ...   y:float
-    ...   Schema: ClassVar[Type[Schema]] = Schema # For the type checker
-    ...
-    >>> Point.Schema().load({'x':0, 'y':0}) # This line can be statically type checked
-    Point(x=0.0, y=0.0)
-    """
-    dc = dataclasses.dataclass(
-        _cls, repr=repr, eq=eq, order=order, unsafe_hash=unsafe_hash, frozen=frozen
-    )
-    return add_schema(dc) if _cls else lambda cls: add_schema(dc(cls))
-
-
 def add_schema(clazz: type) -> type:
     """
     This decorator adds a marshmallow schema as the 'Schema' attribute in a dataclass.
@@ -189,14 +153,11 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
     # Update the schema members to contain marshmallow fields instead of dataclass fields
 
-    attributes.update(
-        (
-            field.name,
-            field_for_schema(field.type, _get_field_default(field), field.metadata),
-        )
-        for field in fields
-        if field.init
-    )
+    for field in fields:
+        if field.init:
+            attributes[field.name] = field_for_schema(
+                field.type, _get_field_default(field), field.metadata
+            )
 
     cls_schema = type(clazz.__name__, (_base_schema(clazz),), attributes)
 
