@@ -67,7 +67,8 @@ Usage
 =========
 
 ..
-    begin-basic-usage
+
+    start-basic-usage
 
 To use Desert in a project:
 
@@ -75,7 +76,9 @@ To use Desert in a project:
 
         from dataclasses import dataclass
 
+        # Or, using `attrs`,
         # from attr import dataclass
+
         from typing import List
 
 	import desert
@@ -103,6 +106,7 @@ To use Desert in a project:
 
 
 ..
+
     end-basic-usage
 
 Documentation
