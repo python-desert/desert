@@ -5,18 +5,18 @@
 # automatically for any template). To use it:
 #
 #    pip install cookiepatcher
-#    cookiepatcher gh:adamboche/cookiecutter-pylibrary project-path
+#    cookiepatcher gh:python-desert/cookiecutter-pylibrary project-path
 #
 # See:
 #    https://pypi.org/pypi/cookiepatcher
 #
 # Alternatively, you can run:
 #
-#    cookiecutter --overwrite-if-exists --config-file=project-path/.cookiecutterrc gh:adamboche/cookiecutter-pylibrary
+#    cookiecutter --overwrite-if-exists --config-file=project-path/.cookiecutterrc gh:python-desert/cookiecutter-pylibrary
 
 default_context:
 
-    _template:                 'gh:adamboche/cookiecutter-pylibrary'
+    _template:                 'gh:python-desert/cookiecutter-pylibrary'
     appveyor:                  'no'
     c_extension_function:      'longest'
     c_extension_module:        '_desert'
@@ -29,9 +29,9 @@ default_context:
     command_line_interface_bin_name: 'desert'
     coveralls:                 'no'
     distribution_name:         'desert'
-    email:                     'adamboche@users.noreply.github.com'
+    email:                     'python-desert@users.noreply.github.com'
     full_name:                 'Adam Boche'
-    github_username:           'adamboche'
+    github_username:           'python-desert'
     landscape:                 'no'
     license:                   'MIT license'
     linter:                    'flake8'
@@ -50,5 +50,5 @@ default_context:
     test_runner:               'pytest'
     travis:                    'yes'
     version:                   '0.1.0'
-    website:                   'github.com/adamboche'
+    website:                   'github.com/python-desert'
     year:                      'now'

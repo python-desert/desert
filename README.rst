@@ -21,21 +21,21 @@ Overview
     :alt: Documentation Status
 
 
-.. |travis| image:: https://travis-ci.org/adamboche/desert.svg?branch=master
+.. |travis| image:: https://travis-ci.org/python-desert/desert.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/adamboche/desert
+    :target: https://travis-ci.org/python-desert/desert
 
-.. |codecov| image:: https://codecov.io/github/adamboche/desert/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/github/python-desert/desert/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/adamboche/desert
+    :target: https://codecov.io/github/python-desert/desert
 
 .. |version| image:: https://img.shields.io/pypi/v/desert.svg
     :alt: PyPI Package latest release
     :target: https://pypi.org/pypi/desert
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/adamboche/desert/v0.1.1.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/python-desert/desert/v0.1.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/adamboche/desert/compare/v0.1.1...master
+    :target: https://github.com/python-desert/desert/compare/v0.1.1...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/desert.svg
     :alt: PyPI Wheel
