@@ -52,7 +52,7 @@ Overview
 
 .. end-badges
 
-Simple serialization for dataclasses and attrs classes.
+Deserialize to objects while staying DRY.
 
 
 Installation
