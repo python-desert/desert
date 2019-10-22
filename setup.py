@@ -36,8 +36,8 @@ DEV_INSTALL_REQUIRES = read("dev-requirements.in").splitlines()
 # Enable code coverage for C code: we can't use CFLAGS=-coverage in tox.ini, since that may mess with compiling
 setup(
     name="desert",
-    version="0.1.1",
-    description="Marshmallow schemas for attrs classes",
+    version="0.1.1.post2",
+    description="Deserialize to objects while staying DRY",
     long_description="%s\n%s"
     % (
         re.compile("^.. start-badges.*^.. end-badges", re.M | re.S).sub(
