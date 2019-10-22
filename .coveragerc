@@ -6,7 +6,7 @@ source =
 [run]
 branch = true
 source =
-    marshmallow_attrs
+    desert
     tests
 parallel = true
 

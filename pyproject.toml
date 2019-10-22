@@ -2,11 +2,11 @@
 
 [tool.towncrier]
 
-   package = "marshmallow_attrs"
+   package = "desert"
    package_dir = "src"
    filename = "CHANGELOG.rst"
    template = "changelog.d/towncrier_template.rst"
-   issue_format = "`#{issue} <https://github.com/adamboche/marshmallow-attrs/issues/{issue}>`_"
+   issue_format = "`#{issue} <https://github.com/adamboche/desert/issues/{issue}>`_"
    directory = "changelog.d"
    title_format = "{version} ({project_date})"
    underlines = ["-", "^"]

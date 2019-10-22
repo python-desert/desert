@@ -16,38 +16,38 @@ Overview
       - | |version| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
 
-.. |docs| image:: https://readthedocs.org/projects/marshmallow-attrs/badge/?style=flat
-    :target: https://readthedocs.org/projects/marshmallow-attrs
+.. |docs| image:: https://readthedocs.org/projects/desert/badge/?style=flat
+    :target: https://readthedocs.org/projects/desert
     :alt: Documentation Status
 
 
-.. |travis| image:: https://travis-ci.org/adamboche/marshmallow-attrs.svg?branch=master
+.. |travis| image:: https://travis-ci.org/adamboche/desert.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/adamboche/marshmallow-attrs
+    :target: https://travis-ci.org/adamboche/desert
 
-.. |codecov| image:: https://codecov.io/github/adamboche/marshmallow-attrs/coverage.svg?branch=master
+.. |codecov| image:: https://codecov.io/github/adamboche/desert/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://codecov.io/github/adamboche/marshmallow-attrs
+    :target: https://codecov.io/github/adamboche/desert
 
-.. |version| image:: https://img.shields.io/pypi/v/marshmallow-attrs.svg
+.. |version| image:: https://img.shields.io/pypi/v/desert.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.org/pypi/marshmallow-attrs
+    :target: https://pypi.org/pypi/desert
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/adamboche/marshmallow-attrs/v0.1.1.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/adamboche/desert/v0.1.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/adamboche/marshmallow-attrs/compare/v0.1.1...master
+    :target: https://github.com/adamboche/desert/compare/v0.1.1...master
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/marshmallow-attrs.svg
+.. |wheel| image:: https://img.shields.io/pypi/wheel/desert.svg
     :alt: PyPI Wheel
-    :target: https://pypi.org/pypi/marshmallow-attrs
+    :target: https://pypi.org/pypi/desert
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/marshmallow-attrs.svg
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/desert.svg
     :alt: Supported versions
-    :target: https://pypi.org/pypi/marshmallow-attrs
+    :target: https://pypi.org/pypi/desert
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/marshmallow-attrs.svg
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/desert.svg
     :alt: Supported implementations
-    :target: https://pypi.org/pypi/marshmallow-attrs
+    :target: https://pypi.org/pypi/desert
 
 
 .. end-badges
@@ -81,13 +81,13 @@ Installation
 
 ::
 
-    pip install marshmallow-attrs
+    pip install desert
 
 Documentation
 =============
 
 
-https://marshmallow-attrs.readthedocs.io/
+https://desert.readthedocs.io/
 
 
 
@@ -95,7 +95,7 @@ Usage
 =====
 
 You simply import
-```marshmallow_attrs.dataclass``
+```desert.dataclass``
 instead of `attr.dataclass <http://attrs.org>`_. It adds a
 ``Schema`` property to the generated class, containing a marshmallow
 `Schema <https://marshmallow.readthedocs.io/en/2.x-line/api_reference.html#marshmallow.Schema>`_
@@ -111,7 +111,7 @@ function.
 .. code:: python
 
     import attr
-    from marshmallow_attrs import dataclass # Importing from marshmallow_attrs instead of attrs
+    from desert import dataclass # Importing from desert instead of attrs
     import marshmallow.validate
     from typing import List, Optional
 
@@ -153,21 +153,21 @@ standard ``attr.s`` decorator, and generate the schema manually using
 
 
     from datetime import datetime
-    import marshmallow_attrs
+    import desert
 
     @attr.dataclass
     class Person:
         name: str
         birth: datetime
 
-    PersonSchema = marshmallow_attrs.class_schema(Person)
+    PersonSchema = desert.class_schema(Person)
 
 You can also declare the schema as a
 `ClassVar <https://docs.python.org/3/library/typing.html#typing.ClassVar>`_:
 
 .. code:: python
 
-    from marshmallow_attrs import dataclass
+    from desert import dataclass
     from marshmallow import Schema
     from typing import ClassVar, Type
 
@@ -183,7 +183,7 @@ just as you would in a marshmallow Schema:
 
 .. code:: python
 
-    from marshmallow_attrs import dataclass
+    from desert import dataclass
 
     @dataclass
     class Point:
@@ -196,17 +196,17 @@ Installation
 ------------
 
 This package `is hosted on
-pypi <https://pypi.org/project/marshmallow-attrs/>`_ :
+pypi <https://pypi.org/project/desert/>`_ :
 
 .. code:: shell
 
-    pip install marshmallow-attrs
+    pip install desert
 
 Documentation
 -------------
 
 The project documentation is hosted on
-`readthedocs <https://marshmallow-attrs.readthedocs.org>`_.
+`readthedocs <https://desert.readthedocs.org>`_.
 
 Usage warning
 -------------
@@ -222,7 +222,7 @@ Credits
 This package is based on
 `marshmallow-dataclass <https://github.com/lovasoa/marshmallow_dataclass>`_.
 
-.. |Build Status| image:: https://travis-ci.org/adamboche/marshmallow-attrs.svg?branch=master
-   :target: https://travis-ci.org/adamboche/marshmallow-attrs
-.. |PyPI version| image:: https://badge.fury.io/py/marshmallow-attrs.svg
-   :target: https://badge.fury.io/py/marshmallow-attrs
+.. |Build Status| image:: https://travis-ci.org/adamboche/desert.svg?branch=master
+   :target: https://travis-ci.org/adamboche/desert
+.. |PyPI version| image:: https://badge.fury.io/py/desert.svg
+   :target: https://badge.fury.io/py/desert

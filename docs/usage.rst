@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use marshmallow-attrs in a project::
+To use desert in a project::
 
-	import marshmallow_attrs
+	import desert
