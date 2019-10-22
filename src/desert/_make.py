@@ -323,13 +323,3 @@ def _get_field_default(field: Union[dataclasses.Field, attr.Attribute]):
         return field.default
     else:
         raise TypeError(field)
-
-
-def schema(cls, many=False, **kw):
-    """Build a schema for the class."""
-    return schema_class(cls, **kw)(many=many)
-
-
-def schema_class(cls, **kw):
-    """Build a schema class for the class."""
-    return class_schema(cls, **kw)
