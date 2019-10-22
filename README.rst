@@ -21,9 +21,9 @@ Desert: DRY deserialization
     :alt: Documentation Status
 
 
-.. |travis| image:: https://travis-ci.com/python-desert/desert.svg?branch=master
+.. |travis| image:: https://img.shields.io/travis/com/python-desert/desert/master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.com/python-desert/desert
+   :target: https://img.shields.io/travis/com/python-desert/desert/master
 
 .. |codecov| image:: https://codecov.io/github/python-desert/desert/coverage.svg?branch=master
     :alt: Coverage Status
