@@ -85,7 +85,6 @@ __all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 NoneType = type(None)
 
 
-
 # _cls should never be specified by keyword, so start it with an
 # underscore.  The presence of _cls is used to detect if this
 # decorator is being called with parameters or not.
@@ -190,7 +189,6 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     else:
         raise desert.exceptions.NotAnAttrsClassOrDataclass(clazz)
 
-
     # Copy all public members of the dataclass to the schema
     attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
     # Update the schema members to contain marshmallow fields instead of dataclass fields
@@ -260,7 +258,10 @@ def field_for_schema(
     <class 'marshmallow.fields.Raw'>
     """
 
-    metadata = {} if metadata is None else dict(metadata).get("clout", {})
+    if metadata is None:
+        metadata = {}
+    else:
+        metadata = dict(metadata).get("desert", {})
 
     if default is not marshmallow.missing:
         metadata.setdefault("default", default)
@@ -302,10 +303,12 @@ def field_for_schema(
             metadata["default"] = metadata.get("default", None)
             metadata["missing"] = metadata.get("missing", None)
             metadata["required"] = False
-            return field_for_schema(subtyp, metadata=metadata)
+
+            return field_for_schema(subtyp, metadata={"desert": metadata})
         elif typing_inspect.is_union_type(typ):
             subfields = [
-                field_for_schema(subtyp, metadata=metadata) for subtyp in arguments
+                field_for_schema(subtyp, metadata={"desert": metadata})
+                for subtyp in arguments
             ]
             import marshmallow_union
 
