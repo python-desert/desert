@@ -33,8 +33,8 @@ version = release = "0.1.1"
 pygments_style = "trac"
 templates_path = ["."]
 extlinks = {
-    "issue": ("https://github.com/adamboche/desert/issues/%s", "#"),
-    "pr": ("https://github.com/adamboche/desert/pull/%s", "PR #"),
+    "issue": ("https://github.com/python-desert/desert/issues/%s", "#"),
+    "pr": ("https://github.com/python-desert/desert/pull/%s", "PR #"),
 }
 # on_rtd is whether we are on readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
