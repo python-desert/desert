@@ -35,7 +35,7 @@ Overview
 
 .. |latest-commit| image:: https://img.shields.io/github/last-commit/python-desert/desert/master
     :alt: Latest commit
-    :target: https://img.shields.io/github/commits-since/python-desert/desert/v0.1.1.svg
+    :target: https://img.shields.io/github/last-commit/python-desert/desert/master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/desert.svg
     :alt: PyPI Wheel
