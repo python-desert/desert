@@ -75,7 +75,7 @@ To use Desert in a project:
 
         from dataclasses import dataclass
 
-        # Or, using `attrs`,
+        # Or using attrs
         # from attr import dataclass
 
         from typing import List
