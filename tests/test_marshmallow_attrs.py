@@ -25,6 +25,8 @@ def test_simple(dataclass):
 
 
 def test_validation(dataclass):
+    """Passing the wrong keys will raise ValidationError."""
+
     @dataclass
     class A:
         x: int = attr.ib()
@@ -45,9 +47,11 @@ def test_not_a_dataclass(dataclass):
 
 
 def test_set_default(dataclass):
+    """Setting a default value in the dataclass makes passing it optional."""
+
     @dataclass
     class A:
-        x: int = attr.ib(default=1)
+        x: int = 1
 
     schema = desert.schema_class(A)()
     data = schema.load({"x": 1})
@@ -55,9 +59,11 @@ def test_set_default(dataclass):
 
 
 def test_list(dataclass):
+    """Build a generic list *without* setting a factory on the dataclass."""
+
     @dataclass
     class A:
-        y: t.List[int] = attr.ib(factory=list)
+        y: t.List[int]
 
     schema = desert.schema_class(A)()
     data = schema.load({"y": [1]})
@@ -65,9 +71,11 @@ def test_list(dataclass):
 
 
 def test_dict(dataclass):
+    """Build a dict without setting a factory on the dataclass."""
+
     @dataclass
     class A:
-        y: t.Dict[int, int] = attr.ib(factory=dict)
+        y: t.Dict[int, int]
 
     schema = desert.schema_class(A)()
     data = schema.load({"y": {1: 2, 3: 4}})
@@ -76,6 +84,8 @@ def test_dict(dataclass):
 
 
 def test_nested(dataclass):
+    """One object can hold instances of another."""
+
     @dataclass
     class A:
         x: int
@@ -90,9 +100,11 @@ def test_nested(dataclass):
 
 
 def test_optional(dataclass):
+    """Setting an optional type makes the default None."""
+
     @dataclass
     class A:
         x: t.Optional[int]
 
-    data = desert.schema_class(A)().load({"x": None})
+    data = desert.schema_class(A)().load({})
     assert data == A(None)
