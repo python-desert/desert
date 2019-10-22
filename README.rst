@@ -1,6 +1,6 @@
-========
-Overview
-========
+===============================
+Desert: DRY deserialization
+===============================
 
 .. start-badges
 
@@ -52,7 +52,12 @@ Overview
 
 .. end-badges
 
-Deserialize to objects while staying DRY.
+
+Writing code that's DRY ("don't repeat yourself") helps avoid bugs and improve readability. Desert helps you write code that's DRY.
+
+
+
+
 
 
 Installation
