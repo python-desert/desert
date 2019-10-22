@@ -175,10 +175,6 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     ...    "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
     ...  }})
     ...
-    >>> class_schema(Website)().load({"url": "I am not a good URL !"})
-    Traceback (most recent call last):
-        ...
-    marshmallow.exceptions.ValidationError: {'url': ['Not a valid URL.']}
     """
 
     fields: Union[Tuple[dataclasses.Field], Tuple[attr.Attribute]]
@@ -236,8 +232,6 @@ def field_for_schema(
     9
     >>> field_for_schema(Dict[str,str]).__class__
     <class 'marshmallow.fields.Dict'>
-    >>> field_for_schema(str, metadata={'clout': {"marshmallow_field": marshmallow.fields.Url()}}).__class__
-    <class 'marshmallow.fields.Url'>
     >>> field_for_schema(Optional[str]).__class__
     <class 'marshmallow.fields.String'>
     >>> import marshmallow_enum
