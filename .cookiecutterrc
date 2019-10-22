@@ -30,7 +30,7 @@ default_context:
     coveralls:                 'no'
     distribution_name:         'desert'
     email:                     'python-desert@users.noreply.github.com'
-    full_name:                 'Adam Boche'
+    full_name:                 'Desert contributors'
     github_username:           'python-desert'
     landscape:                 'no'
     license:                   'MIT license'
