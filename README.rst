@@ -67,7 +67,6 @@ Usage
 =========
 
 ..
-
     start-basic-usage
 
 To use Desert in a project:
@@ -106,7 +105,6 @@ To use Desert in a project:
 
 
 ..
-
     end-basic-usage
 
 Documentation
