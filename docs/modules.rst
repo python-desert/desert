@@ -1,7 +1,7 @@
-marshmallow_attrs
+desert
 =====================
 
 .. toctree::
    :maxdepth: 4
 
-   marshmallow_attrs
+   desert

@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/adamboche/marshmallow-attrs/issues>`_ please include:
+When `reporting a bug <https://github.com/adamboche/desert/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -17,14 +17,14 @@ When `reporting a bug <https://github.com/adamboche/marshmallow-attrs/issues>`_ 
 Documentation improvements
 ==========================
 
-marshmallow-attrs could always use more documentation, whether as part of the
-official marshmallow-attrs docs, in docstrings, or even on the web in blog posts,
+desert could always use more documentation, whether as part of the
+official desert docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/adamboche/marshmallow-attrs/issues.
+The best way to send feedback is to file an issue at https://github.com/adamboche/desert/issues.
 
 If you are proposing a feature:
 
@@ -35,13 +35,13 @@ If you are proposing a feature:
 Development
 ===========
 
-To set up `marshmallow-attrs` for local development:
+To set up `desert` for local development:
 
-1. Fork `marshmallow-attrs <https://github.com/adamboche/marshmallow-attrs>`_
+1. Fork `desert <https://github.com/adamboche/desert>`_
    (look for the "Fork" button).
 2. Clone your fork locally::
 
-    git clone git@github.com:your_name_here/marshmallow-attrs.git
+    git clone git@github.com:your_name_here/desert.git
 
 3. Create a branch for local development::
 
@@ -74,7 +74,7 @@ For merging, you should:
 4. Add yourself to ``AUTHORS.rst``.
 
 .. [1] If you don't have all the necessary python versions available locally you can rely on Travis - it will
-       `run the tests <https://travis-ci.org/adamboche/marshmallow-attrs/pull_requests>`_ for each change you add in the pull request.
+       `run the tests <https://travis-ci.org/adamboche/desert/pull_requests>`_ for each change you add in the pull request.
 
        It will be slower though ...
 

@@ -32,7 +32,7 @@ except FileNotFoundError:
 
 # Enable code coverage for C code: we can't use CFLAGS=-coverage in tox.ini, since that may mess with compiling
 setup(
-    name="marshmallow-attrs",
+    name="desert",
     version="0.1.1",
     description="Marshmallow schemas for attrs classes",
     long_description="%s\n%s"
@@ -44,7 +44,7 @@ setup(
     ),
     author="Adam Boche",
     author_email="adamboche@users.noreply.github.com",
-    url="https://github.com/adamboche/marshmallow-attrs",
+    url="https://github.com/adamboche/desert",
     packages=find_packages("src"),
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],

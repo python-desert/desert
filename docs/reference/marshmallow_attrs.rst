@@ -1,9 +1,9 @@
-marshmallow_attrs
+desert
 =================
 
 .. testsetup::
 
-    from marshmallow_attrs import *
+    from desert import *
 
-.. automodule:: marshmallow_attrs
+.. automodule:: desert
     :members:

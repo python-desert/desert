@@ -130,8 +130,8 @@ def bundle(cfg):
             ".",
             *requirements,
             "-m",
-            "marshmallow_attrs",
-            "-o" "marshmallow_attrs.pex",
+            "desert",
+            "-o" "desert.pex",
             "--disable-cache",
         ]
     )

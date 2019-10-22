@@ -8,13 +8,13 @@ Table of contents
 .. autosummary::
      :toctree: stubs
 
-     marshmallow_attrs.dataclass
-     marshmallow_attrs.class_schema
+     desert.dataclass
+     desert.class_schema
 
 Module
 ------
 
-.. automodule:: marshmallow_attrs
+.. automodule:: desert
     :members:
     :undoc-members:
     :show-inheritance:
