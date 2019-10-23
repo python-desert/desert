@@ -1,7 +1,9 @@
 # MIT License
 
-# Modified for clout from code written by
+# Desert
+# Copyright (c) 2019 Desert contributors
 
+# With sections from marshmallow_dataclass
 # Copyright (c) 2019 Ophir LOJKINE
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
