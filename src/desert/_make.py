@@ -87,22 +87,6 @@ __all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 NoneType = type(None)
 
 
-def add_schema(clazz: type) -> type:
-    """
-    This decorator adds a marshmallow schema as the 'Schema' attribute in a dataclass.
-    It uses :func:`class_schema` internally.
-    >>> @add_schema
-    ... @dataclasses.dataclass
-    ... class Artist:
-    ...    names: Tuple[str, str]
-    >>> artist = Artist.Schema().loads('{"names": ["Martin", "Ramirez"]}')
-    >>> artist
-    Artist(names=('Martin', 'Ramirez'))
-    """
-    clazz.Schema = class_schema(clazz)
-    return clazz
-
-
 def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     """
     Convert a class to a marshmallow schema
