@@ -24,6 +24,7 @@ Use custom marshmallow fields like this.
          # Use `desert.ib()` instead for attrs.
          x: str = desert.field(marshmallow.fields.NaiveDateTime())
 
+         # Or use the more verbose form.
          y: int = dataclasses.field(metadata=desert.metadata(marshmallow.fields.Int()))
 
      timestring = "2019-10-21T10:25:00"
