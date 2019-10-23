@@ -102,7 +102,7 @@ To use Desert in a project:
         data = {'passengers': [{'name': 'Alice', 'age': 21}, {'name': 'Bob', 'age': 22}]}
 
 
-        # Create a schema for the Car object.
+        # Create a schema for the Car class.
         schema = desert.schema(Car)
 
         # Load the data.
