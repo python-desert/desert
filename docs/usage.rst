@@ -11,18 +11,18 @@ Use custom marshmallow fields like this.
 
 .. testcode::
 
-     from dataclasses import dataclass, field
+     import dataclasses
      import datetime
 
      import desert
      import marshmallow
 
 
-     @dataclass
+     @dataclasses.dataclass
      class A:
-         x: str = field(
-             metadata={"desert": {"marshmallow_field": marshmallow.fields.NaiveDateTime()}}
-         )
+
+         # Use `desert.ib()` instead for attrs.
+         x: str = desert.field(marshmallow.fields.NaiveDateTime())
 
 
      timestring = "2019-10-21T10:25:00"

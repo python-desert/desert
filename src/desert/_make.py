@@ -218,7 +218,7 @@ def field_for_schema(
     if metadata is None:
         metadata = {}
     else:
-        metadata = dict(metadata).get("desert", {})
+        metadata = dict(metadata).get(_DESERT_SENTINEL, {})
 
     if default is not marshmallow.missing:
         metadata.setdefault("default", default)
@@ -261,10 +261,10 @@ def field_for_schema(
             metadata["missing"] = metadata.get("missing", None)
             metadata["required"] = False
 
-            return field_for_schema(subtyp, metadata={"desert": metadata})
+            return field_for_schema(subtyp, metadata={_DESERT_SENTINEL: metadata})
         elif typing_inspect.is_union_type(typ):
             subfields = [
-                field_for_schema(subtyp, metadata={"desert": metadata})
+                field_for_schema(subtyp, metadata={_DESERT_SENTINEL: metadata})
                 for subtyp in arguments
             ]
             import marshmallow_union
@@ -325,3 +325,10 @@ def _get_field_default(field: Union[dataclasses.Field, attr.Attribute]):
         return field.default
     else:
         raise TypeError(field)
+
+
+def sentinel(name):
+    return attr.make_class(name, [], frozen=True)()
+
+
+_DESERT_SENTINEL = sentinel("_DesertSentinel")
