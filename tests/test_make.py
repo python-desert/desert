@@ -34,6 +34,8 @@ def dataclass_param(request):
 
 
 def test_simple(module):
+    """Load dict into a dataclass instance."""
+
     @module.dataclass
     class A:
         x: int
