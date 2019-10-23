@@ -9,12 +9,17 @@ Desert: DRY deserialization
 
     * - docs
       - |docs|
+    * - code
+      - | |latest-commit|
     * - tests
       - | |travis|
         | |codecov|
     * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |latest-commit|
+      - | |version|
+        | |wheel|
+        | |supported-versions|
+        | |supported-implementations|
+
 
 .. |docs| image:: https://readthedocs.org/projects/desert/badge/?style=flat
     :target: https://readthedocs.org/projects/desert
