@@ -10,8 +10,10 @@ import pytest
 import desert
 
 
-@attr.s
+@attr.s(frozen=True, order=False)
 class DataclassModule:
+    """Implementation of a dataclass module like attr or dataclasses."""
+
     dataclass = attr.ib()
     field = attr.ib()
     fields = attr.ib()
