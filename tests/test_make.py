@@ -38,7 +38,6 @@ def test_simple(module):
     class A:
         x: int
 
-    print(module.fields(A))
     data = desert.schema_class(A)().load(data={"x": 5})
 
     assert data == A(x=5)
