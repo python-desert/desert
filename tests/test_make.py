@@ -137,10 +137,36 @@ def test_custom_field(module):
     @module.dataclass
     class A:
         x: str = module.field(
-            metadata={
-                "desert": {"marshmallow_field": marshmallow.fields.NaiveDateTime()}
-            }
+            metadata=desert.metadata(marshmallow.fields.NaiveDateTime())
         )
+
+    timestring = "2019-10-21T10:25:00"
+    dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
+    schema = desert.schema(A)
+
+    assert schema.load({"x": timestring}) == A(x=dt)
+
+
+def test_concise_dataclasses_field():
+    """Concisely create a dataclasses.Field."""
+
+    @dataclasses.dataclass
+    class A:
+        x: str = desert.field(marshmallow.fields.NaiveDateTime())
+
+    timestring = "2019-10-21T10:25:00"
+    dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
+    schema = desert.schema(A)
+
+    assert schema.load({"x": timestring}) == A(x=dt)
+
+
+def test_concise_attrib():
+    """Concisely create an attr.ib()"""
+
+    @attr.dataclass
+    class A:
+        x: str = desert.ib(marshmallow.fields.NaiveDateTime())
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
