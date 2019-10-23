@@ -7,24 +7,21 @@ import marshmallow
 import desert._make
 
 
-def schema(cls, many=False):
-    """Build a schema for the class.
+def schema(cls: t.Type, many: bool = False) -> marshmallow.Schema:
+    """Build a marshmallow schema *instance* for the class.
     """
     return desert._make.class_schema(cls)(many=many)
 
 
-def schema_class(cls):
-    """Build a schema class for the class.
-
-
-
+def schema_class(cls: t.Type) -> t.Type[marshmallow.Schema]:
+    """Build a marshmallow schema *class* for the class.
     """
     return desert._make.class_schema(cls)
 
 
 def metadata(
     marshmallow_field: marshmallow.fields.Field
-) -> t.Dict["desert._make._DesertSentinel", marshmallow.fields.Field]:
+) -> t.Dict["desert._make._DesertSentinel", t.Dict[t.Any, marshmallow.fields.Field]]:
     """Specify a marshmallow field in the field metadata.
 
     .. code-block:: python
@@ -35,7 +32,7 @@ def metadata(
 
 
 def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Field:
-    """Specify a marshmallow field in the metadata for a dataclasses.dataclass.
+    """Specify a marshmallow field in the metadata for a ``dataclasses.dataclass``.
 
     .. code-block:: python
 
@@ -47,7 +44,7 @@ def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Fiel
 
 
 def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._CountingAttr:
-    """Specify a marshmallow field in the metadata for an attr.dataclass.
+    """Specify a marshmallow field in the metadata for an ``attr.dataclass``.
 
     .. code-block:: python
 
