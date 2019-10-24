@@ -231,3 +231,25 @@ def test_tuple(module):
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
     assert schema.loads(schema.dumps(loaded)) == loaded
+
+
+def test_attr_factory():
+    """Attrs default factory instantiates the factory type if no value is passed."""
+
+    @attr.dataclass
+    class A:
+        x: t.List[int] = attr.ib(factory=list)
+
+    data = desert.schema_class(A)().load({})
+    assert data == A([])
+
+
+def test_dataclasses_factory():
+    """Dataclasses default factory instantiates the factory type if no value is passed."""
+
+    @dataclasses.dataclass
+    class A:
+        x: t.List[int] = dataclasses.field(default_factory=list)
+
+    data = desert.schema_class(A)().load({})
+    assert data == A([])
