@@ -58,7 +58,10 @@ Desert: DRY deserialization
 .. end-badges
 
 
-Writing code that's DRY ("don't repeat yourself") helps avoid bugs and improve readability. Desert helps you write code that's DRY.
+Desert generates serialization schemas for ``dataclasses`` and ``attrs`` classes. Writing
+code that's DRY ("don't repeat yourself") helps avoid bugs and improve readability. Desert
+helps you write code that's DRY.
+
 
 
 
