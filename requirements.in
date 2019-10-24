@@ -1,5 +1,4 @@
 marshmallow>=3.0
 attrs
 typing_inspect
-marshmallow_enum
 dataclasses
