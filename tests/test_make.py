@@ -212,3 +212,22 @@ def test_enum(module):
     loaded = A(Color.RED)
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
+
+
+def test_tuple(module):
+    """Round trip a tuple.
+
+    The tuple is converted to list only for dumps(), not during dump().
+    """
+
+    @module.dataclass
+    class A:
+        x: t.Tuple[int, bool]
+
+    schema = desert.schema_class(A)()
+    dumped = {"x": (1, False)}
+    loaded = A(x=(1, False))
+
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
+    assert schema.loads(schema.dumps(loaded)) == loaded
