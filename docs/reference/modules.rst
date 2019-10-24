@@ -1,5 +1,5 @@
 desert
-=================
+======
 
 .. toctree::
    :maxdepth: 4

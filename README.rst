@@ -79,7 +79,7 @@ Usage
 ..
     start-basic-usage
 
-To use Desert in a project:
+A simple example models two ``Person`` objects in a ``Car``.
 
 .. code-block:: python
 
