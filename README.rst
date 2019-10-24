@@ -75,6 +75,12 @@ Installation
 
     pip install desert
 
+or
+
+::
+
+   poetry add desert
+
 
 Usage
 =========
