@@ -270,3 +270,26 @@ def test_newtype(module):
 
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
+
+
+@pytest.mark.xfail(
+    reason=(
+        "Forward references and string annotations are broken. \n"
+        + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
+    )
+)
+def test_forward_reference(module):
+    @module.dataclass
+    class A:
+        x: "B"
+
+    @module.dataclass
+    class B:
+        y: int
+
+    schema = desert.schema_class(A)()
+    dumped = {"x": {"y": 1}}
+    loaded = A((B(1)))
+
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
