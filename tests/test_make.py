@@ -253,3 +253,20 @@ def test_dataclasses_factory():
 
     data = desert.schema_class(A)().load({})
     assert data == A([])
+
+
+def test_newtype(module):
+    """An instance of NewType delegates to its supertype."""
+
+    MyInt = t.NewType("MyInt", int)
+
+    @module.dataclass
+    class A:
+        x: MyInt
+
+    schema = desert.schema_class(A)()
+    dumped = {"x": 1}
+    loaded = A(x=1)
+
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
