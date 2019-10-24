@@ -181,11 +181,19 @@ def test_union(module):
 
     @module.dataclass
     class A:
-        x: t.Union[bool, int]
+        x: t.Union[int, bool]
 
     schema = desert.schema_class(A)()
-    assert schema.load({"x": 5}) == A(5)
-    assert schema.load({"x": False}) == A(False)
+
+    dumped = {"x": 5}
+    loaded = A(5)
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
+
+    dumped = {"x": False}
+    loaded = A(False)
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
 
 
 def test_enum(module):
@@ -200,5 +208,7 @@ def test_enum(module):
         x: Color
 
     schema = desert.schema_class(A)()
-    assert schema.load({"x": "RED"}) == A(Color.RED)
-    assert schema.load({"x": "GREEN"}) == A(Color.GREEN)
+    dumped = {"x": "RED"}
+    loaded = A(Color.RED)
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == dumped
