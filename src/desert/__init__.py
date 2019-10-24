@@ -20,7 +20,7 @@ def schema_class(cls: t.Type) -> t.Type[marshmallow.Schema]:
 
 
 def metadata(
-    marshmallow_field: marshmallow.fields.Field
+    field: marshmallow.fields.Field
 ) -> t.Dict["desert._make._DesertSentinel", t.Dict[t.Any, marshmallow.fields.Field]]:
     """Specify a marshmallow field in the field metadata.
 
@@ -28,7 +28,7 @@ def metadata(
 
         x: int = attr.ib(metadata=desert.metadata(marshmallow.fields.Int()))
     """
-    return {desert._make._DESERT_SENTINEL: {"marshmallow_field": marshmallow_field}}
+    return {desert._make._DESERT_SENTINEL: {"marshmallow_field": field}}
 
 
 def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Field:
