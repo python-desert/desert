@@ -60,6 +60,7 @@ import dataclasses
 import datetime
 import decimal
 import inspect
+import typing
 import uuid
 from enum import Enum
 from enum import EnumMeta
@@ -139,10 +140,13 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
     # Update the schema members to contain marshmallow fields instead of dataclass fields
 
+    hints = typing.get_type_hints(clazz)
     for field in fields:
         if field.init:
             attributes[field.name] = field_for_schema(
-                field.type, _get_field_default(field), field.metadata
+                hints.get(field.name, field.type),
+                _get_field_default(field),
+                field.metadata,
             )
 
     cls_schema = type(clazz.__name__, (_base_schema(clazz),), attributes)
@@ -269,6 +273,7 @@ def field_for_schema(
 
     # Nested dataclasses
     forward_reference = getattr(typ, "__forward_arg__", None)
+
     nested = forward_reference or class_schema(typ)
     try:
         nested.help = typ.__doc__
