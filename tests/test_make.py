@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import enum
 import types
 import typing as t
 
@@ -185,3 +186,19 @@ def test_union(module):
     schema = desert.schema_class(A)()
     assert schema.load({"x": 5}) == A(5)
     assert schema.load({"x": False}) == A(False)
+
+
+def test_enum(module):
+    """Deserialize an enum object."""
+
+    class Color(enum.Enum):
+        RED = enum.auto()
+        GREEN = enum.auto()
+
+    @module.dataclass
+    class A:
+        x: Color
+
+    schema = desert.schema_class(A)()
+    assert schema.load({"x": "RED"}) == A(Color.RED)
+    assert schema.load({"x": "GREEN"}) == A(Color.GREEN)

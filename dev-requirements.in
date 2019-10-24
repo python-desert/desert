@@ -16,3 +16,4 @@ mypy
 pytest-sphinx
 towncrier
 marshmallow-union
+marshmallow-enum
