@@ -173,3 +173,15 @@ def test_concise_attrib():
     schema = desert.schema(A)
 
     assert schema.load({"x": timestring}) == A(x=dt)
+
+
+def test_union(module):
+    """Deserialize one of several types."""
+
+    @module.dataclass
+    class A:
+        x: t.Union[bool, int]
+
+    schema = desert.schema_class(A)()
+    assert schema.load({"x": 5}) == A(5)
+    assert schema.load({"x": False}) == A(False)
