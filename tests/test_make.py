@@ -273,12 +273,15 @@ def test_newtype(module):
 
 
 @pytest.mark.xfail(
+    strict=True,
     reason=(
         "Forward references and string annotations are broken. \n"
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
-    )
+    ),
 )
 def test_forward_reference(module):
+    """Build schemas from classes that are defined below their containing class."""
+
     @module.dataclass
     class A:
         x: "B"
