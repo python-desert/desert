@@ -181,17 +181,19 @@ def test_union(module):
 
     @module.dataclass
     class A:
-        x: t.Union[int, bool]
+        x: t.Union[int, str]
 
     schema = desert.schema_class(A)()
 
-    dumped = {"x": 5}
-    loaded = A(5)
+    dumped = {"x": "X"}
+    loaded = A("X")
     assert schema.load(dumped) == loaded
+
     assert schema.dump(loaded) == dumped
 
-    dumped = {"x": False}
-    loaded = A(False)
+    dumped = {"x": "X"}
+    loaded = A("X")
+
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
 

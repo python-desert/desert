@@ -25,8 +25,9 @@ isort==4.3.20
 jinja2==2.10.1            # via towncrier
 lazy-object-proxy==1.4.1  # via astroid
 markupsafe==1.1.1         # via jinja2
-marshmallow-union==0.1.10
-marshmallow==3.2.1        # via marshmallow-union
+marshmallow-enum==1.5.1
+marshmallow-union==0.1.12
+marshmallow==3.2.1        # via marshmallow-enum, marshmallow-union
 mccabe==0.6.1             # via pylint
 more-itertools==7.0.0     # via pytest
 mypy-extensions==0.4.1    # via mypy
