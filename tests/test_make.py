@@ -298,3 +298,9 @@ def test_forward_reference(module):
 
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
+
+
+def test_forward_reference_module_scope():
+    """Run the forward reference test at global scope."""
+
+    import tests.forward_reference  # pylint disable=unused-import,import-outside-toplevel
