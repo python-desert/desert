@@ -103,7 +103,3 @@ Use with :mod:`attrs`
 .. testoutput::
 
     Entry(timestamp=datetime.datetime(2019, 10, 21, 10, 25), favorite_number=42)
-
-
-
-Testing :mod:`marshmallow` and :mod:`attr` and :mod:`attrs`.
