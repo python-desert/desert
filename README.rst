@@ -75,7 +75,7 @@ Installation
 
     pip install desert
 
-or
+or with `Poetry`_
 
 ::
 
@@ -138,3 +138,6 @@ Limitations
 ============
 
 String annotations and forward references are not yet supported. See `this upstream issue <https://github.com/lovasoa/marshmallow_dataclass/issues/13>`__.
+
+
+.. _Poetry: https://poetry.eustace.io
