@@ -294,7 +294,6 @@ def field_for_schema(
         if key in metadata.keys():
             metadata[_DESERT_SENTINEL][key] = metadata.pop(key)
 
-    print(field)
     return field
 
 
