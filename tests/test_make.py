@@ -303,4 +303,15 @@ def test_forward_reference(module):
 def test_forward_reference_module_scope():
     """Run the forward reference test at global scope."""
 
-    import tests.forward_reference  # pylint disable=unused-import,import-outside-toplevel
+    import tests.cases.forward_reference  # pylint disable=unused-import,import-outside-toplevel
+
+
+def test_non_string_metadata_key(module):
+    """A non-string key in the attrib metadata comes through in the mm field."""
+
+    @module.dataclass
+    class A:
+        x: int = module.field(metadata={1: 2})
+
+    field = desert.schema(A).fields["x"]
+    assert field.metadata == {1: 2, desert._make._DESERT_SENTINEL: {}}

@@ -206,81 +206,96 @@ def field_for_schema(
     if metadata is None:
         metadata = {}
     else:
-        metadata = dict(metadata).get(_DESERT_SENTINEL, {})
+        metadata = dict(metadata)
+
+    desert_metadata = dict(metadata).get(_DESERT_SENTINEL, {})
+    metadata[_DESERT_SENTINEL] = desert_metadata
 
     if default is not marshmallow.missing:
-        metadata.setdefault("default", default)
-        if not metadata.get(
+        desert_metadata.setdefault("default", default)
+        if not desert_metadata.get(
             "required"
         ):  # 'missing' must not be set for required fields.
-            metadata.setdefault("missing", default)
-    else:
-        metadata.setdefault("required", True)
+            desert_metadata.setdefault("missing", default)
+
+    field = None
 
     # If the field was already defined by the user
-    predefined_field = metadata.get("marshmallow_field")
+    predefined_field = desert_metadata.get("marshmallow_field")
+
     if predefined_field:
-        return predefined_field
+        field = predefined_field
+        field.metadata.update(metadata)
+        return field
 
     # Base types
-    if typ in _native_to_marshmallow:
-        return _native_to_marshmallow[typ](**metadata)
+    if not field and typ in _native_to_marshmallow:
+        field = _native_to_marshmallow[typ](default=default)
 
     # Generic types
     origin = typing_inspect.get_origin(typ)
     if origin:
         arguments = typing_inspect.get_args(typ, True)
         if origin in (list, List):
-            return marshmallow.fields.List(field_for_schema(arguments[0]), **metadata)
+            field = marshmallow.fields.List(field_for_schema(arguments[0]))
         if origin in (tuple, Tuple):
-            return marshmallow.fields.Tuple(
-                tuple(field_for_schema(arg) for arg in arguments), **metadata
+            field = marshmallow.fields.Tuple(
+                tuple(field_for_schema(arg) for arg in arguments)
             )
         elif origin in (dict, Dict):
-            return marshmallow.fields.Dict(
+            field = marshmallow.fields.Dict(
                 keys=field_for_schema(arguments[0]),
                 values=field_for_schema(arguments[1]),
-                **metadata,
             )
         elif typing_inspect.is_optional_type(typ):
             subtyp = next(t for t in arguments if t is not NoneType)
             # Treat optional types as types with a None default
-            metadata["default"] = metadata.get("default", None)
-            metadata["missing"] = metadata.get("missing", None)
-            metadata["required"] = False
+            metadata[_DESERT_SENTINEL]["default"] = metadata.get("default", None)
+            metadata[_DESERT_SENTINEL]["missing"] = metadata.get("missing", None)
+            metadata[_DESERT_SENTINEL]["required"] = False
 
-            return field_for_schema(subtyp, metadata={_DESERT_SENTINEL: metadata})
+            field = field_for_schema(subtyp, metadata=metadata, default=None)
+            field.default = None
+            field.missing = None
+
         elif typing_inspect.is_union_type(typ):
-            subfields = [
-                field_for_schema(subtyp, metadata={_DESERT_SENTINEL: metadata})
-                for subtyp in arguments
-            ]
+            subfields = [field_for_schema(subtyp) for subtyp in arguments]
             import marshmallow_union
 
-            return marshmallow_union.Union(subfields, **metadata)
+            field = marshmallow_union.Union(subfields)
 
     # typing.NewType returns a function with a __supertype__ attribute
     newtype_supertype = getattr(typ, "__supertype__", None)
     if newtype_supertype and inspect.isfunction(typ):
         metadata.setdefault("description", typ.__name__)
-        return field_for_schema(newtype_supertype, metadata=metadata, default=default)
+        field = field_for_schema(newtype_supertype, default=default)
 
     # enumerations
     if type(typ) is EnumMeta:
         import marshmallow_enum
 
-        return marshmallow_enum.EnumField(typ, **metadata)
+        field = marshmallow_enum.EnumField(typ, metadata=metadata)
 
     # Nested dataclasses
     forward_reference = getattr(typ, "__forward_arg__", None)
 
-    nested = forward_reference or class_schema(typ)
-    try:
-        nested.help = typ.__doc__
-    except AttributeError:
-        # TODO need to handle the case where nested is a string forward reference.
-        pass
-    return marshmallow.fields.Nested(nested, **metadata)
+    if field is None:
+        nested = forward_reference or class_schema(typ)
+        try:
+            nested.help = typ.__doc__
+        except AttributeError:
+            # TODO need to handle the case where nested is a string forward reference.
+            pass
+        field = marshmallow.fields.Nested(nested)
+
+    field.metadata.update(metadata)
+
+    for key in ["default", "missing", "required", "marshmallow_field"]:
+        if key in metadata.keys():
+            metadata[_DESERT_SENTINEL][key] = metadata.pop(key)
+
+    print(field)
+    return field
 
 
 def _base_schema(clazz: type) -> Type[marshmallow.Schema]:
