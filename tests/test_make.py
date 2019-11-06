@@ -315,3 +315,16 @@ def test_non_string_metadata_key(module):
 
     field = desert.schema(A).fields["x"]
     assert field.metadata == {1: 2, desert._make._DESERT_SENTINEL: {}}
+
+
+def test_non_optional_means_required(module):
+    """Non-optional fields are required."""
+
+    @module.dataclass
+    class A:
+        x: int = module.field(metadata={1: 2})
+
+    schema = desert.schema(A)
+
+    with pytest.raises(marshmallow.exceptions.ValidationError):
+        schema.load({})
