@@ -1,1 +1,0 @@
-Non-optional fields without a default or factory now have `required=True` so raise :class:`marshmallow.exceptions.ValidationError` when missing.
