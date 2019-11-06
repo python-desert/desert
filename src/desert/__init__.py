@@ -5,6 +5,7 @@ import attr
 import marshmallow
 
 import desert._make
+import desert._version
 
 
 def schema(cls: t.Type, many: bool = False) -> marshmallow.Schema:
@@ -53,3 +54,6 @@ def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._Countin
             x: int = desert.ib(marshmallow.fields.Int())
     """
     return attr.ib(**kw, metadata=metadata(marshmallow_field))
+
+
+__version__ = desert._version.__version__
