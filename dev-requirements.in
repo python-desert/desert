@@ -17,3 +17,5 @@ pytest-sphinx
 towncrier
 marshmallow-union
 marshmallow-enum
+twine
+wheel
