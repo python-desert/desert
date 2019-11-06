@@ -33,11 +33,14 @@ except FileNotFoundError:
 
 DEV_INSTALL_REQUIRES = read("dev-requirements.in").splitlines()
 
+ns = {}
+exec(read("src/desert/_version.py"), ns)
+VERSION = ns["__version__"]
 
 # Enable code coverage for C code: we can't use CFLAGS=-coverage in tox.ini, since that may mess with compiling
 setup(
     name="desert",
-    version="0.1.6",
+    version=VERSION,
     description="Deserialize to objects while staying DRY",
     long_description="%s\n%s"
     % (
