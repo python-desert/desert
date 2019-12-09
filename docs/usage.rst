@@ -105,4 +105,31 @@ Use with :mod:`attrs`
     Entry(timestamp=datetime.datetime(2019, 10, 21, 10, 25), favorite_number=42)
 
 
+
+
+
+
+Special handling
+---------------------
+
+Any :class:`marshmallow.Schema.Meta` value is accepted in the meta dict. For example, to exclude unknown values during deserialization:
+
+.. testcode::
+
+    import attr
+    import desert
+
+    @attr.dataclass
+    class A:
+        x: int
+
+    schema = desert.schema_class(A, meta={"unknwown": marshmallow.EXCLUDE})()
+    print(schema.load({"x": 1, "y": 2}))
+
+.. testoutput::
+
+    A({"x": 1})
+
+
+
 .. _marshmallow_enum: https://github.com/justanr/marshmallow_enum

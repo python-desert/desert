@@ -8,16 +8,36 @@ import desert._make
 import desert._version
 
 
-def schema(cls: t.Type, many: bool = False) -> marshmallow.Schema:
+def schema(
+    cls: t.Type, many: bool = False, meta: t.Dict[str, t.Any] = {}
+) -> marshmallow.Schema:
     """Build a marshmallow schema *instance* for the class.
+
+    Args:
+        cls: A type-hinted attrs class or dataclass.
+        meta: The schema's Meta class will be built from this dict.
+              Use values from :class:`marshmallow.Schema.Meta`.
+
+    Returns:
+        An instance of the marshmallow schema for the class.
     """
-    return desert._make.class_schema(cls)(many=many)
+    return desert._make.class_schema(cls, meta=meta)(many=many)
 
 
-def schema_class(cls: t.Type) -> t.Type[marshmallow.Schema]:
+def schema_class(
+    cls: t.Type, meta: t.Dict[str, t.Any] = {}
+) -> t.Type[marshmallow.Schema]:
     """Build a marshmallow schema *class* for the class.
+
+    Args:
+        cls: A type-hinted attrs class or dataclass.
+        meta: The schema's Meta class will be built from this dict.
+              Use values from :class:`marshmallow.Schema.Meta`.
+
+    Returns:
+        The marshmallow schema class.
     """
-    return desert._make.class_schema(cls)
+    return desert._make.class_schema(cls, meta=meta)
 
 
 def metadata(
