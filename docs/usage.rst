@@ -109,8 +109,8 @@ Use with :mod:`attrs`
 
 
 
-Special handling
----------------------
+Schema meta parameters
+-----------------------
 
 Any :class:`marshmallow.Schema.Meta` value is accepted in the meta dict. For example, to exclude unknown values during deserialization:
 
