@@ -88,7 +88,7 @@ __all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 NoneType = type(None)
 
 
-def class_schema(clazz: type) -> Type[marshmallow.Schema]:
+def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Schema]:
     """
     Convert a class to a marshmallow schema
     :param clazz: A python class (may be a dataclass)
@@ -99,33 +99,6 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
     If you want to use a custom marshmallow field
     (one that has no equivalent python type), you can pass it as the
     ``marshmallow_field`` key in the metadata dictionary.
-    >>> @dataclasses.dataclass()
-    ... class Person:
-    ...   name: str = dataclasses.field(default="Anonymous")
-    ...   friends: List['Person'] = dataclasses.field(default_factory=lambda:[]) # Recursive field
-    ...
-    >>> person = class_schema(Person)().load({
-    ...     "friends": [{"name": "Roger Boucher"}]
-    ... })
-    >>> person
-    Person(name='Anonymous', friends=[Person(name='Roger Boucher', friends=[])])
-    >>> @dataclasses.dataclass()
-    ... class C:
-    ...   important: int = dataclasses.field(init=True, default=0)
-    ...   unimportant: int = dataclasses.field(init=False, default=0) # Only fields that are in the __init__ method will be added:
-    ...
-    >>> c = class_schema(C)().load({
-    ...     "important": 9, # This field will be imported
-    ...     "unimportant": 9 # This field will NOT be imported
-    ... }, unknown=marshmallow.EXCLUDE)
-    >>> c
-    C(important=9, unimportant=0)
-    >>> @dataclasses.dataclass
-    ... class Website:
-    ...  url:str = dataclasses.field(metadata = {'clout': {
-    ...    "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
-    ...  }})
-    ...
     """
 
     fields: Union[Tuple[dataclasses.Field], Tuple[attr.Attribute]]
@@ -149,7 +122,11 @@ def class_schema(clazz: type) -> Type[marshmallow.Schema]:
                 field.metadata,
             )
 
-    cls_schema = type(clazz.__name__, (_base_schema(clazz),), attributes)
+    cls_schema = type(
+        clazz.__name__,
+        (_base_schema(clazz),),
+        {**attributes, "Meta": type("Meta", (), meta)},
+    )
 
     return cast(Type[marshmallow.Schema], cls_schema)
 
