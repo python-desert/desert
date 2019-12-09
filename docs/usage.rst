@@ -128,7 +128,7 @@ Any :class:`marshmallow.Schema.Meta` value is accepted in the meta dict. For exa
 
 .. testoutput::
 
-    A({"x": 1})
+    A(x=1)
 
 
 
