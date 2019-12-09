@@ -328,3 +328,16 @@ def test_non_optional_means_required(module):
 
     with pytest.raises(marshmallow.exceptions.ValidationError):
         schema.load({})
+
+
+def test_ignore_unknown_fields(module):
+    """Enable unknown fields with meta argument."""
+
+    @module.dataclass
+    class A:
+        x: int
+
+    schema_class = desert.schema_class(A, meta={"unknown": marshmallow.EXCLUDE})
+    schema = schema_class()
+    data = schema.load({"x": 1, "y": 2})
+    assert data == A(x=1)
