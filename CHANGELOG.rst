@@ -1,3 +1,12 @@
+2019.12.09
+--------------
+
+Changes
+^^^^^^^
+
+- Marshmallow schema ``Meta`` arguments are accepted, allowing exclusion of unknown fields and other options.
+  `#3  <https://github.com/python-desert/desert/pull/3>`_
+
 2019.11.06 (2019-11-06)
 -----------------------
 
