@@ -1,3 +1,14 @@
+2019.12.10
+--------------
+
+Changes
+^^^^^^^
+
+- Add ``UnknownType`` exception with better error message for types that should be generic.
+  `#8  <https://github.com/python-desert/desert/issues/8>`_
+
+
+
 2019.12.09
 --------------
 
