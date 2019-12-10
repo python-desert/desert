@@ -344,3 +344,14 @@ def test_ignore_unknown_fields(module):
     schema = schema_class()
     data = schema.load({"x": 1, "y": 2})
     assert data == A(x=1)
+
+
+def test_raise_unknown_type(module):
+    """Raise UnknownType for failed inferences."""
+
+    @module.dataclass
+    class A:
+        x: list
+
+    with pytest.raises(desert.exceptions.UnknownType):
+        desert.schema_class(A)

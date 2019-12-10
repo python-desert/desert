@@ -106,6 +106,11 @@ def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Sch
         fields = dataclasses.fields(clazz)
     elif attr.has(clazz):
         fields = attr.fields(clazz)
+    elif issubclass(clazz, (list, dict)):
+        raise desert.exceptions.UnknownType(
+            "Use parametrized generics like typing.List[int] or typing.Dict[str, int] "
+            f"instead of list and dict. Got {clazz}"
+        )
     else:
         raise desert.exceptions.NotAnAttrsClassOrDataclass(clazz)
 
