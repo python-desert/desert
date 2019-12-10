@@ -81,6 +81,9 @@ def test_set_default(module):
     data = schema.load({"x": 1})
     assert data == A(1)
 
+    data = schema.load({})
+    assert data == A(1)
+
 
 def test_list(module):
     """Build a generic list *without* setting a factory on the dataclass."""
