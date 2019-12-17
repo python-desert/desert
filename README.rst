@@ -140,4 +140,15 @@ Limitations
 String annotations and forward references inside of functions are not supported.
 
 
+
+
+
+Acknowledgements
+=================
+
+- This package began as an extension of marshmallow-dataclass_ to add support for attrs_.
+
+
 .. _Poetry: https://poetry.eustace.io
+.. _marshmallow-dataclass: https://pypi.org/project/marshmallow-dataclass/
+.. _attrs: http://www.attrs.org/
