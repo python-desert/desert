@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import enum
+import sys
 import types
 import typing as t
 
@@ -357,6 +358,9 @@ def test_raise_unknown_type(module):
         desert.schema_class(A)
 
 
+@pytest.mark.skipif(
+    sys.version_info[:2] <= (3, 6), reason="3.6 has isinstance(t.Sequence[int], type)."
+)
 def test_raise_unknown_generic(module):
     """Raise UnknownType for unknown generics."""
 
