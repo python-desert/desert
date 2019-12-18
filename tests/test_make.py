@@ -355,3 +355,14 @@ def test_raise_unknown_type(module):
 
     with pytest.raises(desert.exceptions.UnknownType):
         desert.schema_class(A)
+
+
+def test_raise_unknown_generic(module):
+    """Raise UnknownType for unknown generics."""
+
+    @module.dataclass
+    class A:
+        x: t.Sequence[int]
+
+    with pytest.raises(desert.exceptions.UnknownType):
+        desert.schema_class(A)

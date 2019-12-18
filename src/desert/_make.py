@@ -102,6 +102,11 @@ def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Sch
     """
 
     fields: Union[Tuple[dataclasses.Field], Tuple[attr.Attribute]]
+    if not isinstance(clazz, type):
+        raise desert.exceptions.UnknownType(
+            f"Desert failed to infer the field type for {clazz}.\n"
+            + "Explicitly pass a Marshmallow field type."
+        )
     if dataclasses.is_dataclass(clazz):
         fields = dataclasses.fields(clazz)
     elif attr.has(clazz):
