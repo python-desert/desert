@@ -1,3 +1,12 @@
+2019.12.18
+--------------
+
+Changes
+^^^^^^^
+
+- Improve error message for unknown generics.
+  `#10 <https://github.com/python-desert/desert/pull/10>`_
+
 2019.12.10
 --------------
 

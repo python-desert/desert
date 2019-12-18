@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import enum
+import sys
 import types
 import typing as t
 
@@ -352,6 +353,20 @@ def test_raise_unknown_type(module):
     @module.dataclass
     class A:
         x: list
+
+    with pytest.raises(desert.exceptions.UnknownType):
+        desert.schema_class(A)
+
+
+@pytest.mark.skipif(
+    sys.version_info[:2] <= (3, 6), reason="3.6 has isinstance(t.Sequence[int], type)."
+)
+def test_raise_unknown_generic(module):
+    """Raise UnknownType for unknown generics."""
+
+    @module.dataclass
+    class A:
+        x: t.Sequence[int]
 
     with pytest.raises(desert.exceptions.UnknownType):
         desert.schema_class(A)
