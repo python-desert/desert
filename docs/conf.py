@@ -29,7 +29,7 @@ project = "desert"
 year = "2019"
 author = "Desert contributors"
 copyright = "{0}, {1}".format(year, author)
-version = release = "0.1.6"
+version = release = "2019.12.18"
 
 pygments_style = "trac"
 templates_path = ["."]
