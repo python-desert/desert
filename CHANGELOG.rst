@@ -4,7 +4,7 @@
 Changes
 ^^^^^^^^
 
-- ``Optional`` fields allow ``None``. `#11 https://github.com/python-desert/desert/issues/11`__. Thanks to @sveinse for reporting and testing.
+- ``Optional`` fields allow ``None``. `#11 <https://github.com/python-desert/desert/issues/11>`__. Thanks to @sveinse for reporting and testing.
 
 2019.12.18
 --------------
