@@ -201,6 +201,7 @@ def field_for_schema(
 
     if default is not marshmallow.missing:
         desert_metadata.setdefault("default", default)
+        desert_metadata.setdefault('allow_none', True)
         if not desert_metadata.get(
             "required"
         ):  # 'missing' must not be set for required fields.
@@ -242,9 +243,11 @@ def field_for_schema(
             metadata[_DESERT_SENTINEL]["missing"] = metadata.get("missing", None)
             metadata[_DESERT_SENTINEL]["required"] = False
 
+
             field = field_for_schema(subtyp, metadata=metadata, default=None)
             field.default = None
             field.missing = None
+            field.allow_none = True
 
         elif typing_inspect.is_union_type(typ):
             subfields = [field_for_schema(subtyp) for subtyp in arguments]
