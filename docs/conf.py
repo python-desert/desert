@@ -3,6 +3,13 @@ from __future__ import unicode_literals
 
 import os
 
+def read(*names, **kwargs):
+    with open(
+        os.path.join(os.path.dirname(__file__), *names), encoding=kwargs.get("encoding", "utf8")
+    ) as fh:
+        return fh.read()
+
+
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -29,7 +36,11 @@ project = "desert"
 year = "2019"
 author = "Desert contributors"
 copyright = "{0}, {1}".format(year, author)
-version = release = "2020.01.03"
+
+ns = {}
+exec(read('..', "src/desert/_version.py"), ns)
+version = release = ns["__version__"]
+
 
 pygments_style = "trac"
 templates_path = ["."]
