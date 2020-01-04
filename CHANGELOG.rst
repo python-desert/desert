@@ -6,7 +6,7 @@ Changes
 ^^^^^^^
 
 - Add support for Tuple[int, ...] per https://docs.python.org/3/library/typing.html#typing.Tuple
-  `#16 <https://github.com/python-desert/desert/issues/16>`_
+  `#16 <https://github.com/python-desert/desert/issues/16>`_ Thanks to @sveinse for reporting and testing.
 - Use module imports internally.
   `#18 <https://github.com/python-desert/desert/issues/18>`_
 - Desert version only needs to be updated in _version.py
