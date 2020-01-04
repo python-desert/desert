@@ -60,6 +60,7 @@ import dataclasses
 import datetime
 import decimal
 import inspect
+import typing as t
 import typing
 import uuid
 from enum import Enum
@@ -75,7 +76,6 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 from typing import cast
-
 import attr
 import marshmallow
 import typing_inspect
@@ -86,6 +86,7 @@ import desert.exceptions
 __all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
 
 NoneType = type(None)
+T = t.TypeVar("T")
 
 
 def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Schema]:
@@ -157,6 +158,19 @@ _native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
 }
 
 
+class VariadicTuple(marshmallow.fields.List):
+    """Homogenous tuple with variable number of entries."""
+
+    def _deserialize(self, *args, **kwargs):
+        return tuple(super()._deserialize(*args, **kwargs))
+
+
+def only(items: t.Iterable[T]) -> T:
+    """Return the only item in an iterable or raise ValueError."""
+    [x] = items
+    return x
+
+
 def field_for_schema(
     typ: type, default=marshmallow.missing, metadata: Mapping[str, Any] = None
 ) -> marshmallow.fields.Field:
@@ -201,7 +215,7 @@ def field_for_schema(
 
     if default is not marshmallow.missing:
         desert_metadata.setdefault("default", default)
-        desert_metadata.setdefault('allow_none', True)
+        desert_metadata.setdefault("allow_none", True)
         if not desert_metadata.get(
             "required"
         ):  # 'missing' must not be set for required fields.
@@ -223,13 +237,21 @@ def field_for_schema(
 
     # Generic types
     origin = typing_inspect.get_origin(typ)
+
     if origin:
         arguments = typing_inspect.get_args(typ, True)
+
         if origin in (list, List):
             field = marshmallow.fields.List(field_for_schema(arguments[0]))
-        if origin in (tuple, Tuple):
+
+        if origin in (tuple, t.Tuple) and Ellipsis not in arguments:
             field = marshmallow.fields.Tuple(
                 tuple(field_for_schema(arg) for arg in arguments)
+            )
+        elif origin in (tuple, t.Tuple) and Ellipsis in arguments:
+
+            field = VariadicTuple(
+                field_for_schema(only(arg for arg in arguments if arg != Ellipsis))
             )
         elif origin in (dict, Dict):
             field = marshmallow.fields.Dict(
@@ -242,7 +264,6 @@ def field_for_schema(
             metadata[_DESERT_SENTINEL]["default"] = metadata.get("default", None)
             metadata[_DESERT_SENTINEL]["missing"] = metadata.get("missing", None)
             metadata[_DESERT_SENTINEL]["required"] = False
-
 
             field = field_for_schema(subtyp, metadata=metadata, default=None)
             field.default = None
