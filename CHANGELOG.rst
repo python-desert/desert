@@ -1,3 +1,23 @@
+2020.01.03 (2020-01-04)
+-----------------------
+
+
+Changes
+^^^^^^^
+
+- Add support for Tuple[int, ...] per https://docs.python.org/3/library/typing.html#typing.Tuple
+  `#16 <https://github.com/python-desert/desert/issues/16>`_
+- Use module imports internally.
+  `#18 <https://github.com/python-desert/desert/issues/18>`_
+- Desert version only needs to be updated in _version.py
+  `#19 <https://github.com/python-desert/desert/issues/19>`_
+- Fix doctests.
+  `#20 <https://github.com/python-desert/desert/issues/20>`_
+
+
+----
+
+
 2020.01.03
 --------------
 
