@@ -59,11 +59,10 @@ __all__ = ("schema_class", "schema")
 import dataclasses
 import datetime
 import decimal
+import enum
 import inspect
 import typing as t
-import typing
 import uuid
-import enum
 
 import attr
 import marshmallow
@@ -106,7 +105,7 @@ def class_schema(
         fields = attr.fields(clazz)
     elif issubclass(clazz, (list, dict)):
         raise desert.exceptions.UnknownType(
-            "Use parametrized generics like typing.List[int] or typing.Dict[str, int] "
+            "Use parametrized generics like t.List[int] or t.Dict[str, int] "
             f"instead of list and dict. Got {clazz}."
         )
     else:
@@ -116,7 +115,7 @@ def class_schema(
     attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
     # Update the schema members to contain marshmallow fields instead of dataclass fields
 
-    hints = typing.get_type_hints(clazz)
+    hints = t.get_type_hints(clazz)
     for field in fields:
         if field.init:
             attributes[field.name] = field_for_schema(
@@ -182,7 +181,7 @@ def field_for_schema(
     >>> field_for_schema(enum.Enum("X", "a b c")).__class__
     <class 'marshmallow_enum.EnumField'>
     >>> import typing
-    >>> field_for_schema(typing.Union[int,str]).__class__
+    >>> field_for_schema(t.Union[int,str]).__class__
     <class 'marshmallow_union.Union'>
     >>> field_for_schema(t.NewType('UserId', int)).__class__
     <class 'marshmallow.fields.Integer'>
@@ -267,7 +266,7 @@ def field_for_schema(
 
             field = marshmallow_union.Union(subfields)
 
-    # typing.NewType returns a function with a __supertype__ attribute
+    # t.NewType returns a function with a __supertype__ attribute
     newtype_supertype = getattr(typ, "__supertype__", None)
     if newtype_supertype and inspect.isfunction(typ):
         metadata.setdefault("description", typ.__name__)
