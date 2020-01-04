@@ -137,6 +137,7 @@ def test_optional(module):
     data = desert.schema_class(A)().load({})
     assert data == A(None)
 
+
 def test_optional_present(module):
     """Setting an optional type allows passing None."""
 
@@ -380,3 +381,36 @@ def test_raise_unknown_generic(module):
 
     with pytest.raises(desert.exceptions.UnknownType):
         desert.schema_class(A)
+
+
+def test_tuple_ellipsis(module):
+    """Tuple with ellipsis allows variable length tuple.
+
+    See :class:`typing.Tuple`.
+    """
+
+    @module.dataclass
+    class A:
+        x: t.Tuple[int, ...]
+
+    schema = desert.schema_class(A)()
+    dumped = {"x": (1, 2, 3)}
+    loaded = A(x=(1, 2, 3))
+
+    assert schema.load(dumped) == loaded
+    assert schema.dump(loaded) == {"x": [1, 2, 3]}
+    assert schema.loads(schema.dumps(loaded)) == loaded
+
+
+def test_only():
+    """only() extracts the only item in an iterable."""
+    assert desert._make.only([1]) == 1
+
+
+def test_only_raises():
+    """only() raises if the iterable has an unexpected number of entries.'"""
+    with pytest.raises(ValueError):
+        desert._make.only([])
+
+    with pytest.raises(ValueError):
+        desert._make.only([1, 2])
