@@ -59,11 +59,10 @@ __all__ = ("schema_class", "schema")
 import dataclasses
 import datetime
 import decimal
+import enum
 import inspect
 import typing as t
-import typing
 import uuid
-import enum
 
 import attr
 import marshmallow
