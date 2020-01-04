@@ -123,7 +123,7 @@ Any :class:`marshmallow.Schema.Meta` value is accepted in the meta dict. For exa
     class A:
         x: int
 
-    schema = desert.schema_class(A, meta={"unknwown": marshmallow.EXCLUDE})()
+    schema = desert.schema_class(A, meta={"unknown": marshmallow.EXCLUDE})()
     print(schema.load({"x": 1, "y": 2}))
 
 .. testoutput::

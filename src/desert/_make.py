@@ -192,7 +192,7 @@ def field_for_schema(
     ...   red = 1
     >>> field_for_schema(Color).__class__
     <class 'marshmallow_enum.EnumField'>
-    >>> field_for_schema(Any).__class__
+    >>> field_for_schema(t.Any).__class__
     <class 'marshmallow.fields.Raw'>
     """
 
