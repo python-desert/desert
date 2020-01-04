@@ -51,7 +51,7 @@ Full example::
       website:str = field(metadata = {
         "marshmallow_field": marshmallow.fields.Url() # Custom marshmallow field
       })
-      Schema: ClassVar[Type[Schema]] = Schema # For the type checker
+      Schema: t.ClassVar[Type[Schema]] = Schema # For the type checker
 """
 
 __all__ = ("schema_class", "schema")
@@ -63,19 +63,8 @@ import inspect
 import typing as t
 import typing
 import uuid
-from enum import Enum
-from enum import EnumMeta
-from typing import Any
-from typing import ClassVar
-from typing import Dict
-from typing import List
-from typing import Mapping
-from typing import NewType
-from typing import Optional
-from typing import Tuple
-from typing import Type
-from typing import Union
-from typing import cast
+import enum
+
 import attr
 import marshmallow
 import typing_inspect
@@ -89,7 +78,9 @@ NoneType = type(None)
 T = t.TypeVar("T")
 
 
-def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Schema]:
+def class_schema(
+    clazz: type, meta: t.Dict[str, t.Any] = {}
+) -> t.Type[marshmallow.Schema]:
     """
     Convert a class to a marshmallow schema
     :param clazz: A python class (may be a dataclass)
@@ -102,7 +93,7 @@ def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Sch
     ``marshmallow_field`` key in the metadata dictionary.
     """
 
-    fields: Union[Tuple[dataclasses.Field], Tuple[attr.Attribute]]
+    fields: t.Union[t.Tuple[dataclasses.Field], t.Tuple[attr.Attribute]]
 
     if not isinstance(clazz, type):
         raise desert.exceptions.UnknownType(
@@ -140,10 +131,10 @@ def class_schema(clazz: type, meta: Dict[str, Any] = {}) -> Type[marshmallow.Sch
         {**attributes, "Meta": type("Meta", (), meta)},
     )
 
-    return cast(Type[marshmallow.Schema], cls_schema)
+    return t.cast(t.Type[marshmallow.Schema], cls_schema)
 
 
-_native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
+_native_to_marshmallow: t.Dict[type, t.Type[marshmallow.fields.Field]] = {
     int: marshmallow.fields.Integer,
     float: marshmallow.fields.Float,
     str: marshmallow.fields.String,
@@ -154,7 +145,7 @@ _native_to_marshmallow: Dict[type, Type[marshmallow.fields.Field]] = {
     datetime.date: marshmallow.fields.Date,
     decimal.Decimal: marshmallow.fields.Decimal,
     uuid.UUID: marshmallow.fields.UUID,
-    Any: marshmallow.fields.Raw,
+    t.Any: marshmallow.fields.Raw,
 }
 
 
@@ -172,7 +163,7 @@ def only(items: t.Iterable[T]) -> T:
 
 
 def field_for_schema(
-    typ: type, default=marshmallow.missing, metadata: Mapping[str, Any] = None
+    typ: type, default=marshmallow.missing, metadata: t.Mapping[str, t.Any] = None
 ) -> marshmallow.fields.Field:
     """
     Get a marshmallow Field corresponding to the given python type.
@@ -183,21 +174,21 @@ def field_for_schema(
 
     >>> int_field.default
     9
-    >>> field_for_schema(Dict[str,str]).__class__
+    >>> field_for_schema(t.Dict[str,str]).__class__
     <class 'marshmallow.fields.Dict'>
-    >>> field_for_schema(Optional[str]).__class__
+    >>> field_for_schema(t.Optional[str]).__class__
     <class 'marshmallow.fields.String'>
     >>> import marshmallow_enum
-    >>> field_for_schema(Enum("X", "a b c")).__class__
+    >>> field_for_schema(enum.Enum("X", "a b c")).__class__
     <class 'marshmallow_enum.EnumField'>
     >>> import typing
     >>> field_for_schema(typing.Union[int,str]).__class__
     <class 'marshmallow_union.Union'>
-    >>> field_for_schema(NewType('UserId', int)).__class__
+    >>> field_for_schema(t.NewType('UserId', int)).__class__
     <class 'marshmallow.fields.Integer'>
-    >>> field_for_schema(NewType('UserId', int), default=0).default
+    >>> field_for_schema(t.NewType('UserId', int), default=0).default
     0
-    >>> class Color(Enum):
+    >>> class Color(enum.Enum):
     ...   red = 1
     >>> field_for_schema(Color).__class__
     <class 'marshmallow_enum.EnumField'>
@@ -241,7 +232,7 @@ def field_for_schema(
     if origin:
         arguments = typing_inspect.get_args(typ, True)
 
-        if origin in (list, List):
+        if origin in (list, t.List):
             field = marshmallow.fields.List(field_for_schema(arguments[0]))
 
         if origin in (tuple, t.Tuple) and Ellipsis not in arguments:
@@ -253,7 +244,7 @@ def field_for_schema(
             field = VariadicTuple(
                 field_for_schema(only(arg for arg in arguments if arg != Ellipsis))
             )
-        elif origin in (dict, Dict):
+        elif origin in (dict, t.Dict):
             field = marshmallow.fields.Dict(
                 keys=field_for_schema(arguments[0]),
                 values=field_for_schema(arguments[1]),
@@ -283,7 +274,7 @@ def field_for_schema(
         field = field_for_schema(newtype_supertype, default=default)
 
     # enumerations
-    if type(typ) is EnumMeta:
+    if type(typ) is enum.EnumMeta:
         import marshmallow_enum
 
         field = marshmallow_enum.EnumField(typ, metadata=metadata)
@@ -312,7 +303,7 @@ def field_for_schema(
     return field
 
 
-def _base_schema(clazz: type) -> Type[marshmallow.Schema]:
+def _base_schema(clazz: type) -> t.Type[marshmallow.Schema]:
     class BaseSchema(marshmallow.Schema):
         @marshmallow.post_load
         def make_data_class(self, data, **_):
@@ -321,7 +312,7 @@ def _base_schema(clazz: type) -> Type[marshmallow.Schema]:
     return BaseSchema
 
 
-def _get_field_default(field: Union[dataclasses.Field, attr.Attribute]):
+def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
     """
     Return a marshmallow default value given a dataclass default value
     >>> _get_field_default(dataclasses.field())
