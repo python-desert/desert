@@ -319,8 +319,8 @@ def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
     """
     if isinstance(field, dataclasses.Field):
         if field.default_factory != dataclasses.MISSING:
-            return field.default_factory
-        elif field.default is dataclasses.MISSING:
+            return dataclasses.MISSING
+        if field.default is dataclasses.MISSING:
             return marshmallow.missing
         return field.default
     elif isinstance(field, attr.Attribute):
@@ -328,7 +328,7 @@ def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
             return marshmallow.missing
         if isinstance(field.default, attr.Factory):
             if field.default.takes_self:
-                raise NotImplementedError("Takes self not implemented")
+                return attr.NOTHING
             return field.default.factory
         return field.default
     else:

@@ -1,3 +1,17 @@
+2020.01.05 (2020-01-05)
+-----------------------
+
+
+Changes
+^^^^^^^
+
+- Add support for attrs factories that take ``self`` (``attr.Factory(..., takes_self=True)``).
+  `#27 <https://github.com/python-desert/desert/issues/27>`_
+
+
+----
+
+
 2020.01.04 (2020-01-04)
 -----------------------
 
