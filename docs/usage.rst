@@ -27,10 +27,7 @@ for any of these types:
 * :class:`uuid.UUID`
 * :class:`decimal.Decimal`
 * :class:`enum.Enum` (if you have `marshmallow_enum`_ installed.)
-
-If you have :mod:`marshmallow_union` installed, then :class:`typing.Union` is handled by
-trying to deserialize into each of the unioned types until one succeeds.
-
+* :class:`typing.Union` (if you have `marshmallow_union` installed, tries each type until one succeeds.)
 
 
 There are two syntaxes for
