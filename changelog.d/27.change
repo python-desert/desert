@@ -1,1 +1,0 @@
-Add support for attrs factories that take ``self`` (``attr.Factory(..., takes_self=True)``).
