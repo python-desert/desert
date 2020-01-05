@@ -414,3 +414,19 @@ def test_only_raises():
 
     with pytest.raises(ValueError):
         desert._make.only([1, 2])
+
+
+def test_takes_self():
+    """Attrs default factories are constructed after instance creation."""
+
+    @attr.s
+    class C:
+        x: int = attr.ib()
+        y: int = attr.ib()
+
+        @y.default
+        def _(self):
+            return self.x + 1
+
+    schema = desert.schema(C)
+    assert schema.load({"x": 1}) == C(x=1, y=2)
