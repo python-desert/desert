@@ -1,3 +1,17 @@
+2020.01.06 (2020-01-06)
+-----------------------
+
+
+Changes
+^^^^^^^
+
+- Additional metadata are supported in ib() and fields().
+  `#28 <https://github.com/python-desert/desert/issues/28>`_
+
+
+----
+
+
 2020.01.05 (2020-01-05)
 -----------------------
 

@@ -61,7 +61,9 @@ def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Fiel
         class A:
             x: int = desert.field(marshmallow.fields.Int())
     """
-    return dataclasses.field(**kw, metadata=metadata(marshmallow_field))
+    meta = metadata(marshmallow_field)
+    meta.update(kw.pop("metadata", {}))
+    return dataclasses.field(**kw, metadata=meta)
 
 
 def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._CountingAttr:
@@ -73,7 +75,9 @@ def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._Countin
         class A:
             x: int = desert.ib(marshmallow.fields.Int())
     """
-    return attr.ib(**kw, metadata=metadata(marshmallow_field))
+    meta = metadata(marshmallow_field)
+    meta.update(kw.pop("metadata", {}))
+    return attr.ib(**kw, metadata=meta)
 
 
 __version__ = desert._version.__version__

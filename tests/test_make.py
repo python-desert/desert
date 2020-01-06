@@ -191,6 +191,36 @@ def test_concise_attrib():
     assert schema.load({"x": timestring}) == A(x=dt)
 
 
+def test_concise_field_metadata():
+    """Concisely create a dataclasses.Field with metadata."""
+
+    @dataclasses.dataclass
+    class A:
+        x: str = desert.field(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})
+
+    timestring = "2019-10-21T10:25:00"
+    dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
+    schema = desert.schema(A)
+
+    assert schema.load({"x": timestring}) == A(x=dt)
+    assert dataclasses.fields(A)[0].metadata["foo"] == 1
+
+
+def test_concise_attrib_metadata():
+    """Concisely create an attr.ib() with metadata."""
+
+    @attr.dataclass
+    class A:
+        x: str = desert.ib(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})
+
+    timestring = "2019-10-21T10:25:00"
+    dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
+    schema = desert.schema(A)
+
+    assert schema.load({"x": timestring}) == A(x=dt)
+    assert attr.fields(A).x.metadata["foo"] == 1
+
+
 def test_union(module):
     """Deserialize one of several types."""
 
