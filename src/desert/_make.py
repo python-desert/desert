@@ -283,11 +283,6 @@ def field_for_schema(
 
     if field is None:
         nested = forward_reference or class_schema(typ)
-        try:
-            nested.help = typ.__doc__
-        except AttributeError:
-            # TODO need to handle the case where nested is a string forward reference.
-            pass
         field = marshmallow.fields.Nested(nested)
 
     field.metadata.update(metadata)
