@@ -460,18 +460,3 @@ def test_takes_self():
 
     schema = desert.schema(C)
     assert schema.load({"x": 1}) == C(x=1, y=2)
-
-
-def test_forwardref(module):
-
-    Foo = t.ForwardRef("Foo")
-
-    @module.dataclass
-    class A:
-        x: Foo
-
-    schema = desert.schema(A)
-
-    @module.dataclass
-    class Foo:
-        pass
