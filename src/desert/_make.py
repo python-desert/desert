@@ -122,7 +122,7 @@ def class_schema(
             # This is a hacky workaround. t.get_type_hints() *mutates* the value causing
             # forward references to end up in RecursionError when hashing the type, so we
             # undo that here.
-            if getattr(field.type, "__forward_value__"):
+            if getattr(field.type, "__forward_value__", None):
                 field.type.__forward_value__ = None
 
             attributes[field.name] = field_for_schema(
@@ -229,8 +229,7 @@ def field_for_schema(
         return field
 
     # Base types
-
-    if not field and typ in _native_to_marshmallow:
+    if not field and typ in list(_native_to_marshmallow):
         field = _native_to_marshmallow[typ](default=default)
 
     # Generic types
