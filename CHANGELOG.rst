@@ -5,7 +5,7 @@
 Changes
 ^^^^^^^
 
-- Additional metadata are supported in ib() and fields().
+- Additional metadata are supported in ib() and fields(). Thanks to @sveinse for reporting and testing.
   `#28 <https://github.com/python-desert/desert/issues/28>`_
 
 
