@@ -38,6 +38,31 @@ def dataclass_param(request):
     return request.param
 
 
+def _load_assert(schema, loaded, dumped):
+    assert schema.load(dumped) == loaded
+
+
+def _dump_assert(schema, loaded, dumped):
+    assert schema.dump(loaded) == dumped
+
+
+def _dump_load_assert(schema, loaded, dumped):
+    assert schema.loads(schema.dumps(loaded)) == loaded
+
+
+def _load_dump_assert(schema, loaded, dumped):
+    assert schema.dump(schema.load(dumped)) == dumped
+
+
+@pytest.fixture(
+    name='dump_load_assert',
+    params=[_load_assert, _dump_assert, _dump_load_assert, _load_dump_assert],
+    ids=['load', 'dump', 'dump load', 'load dump'],
+)
+def _dump_load_assert(request):
+    return request.param
+
+
 def test_simple(module):
     """Load dict into a dataclass instance."""
 
@@ -222,7 +247,7 @@ def test_concise_attrib_metadata():
     assert attr.fields(A).x.metadata["foo"] == 1
 
 
-def test_union(module):
+def test_union(module, dump_load_assert):
     """Deserialize one of several types."""
 
     @module.dataclass
@@ -233,18 +258,14 @@ def test_union(module):
 
     dumped = {"x": "X"}
     loaded = A("X")
-    assert schema.load(dumped) == loaded
-
-    assert schema.dump(loaded) == dumped
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
     dumped = {"x": 5}
     loaded = A(5)
-
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_enum(module):
+def test_enum(module, dump_load_assert):
     """Deserialize an enum object."""
 
     class Color(enum.Enum):
@@ -258,11 +279,11 @@ def test_enum(module):
     schema = desert.schema_class(A)()
     dumped = {"x": "RED"}
     loaded = A(Color.RED)
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_tuple(module):
+def test_tuple(module, dump_load_assert):
     """Round trip a tuple.
 
     The tuple is converted to list only for dumps(), not during dump().
@@ -276,9 +297,7 @@ def test_tuple(module):
     dumped = {"x": (1, False)}
     loaded = A(x=(1, False))
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
-    assert schema.loads(schema.dumps(loaded)) == loaded
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_attr_factory():
@@ -303,7 +322,7 @@ def test_dataclasses_factory():
     assert data == A([])
 
 
-def test_newtype(module):
+def test_newtype(module, dump_load_assert):
     """An instance of NewType delegates to its supertype."""
 
     MyInt = t.NewType("MyInt", int)
@@ -316,8 +335,7 @@ def test_newtype(module):
     dumped = {"x": 1}
     loaded = A(x=1)
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
 @pytest.mark.xfail(
@@ -327,7 +345,7 @@ def test_newtype(module):
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
     ),
 )
-def test_forward_reference(module):
+def test_forward_reference(module, dump_load_assert):
     """Build schemas from classes that are defined below their containing class."""
 
     @module.dataclass
@@ -342,8 +360,7 @@ def test_forward_reference(module):
     dumped = {"x": {"y": 1}}
     loaded = A((B(1)))
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_forward_reference_module_scope():
@@ -428,9 +445,13 @@ def test_tuple_ellipsis(module):
     dumped = {"x": (1, 2, 3)}
     loaded = A(x=(1, 2, 3))
 
+    actually_dumped = {"x": [1, 2, 3]}
+
+    # TODO: how to use dump_load_assert?
     assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == {"x": [1, 2, 3]}
+    assert schema.dump(loaded) == actually_dumped
     assert schema.loads(schema.dumps(loaded)) == loaded
+    assert schema.dump(schema.load(actually_dumped)) == actually_dumped
 
 
 def test_only():
