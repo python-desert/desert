@@ -54,13 +54,27 @@ def _load_dump_assert(schema, loaded, dumped):
     assert schema.dump(schema.load(dumped)) == dumped
 
 
-@pytest.fixture(
+def fixture_from_dict(name, id_to_value):
+    @pytest.fixture(
+        name=name,
+        params=id_to_value.values(),
+        ids=id_to_value.keys(),
+    )
+    def fixture(request):
+        return request.param
+
+    return fixture
+
+
+_dump_load_assert = fixture_from_dict(
     name='dump_load_assert',
-    params=[_load_assert, _dump_assert, _dump_load_assert, _load_dump_assert],
-    ids=['load', 'dump', 'dump load', 'load dump'],
+    id_to_value={
+        'load': _load_assert,
+        'dump': _dump_assert,
+        'dump load': _dump_load_assert,
+        'load dump': _load_dump_assert,
+    },
 )
-def _dump_load_assert(request):
-    return request.param
 
 
 def test_simple(module):
