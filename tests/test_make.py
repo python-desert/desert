@@ -31,6 +31,7 @@ class DataclassModule:
             field=dataclasses.field,
         ),
     ],
+    ids=['attrs', 'dataclasses'],
 )
 def dataclass_param(request):
     """Parametrize over both implementations of the @dataclass decorator."""
