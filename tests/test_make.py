@@ -38,19 +38,19 @@ def dataclass_param(request):
     return request.param
 
 
-def _load_assert(schema, loaded, dumped):
+def _assert_load(schema, loaded, dumped):
     assert schema.load(dumped) == loaded
 
 
-def _dump_assert(schema, loaded, dumped):
+def _assert_dump(schema, loaded, dumped):
     assert schema.dump(loaded) == dumped
 
 
-def _dump_load_assert(schema, loaded, dumped):
+def _assert_dump_load(schema, loaded, dumped):
     assert schema.loads(schema.dumps(loaded)) == loaded
 
 
-def _load_dump_assert(schema, loaded, dumped):
+def _assert_load_dump(schema, loaded, dumped):
     assert schema.dump(schema.load(dumped)) == dumped
 
 
@@ -66,13 +66,13 @@ def fixture_from_dict(name, id_to_value):
     return fixture
 
 
-_dump_load_assert = fixture_from_dict(
-    name='dump_load_assert',
+_assert_dump_load = fixture_from_dict(
+    name='assert_dump_load',
     id_to_value={
-        'load': _load_assert,
-        'dump': _dump_assert,
-        'dump load': _dump_load_assert,
-        'load dump': _load_dump_assert,
+        'load': _assert_load,
+        'dump': _assert_dump,
+        'dump load': _assert_dump_load,
+        'load dump': _assert_load_dump,
     },
 )
 
@@ -262,7 +262,7 @@ def test_concise_attrib_metadata():
 
 
 @pytest.mark.parametrize(argnames=['value'], argvalues=[["X"], [5]])
-def test_union(module, value, dump_load_assert):
+def test_union(module, value, assert_dump_load):
     """Deserialize one of several types."""
 
     @module.dataclass
@@ -274,10 +274,10 @@ def test_union(module, value, dump_load_assert):
     dumped = {"x": value}
     loaded = A(value)
 
-    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_enum(module, dump_load_assert):
+def test_enum(module, assert_dump_load):
     """Deserialize an enum object."""
 
     class Color(enum.Enum):
@@ -292,10 +292,10 @@ def test_enum(module, dump_load_assert):
     dumped = {"x": "RED"}
     loaded = A(Color.RED)
 
-    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_tuple(module, dump_load_assert):
+def test_tuple(module, assert_dump_load):
     """Round trip a tuple.
 
     The tuple is converted to list only for dumps(), not during dump().
@@ -309,7 +309,7 @@ def test_tuple(module, dump_load_assert):
     dumped = {"x": (1, False)}
     loaded = A(x=(1, False))
 
-    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_attr_factory():
@@ -334,7 +334,7 @@ def test_dataclasses_factory():
     assert data == A([])
 
 
-def test_newtype(module, dump_load_assert):
+def test_newtype(module, assert_dump_load):
     """An instance of NewType delegates to its supertype."""
 
     MyInt = t.NewType("MyInt", int)
@@ -347,7 +347,7 @@ def test_newtype(module, dump_load_assert):
     dumped = {"x": 1}
     loaded = A(x=1)
 
-    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 @pytest.mark.xfail(
@@ -357,7 +357,7 @@ def test_newtype(module, dump_load_assert):
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
     ),
 )
-def test_forward_reference(module, dump_load_assert):
+def test_forward_reference(module, assert_dump_load):
     """Build schemas from classes that are defined below their containing class."""
 
     @module.dataclass
@@ -372,7 +372,7 @@ def test_forward_reference(module, dump_load_assert):
     dumped = {"x": {"y": 1}}
     loaded = A((B(1)))
 
-    dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_forward_reference_module_scope():
@@ -459,7 +459,7 @@ def test_tuple_ellipsis(module):
 
     actually_dumped = {"x": [1, 2, 3]}
 
-    # TODO: how to use dump_load_assert?
+    # TODO: how to use assert_dump_load?
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == actually_dumped
     assert schema.loads(schema.dumps(loaded)) == loaded
