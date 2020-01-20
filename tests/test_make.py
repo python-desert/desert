@@ -259,6 +259,7 @@ def test_union(module, value, dump_load_assert):
 
     dumped = {"x": value}
     loaded = A(value)
+
     dump_load_assert(schema=schema, loaded=loaded, dumped=dumped)
 
 
