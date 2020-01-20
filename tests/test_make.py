@@ -232,12 +232,6 @@ def test_union(module):
 
     dumped = {"x": "X"}
     loaded = A("X")
-    assert schema.load(dumped) == loaded
-
-    assert schema.dump(loaded) == dumped
-
-    dumped = {"x": "X"}
-    loaded = A("X")
 
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
