@@ -222,7 +222,8 @@ def test_concise_attrib_metadata():
     assert attr.fields(A).x.metadata["foo"] == 1
 
 
-def test_union(module):
+@pytest.mark.parametrize(argnames=['value'], argvalues=[["X"], [5]])
+def test_union(module, value):
     """Deserialize one of several types."""
 
     @module.dataclass
@@ -231,15 +232,8 @@ def test_union(module):
 
     schema = desert.schema_class(A)()
 
-    dumped = {"x": "X"}
-    loaded = A("X")
-    assert schema.load(dumped) == loaded
-
-    assert schema.dump(loaded) == dumped
-
-    dumped = {"x": 5}
-    loaded = A(5)
-
+    dumped = {"x": value}
+    loaded = A(value)
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
 
