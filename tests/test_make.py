@@ -38,6 +38,81 @@ def dataclass_param(request):
     return request.param
 
 
+def _assert_load(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
+    assert schema.load(dumped) == loaded
+
+
+def _assert_dump(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
+    assert schema.dump(loaded) == dumped
+
+
+def _assert_dump_load(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
+    assert schema.loads(schema.dumps(loaded)) == loaded
+
+
+def _assert_load_dump(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
+    assert schema.dump(schema.load(dumped)) == dumped
+
+
+def fixture_from_dict(
+    name: str,
+    id_to_value: t.Mapping[
+        str,
+        t.Callable[
+            [
+                t.Type[marshmallow.Schema],
+                t.Dict[t.Any, t.Any],
+                t.Any,
+            ],
+            None,
+        ],
+    ],
+):
+    """
+    Create fixture parametrized to yield each value and labeled with the
+    corresponding ID.
+    :param name: Name of the fixture itself
+    :param id_to_value: Mapping from ID labels to values
+    :return: The PyTest fixture
+    """
+    @pytest.fixture(
+        name=name,
+        params=id_to_value.values(),
+        ids=id_to_value.keys(),
+    )
+    def fixture(request):
+        return request.param
+
+    return fixture
+
+
+_assert_dump_load = fixture_from_dict(
+    name='assert_dump_load',
+    id_to_value={
+        'load': _assert_load,
+        'dump': _assert_dump,
+        'dump load': _assert_dump_load,
+        'load dump': _assert_load_dump,
+    },
+)
+
+
 def test_simple(module):
     """Load dict into a dataclass instance."""
 
@@ -223,7 +298,7 @@ def test_concise_attrib_metadata():
 
 
 @pytest.mark.parametrize(argnames=['value'], argvalues=[["X"], [5]])
-def test_union(module, value):
+def test_union(module, value, assert_dump_load):
     """Deserialize one of several types."""
 
     @module.dataclass
@@ -234,11 +309,11 @@ def test_union(module, value):
 
     dumped = {"x": value}
     loaded = A(value)
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_enum(module):
+def test_enum(module, assert_dump_load):
     """Deserialize an enum object."""
 
     class Color(enum.Enum):
@@ -252,11 +327,11 @@ def test_enum(module):
     schema = desert.schema_class(A)()
     dumped = {"x": "RED"}
     loaded = A(Color.RED)
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_tuple(module):
+def test_tuple(module, assert_dump_load):
     """Round trip a tuple.
 
     The tuple is converted to list only for dumps(), not during dump().
@@ -270,9 +345,7 @@ def test_tuple(module):
     dumped = {"x": (1, False)}
     loaded = A(x=(1, False))
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
-    assert schema.loads(schema.dumps(loaded)) == loaded
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_attr_factory():
@@ -297,7 +370,7 @@ def test_dataclasses_factory():
     assert data == A([])
 
 
-def test_newtype(module):
+def test_newtype(module, assert_dump_load):
     """An instance of NewType delegates to its supertype."""
 
     MyInt = t.NewType("MyInt", int)
@@ -310,8 +383,7 @@ def test_newtype(module):
     dumped = {"x": 1}
     loaded = A(x=1)
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 @pytest.mark.xfail(
@@ -321,7 +393,7 @@ def test_newtype(module):
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
     ),
 )
-def test_forward_reference(module):
+def test_forward_reference(module, assert_dump_load):
     """Build schemas from classes that are defined below their containing class."""
 
     @module.dataclass
@@ -336,8 +408,7 @@ def test_forward_reference(module):
     dumped = {"x": {"y": 1}}
     loaded = A((B(1)))
 
-    assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == dumped
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
 def test_forward_reference_module_scope():
@@ -422,9 +493,13 @@ def test_tuple_ellipsis(module):
     dumped = {"x": (1, 2, 3)}
     loaded = A(x=(1, 2, 3))
 
+    actually_dumped = {"x": [1, 2, 3]}
+
+    # TODO: how to use assert_dump_load?
     assert schema.load(dumped) == loaded
-    assert schema.dump(loaded) == {"x": [1, 2, 3]}
+    assert schema.dump(loaded) == actually_dumped
     assert schema.loads(schema.dumps(loaded)) == loaded
+    assert schema.dump(schema.load(actually_dumped)) == actually_dumped
 
 
 def test_only():
