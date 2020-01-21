@@ -38,23 +38,59 @@ def dataclass_param(request):
     return request.param
 
 
-def _assert_load(schema, loaded, dumped):
+def _assert_load(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
     assert schema.load(dumped) == loaded
 
 
-def _assert_dump(schema, loaded, dumped):
+def _assert_dump(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
     assert schema.dump(loaded) == dumped
 
 
-def _assert_dump_load(schema, loaded, dumped):
+def _assert_dump_load(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
     assert schema.loads(schema.dumps(loaded)) == loaded
 
 
-def _assert_load_dump(schema, loaded, dumped):
+def _assert_load_dump(
+    schema: t.Type[marshmallow.Schema],
+    loaded: t.Any,
+    dumped: t.Dict[t.Any, t.Any],
+) -> None:
     assert schema.dump(schema.load(dumped)) == dumped
 
 
-def fixture_from_dict(name, id_to_value):
+def fixture_from_dict(
+    name: str,
+    id_to_value: t.Mapping[
+        str,
+        t.Callable[
+            [
+                t.Type[marshmallow.Schema],
+                t.Dict[t.Any, t.Any],
+                t.Any,
+            ],
+            None,
+        ],
+    ],
+):
+    """
+    Create fixture parametrized to yield each value and labeled with the
+    corresponding ID.
+    :param name: Name of the fixture itself
+    :param id_to_value: Mapping from ID labels to values
+    :return: The PyTest fixture
+    """
     @pytest.fixture(
         name=name,
         params=id_to_value.values(),
