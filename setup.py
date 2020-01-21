@@ -78,6 +78,7 @@ setup(
         # "Programming Language :: Python :: Implementation :: Stackless",
         "Topic :: Utilities",
     ],
+    python_requires=['>=3.6'],
     keywords=[
         # eg: "keyword1", "keyword2", "keyword3",
     ],
