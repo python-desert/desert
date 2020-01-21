@@ -81,12 +81,19 @@ def class_schema(
     clazz: type, meta: t.Dict[str, t.Any] = {}
 ) -> t.Type[marshmallow.Schema]:
     """
-    Convert a class to a marshmallow schema
-    :param clazz: A python class (may be a dataclass)
-    :return: A marshmallow Schema corresponding to the dataclass
+    Convert a class to a marshmallow schema.
+
+    Args:
+        clazz: A python class (may be a dataclass)
+        meta: The marshmallow schema metadata dict.
+
+    Returns:
+        A :class:`marshmallow.Schema` type corresponding to the dataclass.
+
     .. note::
         All the arguments supported by marshmallow field classes are can
         be passed in the `metadata` dictionary of a field.
+
     If you want to use a custom marshmallow field
     (one that has no equivalent python type), you can pass it as the
     ``marshmallow_field`` key in the metadata dictionary.

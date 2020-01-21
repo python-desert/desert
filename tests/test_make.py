@@ -87,9 +87,13 @@ def fixture_from_dict(
     """
     Create fixture parametrized to yield each value and labeled with the
     corresponding ID.
-    :param name: Name of the fixture itself
-    :param id_to_value: Mapping from ID labels to values
-    :return: The PyTest fixture
+
+    Args:
+        name: Name of the fixture itself
+        id_to_value: Mapping from ID labels to values
+
+    Returns:
+        The PyTest fixture
     """
     @pytest.fixture(
         name=name,
