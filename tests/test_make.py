@@ -396,6 +396,11 @@ def test_forward_reference(module, assert_dump_load):
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
+# 3.6.9 is known to work, 3.6.1 is known to fail, not sure attrs vs. dataclasses
+@pytest.mark.skipif(
+    condition=sys.implementation.name == "pypy" and sys.version_info < (3, 6, 9),
+    reason="Forward references and string annotations are broken.",
+)
 def test_forward_reference_module_scope():
     """Run the forward reference test at global scope."""
 
