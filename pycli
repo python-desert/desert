@@ -77,25 +77,20 @@ def init(cfg):
 def lock(cfg):
     """Use pip-compile to generate package hashes from setup.py and write them into requirements.txt."""
     subprocess.run([cfg.venv_path / "bin/pip", "install", "pip-tools"], check=True)
-    subprocess.run(
-        [
-            cfg.venv_path / "bin/pip-compile",
-            "--generate-hashes",
-            "--output-file",
-            "requirements.txt",
-            "setup.py",
-        ],
-        check=True,
-    )
-    if pathlib.Path("dev-requirements.in").exists():
+    combined = []
+    for prefix in [None, 'test', 'dev']:
+        combined.append(prefix)
+
         subprocess.run(
             [
                 cfg.venv_path / "bin/pip-compile",
                 "--generate-hashes",
                 "--output-file",
-                "dev-requirements.txt",
-                "setup.py",
-                "dev-requirements.in",
+                f"{'' if prefix is None else prefix + '-'}requirements.txt",
+                *(
+                    f"{'' if each is None else prefix + '-'}requirements.in"
+                    for each in combined
+                )
             ],
             check=True,
         )
