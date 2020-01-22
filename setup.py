@@ -30,7 +30,7 @@ except FileNotFoundError:
     print(sys.exc_info())
     INSTALL_REQUIRES = []
 
-EXTRAS_PREFIXES = ['test', 'dev']
+EXTRAS_PREFIXES = ["test", "dev"]
 
 requirements = []
 extras = {}
@@ -83,7 +83,7 @@ setup(
         # "Programming Language :: Python :: Implementation :: Stackless",
         "Topic :: Utilities",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     keywords=[
         # eg: "keyword1", "keyword2", "keyword3",
     ],
