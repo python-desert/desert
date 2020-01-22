@@ -31,7 +31,7 @@ class DataclassModule:
             field=dataclasses.field,
         ),
     ],
-    ids=['attrs', 'dataclasses'],
+    ids=["attrs", "dataclasses"],
 )
 def dataclass_param(request):
     """Parametrize over both implementations of the @dataclass decorator."""
@@ -39,33 +39,25 @@ def dataclass_param(request):
 
 
 def _assert_load(
-    schema: t.Type[marshmallow.Schema],
-    loaded: t.Any,
-    dumped: t.Dict[t.Any, t.Any],
+    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.load(dumped) == loaded
 
 
 def _assert_dump(
-    schema: t.Type[marshmallow.Schema],
-    loaded: t.Any,
-    dumped: t.Dict[t.Any, t.Any],
+    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.dump(loaded) == dumped
 
 
 def _assert_dump_load(
-    schema: t.Type[marshmallow.Schema],
-    loaded: t.Any,
-    dumped: t.Dict[t.Any, t.Any],
+    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.loads(schema.dumps(loaded)) == loaded
 
 
 def _assert_load_dump(
-    schema: t.Type[marshmallow.Schema],
-    loaded: t.Any,
-    dumped: t.Dict[t.Any, t.Any],
+    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.dump(schema.load(dumped)) == dumped
 
@@ -73,29 +65,22 @@ def _assert_load_dump(
 def fixture_from_dict(
     name: str,
     id_to_value: t.Mapping[
-        str,
-        t.Callable[
-            [
-                t.Type[marshmallow.Schema],
-                t.Dict[t.Any, t.Any],
-                t.Any,
-            ],
-            None,
-        ],
+        str, t.Callable[[t.Type[marshmallow.Schema], t.Dict[t.Any, t.Any], t.Any], None]
     ],
 ):
     """
     Create fixture parametrized to yield each value and labeled with the
     corresponding ID.
-    :param name: Name of the fixture itself
-    :param id_to_value: Mapping from ID labels to values
-    :return: The PyTest fixture
+
+    Args:
+        name: Name of the fixture itself
+        id_to_value: Mapping from ID labels to values
+
+    Returns:
+        The PyTest fixture
     """
-    @pytest.fixture(
-        name=name,
-        params=id_to_value.values(),
-        ids=id_to_value.keys(),
-    )
+
+    @pytest.fixture(name=name, params=id_to_value.values(), ids=id_to_value.keys())
     def fixture(request):
         return request.param
 
@@ -103,12 +88,12 @@ def fixture_from_dict(
 
 
 _assert_dump_load = fixture_from_dict(
-    name='assert_dump_load',
+    name="assert_dump_load",
     id_to_value={
-        'load': _assert_load,
-        'dump': _assert_dump,
-        'dump load': _assert_dump_load,
-        'load dump': _assert_load_dump,
+        "load": _assert_load,
+        "dump": _assert_dump,
+        "dump load": _assert_dump_load,
+        "load dump": _assert_load_dump,
     },
 )
 
@@ -297,7 +282,7 @@ def test_concise_attrib_metadata():
     assert attr.fields(A).x.metadata["foo"] == 1
 
 
-@pytest.mark.parametrize(argnames=['value'], argvalues=[["X"], [5]])
+@pytest.mark.parametrize(argnames=["value"], argvalues=[["X"], [5]])
 def test_union(module, value, assert_dump_load):
     """Deserialize one of several types."""
 
