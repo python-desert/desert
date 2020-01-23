@@ -1,11 +1,11 @@
 language: python
-sudo: false
+os: linux
 cache: pip
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
-matrix:
+jobs:
   include:
     - python: '3.6'
       env:
@@ -42,6 +42,13 @@ install:
          pypy3*/bin/pypy3 -m pip install -U virtualenv)
         export PATH=$(echo $HOME/pypy3*/bin):$PATH
         export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
+    fi
+    set +x
+  - |
+    set -ex
+    if [[ $TOXENV == 'check' ]]; then
+        (gem install travis --no-rdoc --no-ri
+         travis lint --no-interactive --exit-code)
     fi
     set +x
 script:
