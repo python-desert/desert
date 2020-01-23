@@ -1,11 +1,11 @@
 language: python
-sudo: false
+os: linux
 cache: pip
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
-matrix:
+jobs:
   include:
     - python: '3.6'
       env:
