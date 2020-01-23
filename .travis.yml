@@ -45,7 +45,7 @@ install:
     set -ex
     if [[ $TOXENV == 'check' ]]; then
         (gem install travis --no-rdoc --no-ri
-         travis lint .travis.yml)
+         travis lint -x)
     fi
     set +x
 script:
