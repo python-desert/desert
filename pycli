@@ -88,7 +88,7 @@ def lock(cfg):
                 "--output-file",
                 f"{'' if prefix is None else prefix + '-'}requirements.txt",
                 *(
-                    f"{'' if each is None else prefix + '-'}requirements.in"
+                    f"{'' if each is None else each + '-'}requirements.in"
                     for each in combined
                 )
             ],
