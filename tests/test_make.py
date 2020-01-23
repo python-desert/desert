@@ -397,7 +397,7 @@ def test_forward_reference(module, assert_dump_load):
 
 
 @pytest.mark.skipif(
-    condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2, 0),
+    condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2),
     reason="Forward references and string annotations are broken.",
 )
 def test_forward_reference_module_scope():
