@@ -29,6 +29,13 @@ class _Registry:
 _register = _Registry()
 
 
+def build_requirements_name(layer, extension):
+    if layer is None:
+        return "requirements." + extension
+
+    return layer + "-requirements." + extension
+
+
 @_register
 def clean(cfg):
     """Remove extraneous files."""
@@ -52,20 +59,20 @@ def init(cfg):
     subprocess.run(
         ["virtualenv", "--python", sys.executable, str(cfg.venv_path)], check=True
     )
-    if not pathlib.Path("requirements.txt").exists():
+    if not pathlib.Path(build_requirements_name(None, "txt")).exists():
         raise FileNotFoundError("Run `lock` first, to create requirements.txt.")
-    if pathlib.Path("dev-requirements.txt").exists():
+    if pathlib.Path(build_requirements_name("dev", "txt")).exists():
         subprocess.run(
             [
                 cfg.venv_path / "bin/pip",
                 "install",
                 "--requirement",
-                "dev-requirements.txt",
+                build_requirements_name("dev", "txt"),
             ],
             check=True,
         )
     subprocess.run(
-        [cfg.venv_path / "bin/pip", "install", "--requirement", "requirements.txt"],
+        [cfg.venv_path / "bin/pip", "install", "--requirement", build_requirements_name(None, "txt")],
         check=True,
     )
     subprocess.run(
@@ -78,18 +85,18 @@ def lock(cfg):
     """Use pip-compile to generate package hashes from setup.py and write them into requirements.txt."""
     subprocess.run([cfg.venv_path / "bin/pip", "install", "pip-tools"], check=True)
     combined = []
-    for prefix in [None, 'test', 'dev']:
-        combined.append(prefix)
+    for layer in [None, 'test', 'dev']:
+        combined.append(layer)
 
         subprocess.run(
             [
                 cfg.venv_path / "bin/pip-compile",
                 "--generate-hashes",
                 "--output-file",
-                f"{'' if prefix is None else prefix + '-'}requirements.txt",
+                build_requirements_name(layer, 'txt'),
                 *(
-                    f"{'' if each is None else each + '-'}requirements.in"
-                    for each in combined
+                    build_requirements_name(prefix, 'in')
+                    for prefix in combined
                 )
             ],
             check=True,
@@ -116,7 +123,7 @@ def upload(cfg):
 def bundle(cfg):
     """Bundle the package into a standalone unix executable."""
     lock(cfg)
-    with open("requirements.txt") as f:
+    with open(build_requirements_name(None, "txt")) as f:
         requirements = [line.split()[0] for line in f if line[0].isalpha()]
 
     subprocess.run(
