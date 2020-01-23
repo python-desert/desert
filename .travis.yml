@@ -15,6 +15,9 @@ matrix:
       sudo: required
       env:
         - TOXENV=py37,report,codecov
+    - python: 'pypy3'
+      env:
+        - TOXENV=pypy3,report,codecov
     - python: '3.7'
       dist: xenial
       sudo: required

@@ -396,6 +396,11 @@ def test_forward_reference(module, assert_dump_load):
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
+# where 3.6.9 corresponds to PyPy3 release 7.2.0
+@pytest.mark.skipif(
+    condition=sys.implementation.name == "pypy" and sys.version_info < (3, 6, 9),
+    reason="Forward references and string annotations are broken.",
+)
 def test_forward_reference_module_scope():
     """Run the forward reference test at global scope."""
 
