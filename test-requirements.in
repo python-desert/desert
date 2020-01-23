@@ -1,0 +1,12 @@
+coverage
+cuvner
+marshmallow-enum
+marshmallow-union
+pytest
+pytest-cov
+pytest-sphinx
+pytest-travis-fold
+tox
+
+# should not need this but pypy3 envs complain otherwise
+importlib-metadata

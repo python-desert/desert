@@ -23,15 +23,23 @@ def read(*names, **kwargs):
         return fh.read()
 
 
+def read_extras(*prefixes):
+    requirements = []
+    extras = {}
+
+    for prefix in prefixes:
+        requirements.extend(read("{}-requirements.in".format(prefix)).splitlines())
+        extras[prefix] = requirements.copy()
+
+    return extras
+
+
 try:
     with open("requirements.in") as f:
         INSTALL_REQUIRES = f.read().splitlines()
 except FileNotFoundError:
     print(sys.exc_info())
     INSTALL_REQUIRES = []
-
-
-DEV_INSTALL_REQUIRES = read("dev-requirements.in").splitlines()
 
 ns = {}
 exec(read("src/desert/_version.py"), ns)
@@ -83,5 +91,5 @@ setup(
     install_requires=INSTALL_REQUIRES
     # eg: "aspectlib==1.1.1", "six>=1.7",
     ,
-    extras_require={"dev": DEV_INSTALL_REQUIRES},
+    extras_require=read_extras("test", "dev"),
 )
