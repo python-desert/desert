@@ -1,7 +1,3 @@
-coverage
-cuvner
-pytest
-tox
 versioneer
 black
 pylint
@@ -13,9 +9,6 @@ readme-renderer
 pygments
 isort
 mypy
-pytest-sphinx
 towncrier
-marshmallow-union
-marshmallow-enum
 twine
 wheel
