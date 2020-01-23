@@ -41,7 +41,7 @@ def schema_class(
 
 
 def metadata(
-    field: marshmallow.fields.Field
+    field: marshmallow.fields.Field,
 ) -> t.Dict["desert._make._DesertSentinel", t.Dict[t.Any, marshmallow.fields.Field]]:
     """Specify a marshmallow field in the field metadata.
 
