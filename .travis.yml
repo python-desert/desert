@@ -47,6 +47,13 @@ install:
         export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
     fi
     set +x
+  - |
+    set -ex
+    if [[ $TOXENV == 'check' ]]; then
+        (gem install travis --no-rdoc --no-ri
+         travis lint .travis.yml)
+    fi
+    set +x
 script:
   - tox -v
 after_failure:
