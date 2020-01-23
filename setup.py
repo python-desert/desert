@@ -91,5 +91,5 @@ setup(
     install_requires=INSTALL_REQUIRES
     # eg: "aspectlib==1.1.1", "six>=1.7",
     ,
-    extras_require=read_extras('test', 'dev'),
+    extras_require=read_extras("test", "dev"),
 )
