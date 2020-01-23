@@ -30,8 +30,13 @@ except FileNotFoundError:
     print(sys.exc_info())
     INSTALL_REQUIRES = []
 
+EXTRAS_PREFIXES = ["test", "dev"]
 
-DEV_INSTALL_REQUIRES = read("dev-requirements.in").splitlines()
+requirements = []
+extras = {}
+for prefix in EXTRAS_PREFIXES:
+    requirements.extend(read("{}-requirements.in".format(prefix)).splitlines())
+    extras[prefix] = requirements.copy()
 
 ns = {}
 exec(read("src/desert/_version.py"), ns)
@@ -83,5 +88,5 @@ setup(
     install_requires=INSTALL_REQUIRES
     # eg: "aspectlib==1.1.1", "six>=1.7",
     ,
-    extras_require={"dev": DEV_INSTALL_REQUIRES},
+    extras_require=extras,
 )
