@@ -1,5 +1,9 @@
 language: python
 os: linux
+branches:
+  only:
+    - master
+    - /^v\d.*$/
 cache: pip
 env:
   global:
