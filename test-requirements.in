@@ -9,4 +9,4 @@ pytest-travis-fold
 tox
 
 # should not need this but pypy3 envs complain otherwise
-importlib-metadata; implementation_name == "pypy"
+importlib-metadata
