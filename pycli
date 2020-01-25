@@ -100,6 +100,12 @@ def lock(cfg):
                 )
             ],
             check=True,
+            env={
+                **os.environ,
+                "CUSTOM_COMPILE_COMMAND": "python {} lock".format(
+                    pathlib.Path(__file__).name
+                ),
+            },
         )
 
 
