@@ -7,12 +7,10 @@ branches:
     - master
     - /^v\d.*$/
 cache: pip
-
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
-
 jobs:
   include:
     - python: '3.6'
