@@ -19,10 +19,13 @@ jobs:
     - python: '3.7'
       env:
         - TOXENV=py37,report,codecov
-    - python: '3.7'
+    - python: '3.8'
+      env:
+        - TOXENV=py38,report,codecov
+    - python: '3.8'
       env:
         - TOXENV=doc
-    - python: '3.7'
+    - python: '3.8'
       env:
         - TOXENV=check
 before_install:
