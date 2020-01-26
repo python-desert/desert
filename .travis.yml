@@ -1,5 +1,11 @@
 language: python
 os: linux
+branches:
+  only:
+    # Build tags and branches named master or starting with
+    # 'v' followed by a digit, such as for version tags.
+    - master
+    - /^v\d.*$/
 cache: pip
 env:
   global:
@@ -43,7 +49,7 @@ install:
         export PATH=$(echo $HOME/pypy3*/bin):$PATH
         export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
     fi
-    set +x
+    set +x starting
   - |
     set -ex
     if [[ $TOXENV == 'check' ]]; then
