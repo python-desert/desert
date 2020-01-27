@@ -40,6 +40,7 @@ exclude = '''
   | \.hg
   | \.mypy_cache
   | \.tox
+  | \.pyenv
   | \.?venv
   | _build
   | buck-out
