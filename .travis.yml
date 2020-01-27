@@ -65,7 +65,9 @@ before_install:
 install:
   - |
     (
-      if [[ ! -f ${TOXTOOLPYTHON} ]]; then
+      set -vx
+      ls -l "${TOXTOOLPYTHON}"
+      if [[ ! -f "${TOXTOOLPYTHON}" ]]; then
         export PYENV_ROOT="${DESERT_PYENV_ROOT}"
         rm -rf "${PYENV_ROOT}"
         curl https://pyenv.run | bash
