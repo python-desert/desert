@@ -6,7 +6,10 @@ branches:
     # 'v' followed by a digit, such as for version tags.
     - master
     - /^v\d.*$/
-cache: pip
+cache:
+    pip: true
+    directories:
+        - $TRAVIS_BUILD_DIR/.pyenv
 addons:
   apt:
     packages:
@@ -32,6 +35,9 @@ env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
+    - DESERT_PYENV_ROOT=$TRAVIS_BUILD_DIR/.pyenv
+    - TOXTOOLPYTHONVERSION=3.8.1
+    - TOXTOOLPYTHON=${DESERT_PYENV_ROOT}/versions/${TOXTOOLPYTHON_VERSION}/bin/python
 jobs:
   include:
     - python: '3.6'
@@ -57,14 +63,14 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
-  - export DESERT_PYENV_ROOT="${PWD}/desert_cache/.pyenv"
   - |
     (
-      export PYENV_ROOT="${DESERT_PYENV_ROOT}"
-      curl https://pyenv.run | bash
-      "${PYENV_ROOT}/bin/pyenv" install 3.8.1
+      if [[ ! -f ${TOXTOOLPYTHON} ]]; then
+        export PYENV_ROOT="${DESERT_PYENV_ROOT}"
+        curl https://pyenv.run | bash
+        "${PYENV_ROOT}/bin/pyenv" install 3.8.1
+      fi
     )
-  - export TOXTOOLPYTHON="${DESERT_PYENV_ROOT}/versions/3.8.1/bin/python"
   - pip install tox
   - virtualenv --version
   - easy_install --version
