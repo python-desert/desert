@@ -37,7 +37,7 @@ env:
     - SEGFAULT_SIGNALS=all
     - DESERT_PYENV_ROOT=$TRAVIS_BUILD_DIR/.pyenv
     - TOXTOOLPYTHONVERSION=3.8.1
-    - TOXTOOLPYTHON=${DESERT_PYENV_ROOT}/versions/${TOXTOOLPYTHON_VERSION}/bin/python
+    - TOXTOOLPYTHON=${DESERT_PYENV_ROOT}/versions/${TOXTOOLPYTHONVERSION}/bin/python
 jobs:
   include:
     - python: '3.6'
