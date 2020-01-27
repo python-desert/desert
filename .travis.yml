@@ -57,9 +57,10 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
+  - export PYENV_ROOT=~/desert_cache/.pyenv
   - curl https://pyenv.run | bash
   - ~/.pyenv/bin/pyenv install 3.8.1
-  - export TOXTOOLPYTHON=~/.pyenv/versions/3.8.1/bin/python
+  - export TOXTOOLPYTHON=~/desert_cache/.pyenv/versions/3.8.1/bin/python
   - pip install tox
   - virtualenv --version
   - easy_install --version
