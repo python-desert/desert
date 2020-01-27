@@ -7,6 +7,27 @@ branches:
     - master
     - /^v\d.*$/
 cache: pip
+addons:
+  apt:
+    packages:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncurses5-dev
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libffi-dev
+      - liblzma-dev
+      - python-openssl
+      - git
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
@@ -36,6 +57,9 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
+  - curl https://pyenv.run | bash
+  - ~/.pyenv/bin/pyenv install 3.8.1
+  - export TOXTOOLPYTHON=~/.pyenv/versions/3.8.1/bin/python
   - pip install tox
   - virtualenv --version
   - easy_install --version
