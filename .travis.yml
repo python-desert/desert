@@ -58,7 +58,8 @@ before_install:
   - lsb_release -a
 install:
   - export DESERT_PYENV_ROOT="${PWD}/desert_cache/.pyenv"
-  - (
+  - |
+    (
       export PYENV_ROOT="${DESERT_PYENV_ROOT}"
       curl https://pyenv.run | bash
       '"${PYENV_ROOT}/bin/pyenv" install 3.8.1'
