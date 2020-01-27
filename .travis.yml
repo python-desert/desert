@@ -6,11 +6,38 @@ branches:
     # 'v' followed by a digit, such as for version tags.
     - master
     - /^v\d.*$/
-cache: pip
+cache:
+    pip: true
+    directories:
+        - $TRAVIS_BUILD_DIR/.pyenv
+addons:
+  apt:
+    packages:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncurses5-dev
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libffi-dev
+      - liblzma-dev
+      - python-openssl
+      - git
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
+    - DESERT_PYENV_ROOT=$TRAVIS_BUILD_DIR/.pyenv
+    - TOXTOOLPYTHONVERSION=3.8.1
+    - TOXTOOLPYTHON=${DESERT_PYENV_ROOT}/versions/${TOXTOOLPYTHONVERSION}/bin/python
 jobs:
   include:
     - python: '3.6'
@@ -33,23 +60,20 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
+  - |
+    (
+      if [[ ! -f ${TOXTOOLPYTHON} ]]; then
+        export PYENV_ROOT="${DESERT_PYENV_ROOT}"
+        rm -rf "${PYENV_ROOT}"
+        curl https://pyenv.run | bash
+        "${PYENV_ROOT}/bin/pyenv" install 3.8.1
+      fi
+    )
   - pip install tox
   - virtualenv --version
   - easy_install --version
   - pip --version
   - tox --version
-  - |
-    set -ex
-    if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
-        (cd $HOME
-         wget https://bitbucket.org/pypy/pypy/downloads/pypy3.6-v7.1.1-linux64.tar.bz2
-         tar xf pypy3*.tar.bz2
-         pypy3*/bin/pypy3 -m ensurepip
-         pypy3*/bin/pypy3 -m pip install -U virtualenv)
-        export PATH=$(echo $HOME/pypy3*/bin):$PATH
-        export TOXPYTHON=$(echo $HOME/pypy3*/bin/pypy3)
-    fi
-    set +x starting
   - |
     set -ex
     if [[ $TOXENV == 'check' ]]; then
