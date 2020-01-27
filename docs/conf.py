@@ -79,3 +79,8 @@ intersphinx_mapping = {
         None,
     ),
 }
+
+
+# codecov.io is unreliable so allow some retries in the
+# `linkcheck` to avoid failing the build.
+linkcheck_retries = 3
