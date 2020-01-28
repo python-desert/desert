@@ -7,12 +7,17 @@ branches:
     - master
     - /^v\d.*$/
 cache:
-    pip: true
-    directories:
-        - $TRAVIS_BUILD_DIR/.pyenv
+  pip: true
+  directories:
+    # pyenv is used to provide the Python version used for tool targets
+    # that version is specified below in env: global: TOXTOOLPYTHONVERSION
+    - $TRAVIS_BUILD_DIR/.pyenv
 addons:
   apt:
     packages:
+      # The below packages are copied from the pyenv wiki suggestions for
+      # Ubuntu as of January 2020
+      # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
       - make
       - build-essential
       - libssl-dev
@@ -65,6 +70,9 @@ before_install:
 install:
   - |
     (
+      # Usage of a subshell is intentional to avoid the PYENV_ROOT living
+      # on.  Travis uses their own PYENV_ROOT and changing that causes
+      # tox trouble finding the Python to be used for testing.
       if [[ ! -f ${TOXTOOLPYTHON} ]]; then
         export PYENV_ROOT="${DESERT_PYENV_ROOT}"
         rm -rf "${PYENV_ROOT}"
