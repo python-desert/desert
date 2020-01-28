@@ -9,6 +9,8 @@ branches:
 cache:
   pip: true
   directories:
+    # pyenv is used to provide the Python version used for tool targets
+    # that version is specified below in env: global: TOXTOOLPYTHONVERSION
     - $TRAVIS_BUILD_DIR/.pyenv
 addons:
   apt:
