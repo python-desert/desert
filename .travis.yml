@@ -7,9 +7,9 @@ branches:
     - master
     - /^v\d.*$/
 cache:
-    pip: true
-    directories:
-        - $TRAVIS_BUILD_DIR/.pyenv
+  pip: true
+  directories:
+    - $TRAVIS_BUILD_DIR/.pyenv
 addons:
   apt:
     packages:
