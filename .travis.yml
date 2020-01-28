@@ -67,6 +67,9 @@ before_install:
 install:
   - |
     (
+      # Usage of a subshell is intentional to avoid the PYENV_ROOT living
+      # on.  Travis uses their own PYENV_ROOT and changing that causes
+      # tox trouble finding the Python to be used for testing.
       if [[ ! -f ${TOXTOOLPYTHON} ]]; then
         export PYENV_ROOT="${DESERT_PYENV_ROOT}"
         rm -rf "${PYENV_ROOT}"
