@@ -15,6 +15,9 @@ cache:
 addons:
   apt:
     packages:
+      # The below packages are copied from the pyenv wiki suggestions for
+      # Ubuntu as of January 2020
+      # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
       - make
       - build-essential
       - libssl-dev
