@@ -1,12 +1,15 @@
 import dataclasses
 import datetime
+import decimal
 import enum
+import re
 import sys
 import types
 import typing as t
 
 import attr
 import marshmallow
+import marshmallow.fields
 import pytest
 
 import desert
@@ -280,6 +283,40 @@ def test_concise_attrib_metadata():
 
     assert schema.load({"x": timestring}) == A(x=dt)
     assert attr.fields(A).x.metadata["foo"] == 1
+
+
+def test_non_init(module):
+    """Non-init attributes are not included in schema"""
+
+    @module.dataclass
+    class A:
+        x: int
+        y: str = module.field(default="can't init this", init=False)
+
+    schema = desert.schema_class(A)()
+
+    assert "y" not in schema.fields
+
+
+def test_metadata_marshmallow_field_loads(module):
+    """Marshmallow field can be specified via metadata dict"""
+
+    @module.dataclass
+    class A:
+        x: decimal.Decimal = module.field(
+            metadata={"marshmallow_field": marshmallow.fields.Decimal(as_string=True)}
+        )
+
+    schema = desert.schema_class(A)()
+
+    assert schema.loads('{"x": "1.3"}') == A(decimal.Decimal("1.3"))
+
+
+def test_get_field_default_raises_for_non_field():
+    """Not attrs and not dataclasses field raises"""
+
+    with pytest.raises(TypeError, match=re.escape("None")):
+        desert._make._get_field_default(field=None)
 
 
 @pytest.mark.parametrize(argnames=["value"], argvalues=[["X"], [5]])
