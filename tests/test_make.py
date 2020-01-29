@@ -396,6 +396,11 @@ def test_forward_reference(module, assert_dump_load):  # pragma: no cover
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
+@pytest.mark.xfail(
+    condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2),
+    reason="Forward references and string annotations are broken in PyPy3 < 7.2",
+    strict=True,
+)
 def test_forward_reference_module_scope():
     """Run the forward reference test at global scope."""
 
