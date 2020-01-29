@@ -378,7 +378,7 @@ def test_newtype(module, assert_dump_load):
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
     ),
 )
-def test_forward_reference(module, assert_dump_load):   # pragma: no cover
+def test_forward_reference(module, assert_dump_load):  # pragma: no cover
     """Build schemas from classes that are defined below their containing class."""
 
     @module.dataclass
