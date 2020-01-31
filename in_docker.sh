@@ -2,7 +2,8 @@
 
 eval "$(pyenv init -)"
 
-pyenv shell 3.8.1
+pyenv shell "${TOXTOOLPYTHON}" $(pyenv global)
+
 pip install tox
 virtualenv --version
 easy_install --version
