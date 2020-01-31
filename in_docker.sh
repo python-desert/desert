@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -vx
+
 eval "$(pyenv init -)"
 
 pyenv shell "${TOXTOOLPYTHON}" $(pyenv global)
