@@ -253,7 +253,7 @@ def field_for_schema(
                 values=field_for_schema(arguments[1]),
             )
         elif typing_inspect.is_optional_type(typ):
-            subtyp = next(t for t in arguments if t is not NoneType)
+            [subtyp] = (t for t in arguments if t is not NoneType)
             # Treat optional types as types with a None default
             metadata[_DESERT_SENTINEL]["default"] = metadata.get("default", None)
             metadata[_DESERT_SENTINEL]["missing"] = metadata.get("missing", None)
