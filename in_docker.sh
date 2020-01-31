@@ -1,4 +1,8 @@
-pyenv shell python3.8
+#!/bin/bash
+
+eval "$(pyenv init -)"
+
+pyenv shell 3.8.1
 pip install tox
 virtualenv --version
 easy_install --version
