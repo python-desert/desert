@@ -6,43 +6,6 @@ branches:
     # 'v' followed by a digit, such as for version tags.
     - master
     - /^v\d.*$/
-cache:
-  pip: true
-  directories:
-    # pyenv is used to provide the Python version used for tool targets
-    # that version is specified below in env: global: TOXTOOLPYTHONVERSION
-    - $TRAVIS_BUILD_DIR/.pyenv
-addons:
-  apt:
-    packages:
-      # The below packages are copied from the pyenv wiki suggestions for
-      # Ubuntu as of January 2020
-      # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
-      - make
-      - build-essential
-      - libssl-dev
-      - zlib1g-dev
-      - libbz2-dev
-      - libreadline-dev
-      - libsqlite3-dev
-      - wget
-      - curl
-      - llvm
-      - libncurses5-dev
-      - libncursesw5-dev
-      - xz-utils
-      - tk-dev
-      - libffi-dev
-      - liblzma-dev
-      - python-openssl
-      - git
-env:
-  global:
-    - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
-    - SEGFAULT_SIGNALS=all
-    - DESERT_PYENV_ROOT=$TRAVIS_BUILD_DIR/.pyenv
-    - TOXTOOLPYTHONVERSION=3.8.1
-    - TOXTOOLPYTHON=${DESERT_PYENV_ROOT}/versions/${TOXTOOLPYTHONVERSION}/bin/python
 jobs:
   include:
     - python: '3.6'
@@ -63,28 +26,10 @@ jobs:
     - python: '3.8'
       env:
         - TOXENV=check
-before_install:
-  - python --version
-  - uname -a
-  - lsb_release -a
 install:
-  - |
-    (
-      # Usage of a subshell is intentional to avoid the PYENV_ROOT living
-      # on.  Travis uses their own PYENV_ROOT and changing that causes
-      # tox trouble finding the Python to be used for testing.
-      if [[ ! -f ${TOXTOOLPYTHON} ]]; then
-        export PYENV_ROOT="${DESERT_PYENV_ROOT}"
-        rm -rf "${PYENV_ROOT}"
-        curl https://pyenv.run | bash
-        "${PYENV_ROOT}/bin/pyenv" install 3.8.1
-      fi
-    )
-  - pip install tox
-  - virtualenv --version
-  - easy_install --version
-  - pip --version
-  - tox --version
+  - docker pull altendky/hydra
+script:
+  - docker run --rm -it -v $(pwd):/wd -e TOXENV "${TOXENV}" altendky/hydra /bin/bash in_docker.sh
   - |
     set -ex
     if [[ $TOXENV == 'check' ]]; then
@@ -92,8 +37,6 @@ install:
          travis lint --no-interactive --exit-code)
     fi
     set +x
-script:
-  - tox -v
 after_failure:
   - more .tox/log/* | cat
   - more .tox/*/log/* | cat
