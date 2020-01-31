@@ -213,10 +213,7 @@ def field_for_schema(
     if default is not marshmallow.missing:
         desert_metadata.setdefault("default", default)
         desert_metadata.setdefault("allow_none", True)
-        if not desert_metadata.get(
-            "required"
-        ):  # 'missing' must not be set for required fields.
-            desert_metadata.setdefault("missing", default)
+        desert_metadata.setdefault("missing", default)
 
     field = None
 
