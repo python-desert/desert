@@ -30,3 +30,5 @@ include  changelog.d/towncrier_template.rst
 
 
 global-exclude *.py[cod] __pycache__ *.so *.dylib
+
+exclude in_docker.sh
