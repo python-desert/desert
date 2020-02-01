@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    container: docker://altendky/hydra:latest
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        abc:
+          - name: CPython 3.6
+            toxenv: py36,report,codecov
+          - name: CPython 3.7
+            toxenv: py37,report,codecov
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          pip install tox
+          tox -v -e "${{ matrix.abc.toxenv }}"
