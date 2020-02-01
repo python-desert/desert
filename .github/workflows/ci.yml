@@ -16,14 +16,16 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-        abc:
-          - name: CPython 3.6
-            toxenv: py36,report,codecov
-          - name: CPython 3.7
-            toxenv: py37,report,codecov
+        toxenv:
+          - py36,report,codecov
+          - py37,report,codecov
+          - py38,report,codecov
+          - pypy3,report,codecov
+          - doc
+          - check
     steps:
       - uses: actions/checkout@v1
       - run: |
           eval "$(pyenv init -)"
           pip install tox
-          tox -v -e "${{ matrix.abc.toxenv }}"
+          tox -v -e "${{ matrix.toxenv }}"
