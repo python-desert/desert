@@ -1,4 +1,4 @@
-language: python
+language: ruby
 os: linux
 branches:
   only:
@@ -6,25 +6,21 @@ branches:
     # 'v' followed by a digit, such as for version tags.
     - master
     - /^v\d.*$/
+services:
+  - docker
 jobs:
   include:
-    - python: '3.6'
-      env:
+    - env:
         - TOXENV=py36,report,codecov
-    - python: '3.7'
-      env:
+    - env:
         - TOXENV=py37,report,codecov
-    - python: '3.8'
-      env:
+    - env:
         - TOXENV=py38,report,codecov
-    - python: 'pypy3'
-      env:
+    - env:
         - TOXENV=pypy3,report,codecov
-    - python: '3.8'
-      env:
+    - env:
         - TOXENV=doc
-    - python: '3.8'
-      env:
+    - env:
         - TOXENV=check
 install:
   - docker pull altendky/hydra
