@@ -24,5 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: |
+          eval "$(pyenv init -)"
           pip install tox
           tox -v -e "${{ matrix.abc.toxenv }}"
