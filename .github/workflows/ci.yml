@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    container: docker://python:3.8
+    strategy:
+      matrix:
+        os:
+          - ubuntu-18.04
+        toxenv:
+          - py36,report,codecov
+          - py37,report,codecov
+          - py38,report,codecov
+          - pypy3,report,codecov
+          - doc
+          - check
+    steps:
+      - uses: actions/checkout@v1
+      - run: |
+          pip install --upgrade tox tox-docker
+          tox -v -e "${{ matrix.toxenv }}"
+        name: tox
