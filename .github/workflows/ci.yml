@@ -11,7 +11,7 @@ on:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
-    container: docker://altendky/hydra:latest
+    container: docker://altendky/hydra_testing:ubuntu-3-minors
     strategy:
       matrix:
         os:
