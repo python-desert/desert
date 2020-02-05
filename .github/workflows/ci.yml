@@ -25,7 +25,9 @@ jobs:
           - check
     steps:
       - uses: actions/checkout@v1
-      - name: tox
+      - name: Install
         run: |
           pip install tox
+      - name: Test
+        run: |
           tox -v -e "${{ matrix.toxenv }}"
