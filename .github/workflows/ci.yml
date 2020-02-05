@@ -11,7 +11,7 @@ on:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
-    container: docker://altendky/hydra-dev:ubuntu-3-minors
+    container: docker://altendky/hydra:ubuntu-3-minors
     strategy:
       matrix:
         os:
@@ -26,7 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: |
-          eval "$(pyenv init -)"
           pip install tox
           tox -v -e "${{ matrix.toxenv }}"
         name: tox
