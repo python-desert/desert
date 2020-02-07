@@ -557,3 +557,17 @@ def test_takes_self():
 
     schema = desert.schema(C)
     assert schema.load({"x": 1}) == C(x=1, y=2)
+
+
+def test_methods_not_on_schema(module):
+    """Dataclass methods are not copied to the schema."""
+
+    @module.dataclass
+    class A:
+        def dataclass_method(self) -> None:
+            """This method should not exist on the schema."""
+
+    schema = desert.schema(A)
+    sentinel = object()
+    method = getattr(schema, "dataclass_method", sentinel)
+    assert method is sentinel
