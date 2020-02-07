@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    container: docker://altendky/hydra:ubuntu-3-minors
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        toxenv:
+          - py36,report,codecov
+          - py37,report,codecov
+          - py38,report,codecov
+          - pypy3,report,codecov
+          - doc
+          - check
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install
+        run: |
+          pip install tox
+      - name: Test
+        run: |
+          tox -v -e "${{ matrix.toxenv }}"
