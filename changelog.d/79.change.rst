@@ -1,0 +1,1 @@
+Schemas no longer copy non-field dataclass attributes. Thanks to @sveinse for report and test.

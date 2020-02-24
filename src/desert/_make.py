@@ -118,10 +118,12 @@ def class_schema(
     else:
         raise desert.exceptions.NotAnAttrsClassOrDataclass(clazz)
 
-    # Copy all public members of the dataclass to the schema
-    attributes = {k: v for k, v in inspect.getmembers(clazz) if not k.startswith("_")}
-    # Update the schema members to contain marshmallow fields instead of dataclass fields
+    # Copy all public fields of the dataclass to the schema
+    attributes = {
+        field.name: field for field in fields if not field.name.startswith("_")
+    }
 
+    # Update the schema members to contain marshmallow fields instead of dataclass fields.
     hints = t.get_type_hints(clazz)
     for field in fields:
         if field.init:
