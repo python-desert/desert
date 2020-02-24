@@ -9,6 +9,34 @@ on:
   pull_request:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: docker://altendky/hydra:ubuntu-3-minors
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install and update
+        run: |
+          pip install --upgrade pip setuptools tox wheel
+      - name: Report versions
+        run: |
+          python --version --version
+          pip --version
+          pip list
+          pip freeze --all
+      - name: Source distribution
+        if: always()
+        run: |
+          python setup.py sdist
+      - name: Wheel
+        if: always()
+        run: |
+          pip wheel  --no-deps --wheel-dir dist/ .
+      - name: Archive dist
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: desert-dist
+          path: dist
   ci:
     runs-on: ${{ matrix.os }}
     container: docker://altendky/hydra:ubuntu-3-minors
