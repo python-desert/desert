@@ -63,6 +63,10 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
     ) -> typing.Any:
         tag = value["type"]
         serialized_value = value["value"]
+
+        if len(value) > 2:
+            raise Exception()
+
         type_tag_field = self.from_tag(tag)
         field = type_tag_field.field()
 
