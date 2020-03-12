@@ -26,6 +26,16 @@ example_data_list = [
         tag="decimal_tag",
         field=marshmallow.fields.Decimal,
     ),
+    ExampleData(
+        object=[1, 2, 3],
+        tag="integer_list_tag",
+        field=lambda: marshmallow.fields.List(marshmallow.fields.Integer()),
+    ),
+    ExampleData(
+        object=['abc', '2', 'mno'],
+        tag="string_list_tag",
+        field=lambda: marshmallow.fields.List(marshmallow.fields.String()),
+    ),
 ]
 
 
