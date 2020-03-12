@@ -16,7 +16,7 @@ class TypeTagField:
 
 @attr.s(auto_attribs=True)
 class TypeDictRegistry:
-    the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field,] = attr.ib(
+    the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field] = attr.ib(
         factory=dict
     )
 
