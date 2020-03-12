@@ -18,31 +18,24 @@ class ExampleData:
 
 
 example_data = [
-    ExampleData(
-        object=3.7,
-        tag='float_tag',
-        field=marshmallow.fields.Float,
-    ),
+    ExampleData(object=3.7, tag="float_tag", field=marshmallow.fields.Float,),
 ]
 
 
 @pytest.fixture(
-    name='example_data',
-    params=example_data,
+    name="example_data", params=example_data,
 )
 def _example_data(request):
     return request.param
 
 
-@pytest.fixture(name='registry', scope='session')
+@pytest.fixture(name="registry", scope="session")
 def _registry():
     registry = desert._fields.TypeDictRegistry()
 
     for example in example_data:
         registry.register(
-            cls=type(example.object),
-            tag=example.tag,
-            field=example.field,
+            cls=type(example.object), tag=example.tag, field=example.field,
         )
 
     return registry
@@ -50,11 +43,10 @@ def _registry():
 
 def test_adjacently_tagged_deserialize(example_data, registry):
     field = desert._fields.AdjacentlyTaggedUnion(
-        from_object=registry.from_object,
-        from_tag=registry.from_tag,
+        from_object=registry.from_object, from_tag=registry.from_tag,
     )
 
-    serialized_value = {'type': example_data.tag, 'value': example_data.object}
+    serialized_value = {"type": example_data.tag, "value": example_data.object}
 
     deserialized_value = field.deserialize(serialized_value)
 
@@ -63,12 +55,11 @@ def test_adjacently_tagged_deserialize(example_data, registry):
 
 def test_adjacently_tagged_serialize(example_data, registry):
     field = desert._fields.AdjacentlyTaggedUnion(
-        from_object=registry.from_object,
-        from_tag=registry.from_tag,
+        from_object=registry.from_object, from_tag=registry.from_tag,
     )
 
-    obj = {'key': example_data.object}
+    obj = {"key": example_data.object}
 
-    serialized_value = field.serialize('key', obj)
+    serialized_value = field.serialize("key", obj)
 
-    assert serialized_value == {'type': example_data.tag, 'value': example_data.object}
+    assert serialized_value == {"type": example_data.tag, "value": example_data.object}

@@ -4,7 +4,7 @@ import attr
 import marshmallow.fields
 
 
-T = typing.TypeVar('T')
+T = typing.TypeVar("T")
 
 
 @attr.s(frozen=True, auto_attribs=True)
@@ -16,10 +16,9 @@ class TypeTagField:
 
 @attr.s(auto_attribs=True)
 class TypeDictRegistry:
-    the_dict: typing.Dict[
-        typing.Union[type, str],
-        marshmallow.fields.Field,
-    ] = attr.ib(factory=dict)
+    the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field,] = attr.ib(
+        factory=dict
+    )
 
     def register(self, cls, tag, field):
         if any(key in self.the_dict for key in [cls, tag]):
@@ -44,11 +43,11 @@ class TypeDictRegistry:
 
 class AdjacentlyTaggedUnion(marshmallow.fields.Field):
     def __init__(
-            self,
-            *,
-            from_object: typing.Callable[[typing.Any], TypeTagField],
-            from_tag: typing.Callable[[str], TypeTagField],
-            **kwargs,
+        self,
+        *,
+        from_object: typing.Callable[[typing.Any], TypeTagField],
+        from_tag: typing.Callable[[str], TypeTagField],
+        **kwargs,
     ):
         super().__init__(**kwargs)
 
@@ -56,29 +55,25 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
         self.from_tag = from_tag
 
     def _deserialize(
-            self,
-            value: typing.Any,
-            attr: typing.Optional[str],
-            data: typing.Optional[typing.Mapping[str, typing.Any]],
-            **kwargs
+        self,
+        value: typing.Any,
+        attr: typing.Optional[str],
+        data: typing.Optional[typing.Mapping[str, typing.Any]],
+        **kwargs,
     ) -> typing.Any:
-        tag = value['type']
-        serialized_value = value['value']
+        tag = value["type"]
+        serialized_value = value["value"]
         type_tag_field = self.from_tag(tag)
         field = type_tag_field.field()
 
         return field.deserialize(serialized_value)
 
     def _serialize(
-            self,
-            value: typing.Any,
-            attr: str,
-            obj: typing.Any,
-            **kwargs,
+        self, value: typing.Any, attr: str, obj: typing.Any, **kwargs,
     ) -> typing.Any:
         type_tag_field = self.from_object(value)
         field = type_tag_field.field()
         tag = type_tag_field.tag
         serialized_value = field.serialize(attr, obj)
 
-        return {'type': tag, 'value': serialized_value}
+        return {"type": tag, "value": serialized_value}
