@@ -1,3 +1,4 @@
+import decimal
 import typing
 
 import attr
@@ -14,16 +15,24 @@ import desert._fields
 class ExampleData:
     object: typing.Any
     tag: str
-    field: typing.Type[marshmallow.fields.Field]
+    field: typing.Callable[[], marshmallow.fields.Field]
 
 
 example_data_list = [
-    ExampleData(object=3.7, tag="float_tag", field=marshmallow.fields.Float,),
+    ExampleData(object=3.7, tag="float_tag", field=marshmallow.fields.Float),
+    ExampleData(object="29", tag="str_tag", field=marshmallow.fields.String),
+    ExampleData(
+        object=decimal.Decimal("4.2"),
+        tag="decimal_tag",
+        field=marshmallow.fields.Decimal,
+    ),
 ]
 
 
 @pytest.fixture(
-    name="example_data", params=example_data_list,
+    name="example_data",
+    params=example_data_list,
+    ids=[str(example) for example in example_data_list],
 )
 def _example_data(request):
     return request.param
@@ -53,7 +62,9 @@ def test_adjacently_tagged_deserialize(example_data, adjacently_tagged_field):
 
     deserialized_value = adjacently_tagged_field.deserialize(serialized_value)
 
-    assert deserialized_value == example_data.object
+    assert (type(deserialized_value) == type(example_data.object)) and (
+        deserialized_value == example_data.object
+    )
 
 
 def test_adjacently_tagged_deserialize_extra_key_raises(
