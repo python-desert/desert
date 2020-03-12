@@ -11,7 +11,7 @@ T = typing.TypeVar("T")
 class TypeTagField:
     cls: type
     tag: str
-    field: marshmallow.fields.Field
+    field: typing.Type[marshmallow.fields.Field]
 
 
 @attr.s(auto_attribs=True)
