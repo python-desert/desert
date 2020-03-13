@@ -15,7 +15,7 @@ class TypeTagField:
 
 
 @attr.s(auto_attribs=True)
-class TypeDictRegistry:
+class TypeDictFieldRegistry:
     the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field] = attr.ib(
         factory=dict
     )
@@ -69,7 +69,7 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
             raise Exception()
 
         type_tag_field = self.from_tag(tag)
-        field = type_tag_field.field()
+        field = type_tag_field.field
 
         return field.deserialize(serialized_value)
 
@@ -77,7 +77,7 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
         self, value: typing.Any, attr: str, obj: typing.Any, **kwargs,
     ) -> typing.Any:
         type_tag_field = self.from_object(value)
-        field = type_tag_field.field()
+        field = type_tag_field.field
         tag = type_tag_field.tag
         serialized_value = field.serialize(attr, obj)
 
