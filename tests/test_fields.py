@@ -97,19 +97,13 @@ registry_builders = [
     build_type_dict_registry,
 ]
 registries = [
-    registry_builder(example_data_list)
-    for registry_builder in registry_builders
+    registry_builder(example_data_list) for registry_builder in registry_builders
 ]
-registry_ids = [
-    type(registry).__name__
-    for registry in registries
-]
+registry_ids = [type(registry).__name__ for registry in registries]
 
 
 @pytest.fixture(
-    name="registry",
-    params=registries,
-    ids=registry_ids,
+    name="registry", params=registries, ids=registry_ids,
 )
 def _registry(request):
     return request.param
