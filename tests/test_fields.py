@@ -1,3 +1,5 @@
+import abc
+import collections.abc
 import decimal
 import typing
 
@@ -20,10 +22,12 @@ class ExampleData:
     deserialized: typing.Any
     tag: str
     field: marshmallow.fields.Field
+    # TODO: can we be more specific?
+    hint: typing.Any
 
     @classmethod
     def build(
-        cls, to_serialize, tag, field, serialized=_NOTHING, deserialized=_NOTHING,
+        cls, hint, to_serialize, tag, field, serialized=_NOTHING, deserialized=_NOTHING,
     ):
         if serialized is _NOTHING:
             serialized = to_serialize
@@ -32,6 +36,7 @@ class ExampleData:
             deserialized = to_serialize
 
         return cls(
+            hint=hint,
             to_serialize=to_serialize,
             serialized=serialized,
             deserialized=deserialized,
@@ -42,28 +47,38 @@ class ExampleData:
 
 example_data_list = [
     ExampleData.build(
-        to_serialize=3.7, tag="float_tag", field=marshmallow.fields.Float()
+        hint=float,
+        to_serialize=3.7,
+        tag="float_tag",
+        field=marshmallow.fields.Float(),
     ),
     ExampleData.build(
-        to_serialize="29", tag="str_tag", field=marshmallow.fields.String()
+        hint=str,
+        to_serialize="29",
+        tag="str_tag",
+        field=marshmallow.fields.String(),
     ),
     ExampleData.build(
+        hint=decimal.Decimal,
         to_serialize=decimal.Decimal("4.2"),
         serialized="4.2",
         tag="decimal_tag",
         field=marshmallow.fields.Decimal(as_string=True),
     ),
     ExampleData.build(
+        hint=typing.List[int],
         to_serialize=[1, 2, 3],
         tag="integer_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.Integer()),
     ),
     ExampleData.build(
+        hint=typing.List[str],
         to_serialize=["abc", "2", "mno"],
         tag="string_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.String()),
     ),
     ExampleData(
+        hint=typing.Sequence[str],
         to_serialize=("def", "13"),
         serialized=["def", "13"],
         deserialized=["def", "13"],
@@ -87,17 +102,67 @@ def build_type_dict_registry(examples):
 
     for example in examples:
         registry.register(
-            cls=type(example.deserialized), tag=example.tag, field=example.field,
+            hint=example.hint, tag=example.tag, field=example.field,
         )
 
     return registry
 
 
-registry_builders = [
-    build_type_dict_registry,
-]
+# class NonStringSequence(abc.ABC):
+#     @classmethod
+#     def __subclasshook__(cls, maybe_subclass):
+#         return isinstance(maybe_subclass, collections.abc.Sequence) and not isinstance(
+#             maybe_subclass, str
+#         )
+
+
+def build_order_isinstance_registry(examples):
+    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+
+    # registry.register(
+    #     hint=typing.List[],
+    #     tag="sequence_abc",
+    #     field=marshmallow.fields.List(marshmallow.fields.String()),
+    # )
+
+    for example in examples:
+        registry.register(
+            hint=example.hint,
+            tag=example.tag,
+            field=example.field,
+        )
+
+    return registry
+
+
+# class NonStringSequence(abc.ABC):
+#     @classmethod
+#     def __subclasshook__(cls, maybe_subclass):
+#         return isinstance(maybe_subclass, collections.abc.Sequence) and not isinstance(
+#             maybe_subclass, str
+#         )
+
+
+def build_order_isinstance_registry(examples):
+    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+
+    # registry.register(
+    #     hint=typing.Sequence,
+    #     tag="sequence_abc",
+    #     field=marshmallow.fields.List(marshmallow.fields.String()),
+    # )
+
+    for example in examples:
+        registry.register(
+            hint=example.hint, tag=example.tag, field=example.field,
+        )
+
+    return registry
+
+
 registries = [
-    registry_builder(example_data_list) for registry_builder in registry_builders
+    # build_type_dict_registry(example_data_list),
+    build_order_isinstance_registry(example_data_list),
 ]
 registry_ids = [type(registry).__name__ for registry in registries]
 
