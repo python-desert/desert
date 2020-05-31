@@ -2,8 +2,6 @@ import typing
 
 import attr
 import marshmallow.fields
-
-# import pytypes
 import typeguard
 
 
