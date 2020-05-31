@@ -114,10 +114,10 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
         data: typing.Optional[typing.Mapping[str, typing.Any]],
         **kwargs,
     ) -> typing.Any:
-        tag = value["type"]
-        serialized_value = value["value"]
+        tag = value.pop("type")
+        serialized_value = value.pop("value")
 
-        if len(value) > 2:
+        if len(value) > 0:
             raise Exception()
 
         type_tag_field = self.from_tag(tag)
