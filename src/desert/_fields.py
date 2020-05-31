@@ -163,6 +163,31 @@ def externally_tagged_union(*args, **kwargs):
     )
 
 
+def from_internally_tagged(item: typing.Any):
+    # TODO: shouldn't be hardcoded to "type"
+    return TaggedValue(
+        tag=item["type"], value={k: v for k, v in item.items() if k != "type"}
+    )
+
+
+def to_internally_tagged(tag: str, value: typing.Any):
+    # TODO: shouldn't be hardcoded to "type"
+    if "type" in value:
+        raise Exception()
+
+    return {"type": tag, **value}
+
+
+@functools.wraps(TaggedUnion)
+def internally_tagged_union(*args, **kwargs):
+    return TaggedUnion(
+        *args,
+        from_tagged=from_internally_tagged,
+        to_tagged=to_internally_tagged,
+        **kwargs,
+    )
+
+
 def from_adjacently_tagged(item: typing.Any):
     tag = item.pop("type")
     serialized_value = item.pop("value")
