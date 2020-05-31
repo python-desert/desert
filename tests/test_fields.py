@@ -47,16 +47,10 @@ class ExampleData:
 
 example_data_list = [
     ExampleData.build(
-        hint=float,
-        to_serialize=3.7,
-        tag="float_tag",
-        field=marshmallow.fields.Float(),
+        hint=float, to_serialize=3.7, tag="float_tag", field=marshmallow.fields.Float(),
     ),
     ExampleData.build(
-        hint=str,
-        to_serialize="29",
-        tag="str_tag",
-        field=marshmallow.fields.String(),
+        hint=str, to_serialize="29", tag="str_tag", field=marshmallow.fields.String(),
     ),
     ExampleData.build(
         hint=decimal.Decimal,
@@ -127,9 +121,7 @@ def build_order_isinstance_registry(examples):
 
     for example in examples:
         registry.register(
-            hint=example.hint,
-            tag=example.tag,
-            field=example.field,
+            hint=example.hint, tag=example.tag, field=example.field,
         )
 
     return registry

@@ -2,6 +2,7 @@ import typing
 
 import attr
 import marshmallow.fields
+
 # import pytypes
 import typeguard
 
@@ -26,18 +27,12 @@ class FieldRegistry(typing.Protocol):
 
 @attr.s(auto_attribs=True)
 class TypeDictFieldRegistry:
-    the_dict: typing.Dict[
-        typing.Union[type, str],
-        marshmallow.fields.Field,
-    ] = attr.ib(
+    the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field,] = attr.ib(
         factory=dict
     )
 
     def register(
-        self,
-        hint: typing.Any,
-        tag: str,
-        field: marshmallow.fields.Field,
+        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
     ) -> None:
         # TODO: just disabling for now to show more interesting test results
         # if any(key in self.the_dict for key in [cls, tag]):
@@ -67,10 +62,7 @@ class OrderedIsinstanceFieldRegistry:
 
     # TODO: but type bans from-scratch metatypes...  and protocols
     def register(
-        self,
-        hint: typing.Any,
-        tag: str,
-        field: marshmallow.fields.Field,
+        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
     ) -> None:
         # TODO: just disabling for now to show more interesting test results
         # if any(key in self.the_dict for key in [cls, tag]):
@@ -104,10 +96,7 @@ class OrderedIsinstanceFieldRegistry:
 
     # TODO: but type bans from-scratch metatypes...  and protocols
     def register(
-        self,
-        hint: typing.Any,
-        tag: str,
-        field: marshmallow.fields.Field,
+        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
     ) -> None:
         # TODO: just disabling for now to show more interesting test results
         # if any(key in self.the_dict for key in [cls, tag]):
@@ -128,9 +117,7 @@ class OrderedIsinstanceFieldRegistry:
             # if pytypes.is_of_type(value, type_tag_field.hint):
             try:
                 typeguard.check_type(
-                    argname='',
-                    value=value,
-                    expected_type=type_tag_field.hint,
+                    argname="", value=value, expected_type=type_tag_field.hint,
                 )
             except TypeError:
                 continue
