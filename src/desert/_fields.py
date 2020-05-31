@@ -101,20 +101,6 @@ class TaggedValue:
     value: typing.Any
 
 
-def from_adjacently_tagged(item: typing.Any):
-    tag = item.pop("type")
-    serialized_value = item.pop("value")
-
-    if len(item) > 0:
-        raise Exception()
-
-    return TaggedValue(tag=tag, value=serialized_value)
-
-
-def to_adjacently_tagged(tag: str, value: typing.Any):
-    return {"type": tag, "value": value}
-
-
 class TaggedUnion(marshmallow.fields.Field):
     def __init__(
         self,
@@ -155,6 +141,20 @@ class TaggedUnion(marshmallow.fields.Field):
         serialized_value = field.serialize(attr, obj)
 
         return self.to_tagged(tag=tag, value=serialized_value)
+
+
+def from_adjacently_tagged(item: typing.Any):
+    tag = item.pop("type")
+    serialized_value = item.pop("value")
+
+    if len(item) > 0:
+        raise Exception()
+
+    return TaggedValue(tag=tag, value=serialized_value)
+
+
+def to_adjacently_tagged(tag: str, value: typing.Any):
+    return {"type": tag, "value": value}
 
 
 @functools.wraps(TaggedUnion)
