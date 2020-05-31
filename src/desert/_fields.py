@@ -15,12 +15,12 @@ class HintTagField:
     field: marshmallow.fields.Field
 
 
-class FieldRegistry(typing.Protocol):
-    def from_object(self, value: typing.Any) -> marshmallow.fields.Field:
-        ...
-
-    def from_tag(self, tag: str) -> marshmallow.fields.Field:
-        ...
+# class FieldRegistry(typing.Protocol):
+#     def from_object(self, value: typing.Any) -> marshmallow.fields.Field:
+#         ...
+#
+#     def from_tag(self, tag: str) -> marshmallow.fields.Field:
+#         ...
 
 
 @attr.s(auto_attribs=True)
