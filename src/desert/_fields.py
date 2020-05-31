@@ -2,7 +2,8 @@ import typing
 
 import attr
 import marshmallow.fields
-import pytypes
+# import pytypes
+import typeguard
 
 
 T = typing.TypeVar("T")
@@ -124,8 +125,17 @@ class OrderedIsinstanceFieldRegistry:
 
     def from_object(self, value: typing.Any) -> HintTagField:
         for type_tag_field in self.the_list:
-            if pytypes.is_of_type(value, type_tag_field.hint):
-                return type_tag_field
+            # if pytypes.is_of_type(value, type_tag_field.hint):
+            try:
+                typeguard.check_type(
+                    argname='',
+                    value=value,
+                    expected_type=type_tag_field.hint,
+                )
+            except TypeError:
+                continue
+
+            return type_tag_field
 
         raise Exception()
 
