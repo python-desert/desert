@@ -143,6 +143,10 @@ class TaggedUnion(marshmallow.fields.Field):
         return self.to_tagged(tag=tag, value=serialized_value)
 
 
+default_tagged_type_key = "#type"
+default_tagged_value_key = "#value"
+
+
 def from_externally_tagged(item: typing.Any):
     [[tag, serialized_value]] = item.items()
 
@@ -163,34 +167,32 @@ def externally_tagged_union(*args, **kwargs):
     )
 
 
-def from_internally_tagged(item: typing.Any):
-    # TODO: shouldn't be hardcoded to "type"
+def from_internally_tagged(item: typing.Any, type_key: str):
     return TaggedValue(
-        tag=item["type"], value={k: v for k, v in item.items() if k != "type"}
+        tag=item[type_key], value={k: v for k, v in item.items() if k != type_key}
     )
 
 
-def to_internally_tagged(tag: str, value: typing.Any):
-    # TODO: shouldn't be hardcoded to "type"
-    if "type" in value:
+def to_internally_tagged(tag: str, value: typing.Any, type_key: str):
+    if type_key in value:
         raise Exception()
 
-    return {"type": tag, **value}
+    return {type_key: tag, **value}
 
 
 @functools.wraps(TaggedUnion)
-def internally_tagged_union(*args, **kwargs):
+def internally_tagged_union(*args, type_key=default_tagged_type_key, **kwargs):
     return TaggedUnion(
         *args,
-        from_tagged=from_internally_tagged,
-        to_tagged=to_internally_tagged,
+        from_tagged=functools.partial(from_internally_tagged, type_key=type_key),
+        to_tagged=functools.partial(to_internally_tagged, type_key=type_key),
         **kwargs,
     )
 
 
-def from_adjacently_tagged(item: typing.Any):
-    tag = item.pop("type")
-    serialized_value = item.pop("value")
+def from_adjacently_tagged(item: typing.Any, type_key: str, value_key: str):
+    tag = item.pop(type_key)
+    serialized_value = item.pop(value_key)
 
     if len(item) > 0:
         raise Exception()
@@ -198,15 +200,24 @@ def from_adjacently_tagged(item: typing.Any):
     return TaggedValue(tag=tag, value=serialized_value)
 
 
-def to_adjacently_tagged(tag: str, value: typing.Any):
-    return {"type": tag, "value": value}
+def to_adjacently_tagged(tag: str, value: typing.Any, type_key: str, value_key: str):
+    return {type_key: tag, value_key: value}
 
 
 @functools.wraps(TaggedUnion)
-def adjacently_tagged_union(*args, **kwargs):
+def adjacently_tagged_union(
+    *args,
+    type_key=default_tagged_type_key,
+    value_key=default_tagged_value_key,
+    **kwargs,
+):
     return TaggedUnion(
         *args,
-        from_tagged=from_adjacently_tagged,
-        to_tagged=to_adjacently_tagged,
+        from_tagged=functools.partial(
+            from_adjacently_tagged, type_key=type_key, value_key=value_key
+        ),
+        to_tagged=functools.partial(
+            to_adjacently_tagged, type_key=type_key, value_key=value_key
+        ),
         **kwargs,
     )

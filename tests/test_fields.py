@@ -216,7 +216,7 @@ def test_externally_tagged_deserialize_extra_key_raises(
     example_data, externally_tagged_field,
 ):
     serialized = {
-        example_data.tag: {"value": example_data.serialized, "extra": 29,},
+        example_data.tag: {"#value": example_data.serialized, "extra": 29,},
     }
 
     with pytest.raises(expected_exception=Exception):
@@ -239,7 +239,7 @@ def _internally_tagged_field(registry):
 
 
 def test_internally_tagged_deserialize(custom_example_data, internally_tagged_field):
-    serialized = {"type": custom_example_data.tag, **custom_example_data.serialized}
+    serialized = {"#type": custom_example_data.tag, **custom_example_data.serialized}
 
     deserialized = internally_tagged_field.deserialize(serialized)
 
@@ -254,7 +254,7 @@ def test_internally_tagged_serialize(custom_example_data, internally_tagged_fiel
     serialized = internally_tagged_field.serialize("key", obj)
 
     assert serialized == {
-        "type": custom_example_data.tag,
+        "#type": custom_example_data.tag,
         **custom_example_data.serialized,
     }
 
@@ -267,7 +267,7 @@ def _adjacently_tagged_field(registry):
 
 
 def test_adjacently_tagged_deserialize(example_data, adjacently_tagged_field):
-    serialized = {"type": example_data.tag, "value": example_data.serialized}
+    serialized = {"#type": example_data.tag, "#value": example_data.serialized}
 
     deserialized = adjacently_tagged_field.deserialize(serialized)
 
@@ -280,8 +280,8 @@ def test_adjacently_tagged_deserialize_extra_key_raises(
     example_data, adjacently_tagged_field,
 ):
     serialized = {
-        "type": example_data.tag,
-        "value": example_data.serialized,
+        "#type": example_data.tag,
+        "#value": example_data.serialized,
         "extra": 29,
     }
 
@@ -294,4 +294,4 @@ def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
 
     serialized = adjacently_tagged_field.serialize("key", obj)
 
-    assert serialized == {"type": example_data.tag, "value": example_data.serialized}
+    assert serialized == {"#type": example_data.tag, "#value": example_data.serialized}
