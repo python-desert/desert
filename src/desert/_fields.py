@@ -78,40 +78,6 @@ class OrderedIsinstanceFieldRegistry:
 
     def from_object(self, value: typing.Any) -> HintTagField:
         for type_tag_field in self.the_list:
-            if isinstance(value, type_tag_field.cls):
-                return type_tag_field
-
-        raise Exception()
-
-    def from_tag(self, tag: str) -> HintTagField:
-        return self.by_tag[tag]
-
-
-@attr.s(auto_attribs=True)
-class OrderedIsinstanceFieldRegistry:
-    the_list: typing.List[HintTagField] = attr.ib(factory=list)
-    by_tag: typing.Dict[str, HintTagField] = attr.ib(factory=dict)
-
-    # TODO: but type bans from-scratch metatypes...  and protocols
-    def register(
-        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
-    ) -> None:
-        # TODO: just disabling for now to show more interesting test results
-        # if any(key in self.the_dict for key in [cls, tag]):
-        #     raise Exception()
-
-        type_tag_field = HintTagField(hint=hint, tag=tag, field=field)
-
-        self.the_list.append(type_tag_field)
-        self.by_tag[tag] = type_tag_field
-
-    # # TODO: this type hinting...  doesn't help much as it could return
-    # #       another cls
-    # def __call__(self, tag: str, field: marshmallow.fields) -> typing.Callable[[T], T]:
-    #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
-
-    def from_object(self, value: typing.Any) -> HintTagField:
-        for type_tag_field in self.the_list:
             # if pytypes.is_of_type(value, type_tag_field.hint):
             try:
                 typeguard.check_type(
