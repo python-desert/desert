@@ -107,8 +107,8 @@ class TaggedUnion(marshmallow.fields.Field):
         *,
         from_object: typing.Callable[[typing.Any], HintTagField],
         from_tag: typing.Callable[[str], HintTagField],
-        from_tagged: typing.Callable[[typing.Any], typing.Any],
-        to_tagged: typing.Callable[[str, typing.Any], TaggedValue],
+        from_tagged: typing.Callable[[typing.Any], TaggedValue],
+        to_tagged: typing.Callable[[str, typing.Any], typing.Any],
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -141,6 +141,26 @@ class TaggedUnion(marshmallow.fields.Field):
         serialized_value = field.serialize(attr, obj)
 
         return self.to_tagged(tag=tag, value=serialized_value)
+
+
+def from_externally_tagged(item: typing.Any):
+    [[tag, serialized_value]] = item.items()
+
+    return TaggedValue(tag=tag, value=serialized_value)
+
+
+def to_externally_tagged(tag: str, value: typing.Any):
+    return {tag: value}
+
+
+@functools.wraps(TaggedUnion)
+def externally_tagged_union(*args, **kwargs):
+    return TaggedUnion(
+        *args,
+        from_tagged=from_externally_tagged,
+        to_tagged=to_externally_tagged,
+        **kwargs,
+    )
 
 
 def from_adjacently_tagged(item: typing.Any):

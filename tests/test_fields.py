@@ -202,3 +202,42 @@ def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
     serialized = adjacently_tagged_field.serialize("key", obj)
 
     assert serialized == {"type": example_data.tag, "value": example_data.serialized}
+
+
+@pytest.fixture(name="externally_tagged_field")
+def _externally_tagged_field(registry):
+    return desert._fields.externally_tagged_union(
+        from_object=registry.from_object, from_tag=registry.from_tag,
+    )
+
+
+def test_externally_tagged_deserialize(example_data, externally_tagged_field):
+    serialized = {example_data.tag: example_data.serialized}
+
+    deserialized = externally_tagged_field.deserialize(serialized)
+
+    expected = example_data.deserialized
+
+    assert (type(deserialized) == type(expected)) and (deserialized == expected)
+
+
+def test_externally_tagged_deserialize_extra_key_raises(
+    example_data, externally_tagged_field,
+):
+    serialized = {
+        example_data.tag: {
+            "value": example_data.serialized,
+            "extra": 29,
+        },
+    }
+
+    with pytest.raises(expected_exception=Exception):
+        externally_tagged_field.deserialize(serialized)
+
+
+def test_externally_tagged_serialize(example_data, externally_tagged_field):
+    obj = {"key": example_data.to_serialize}
+
+    serialized = externally_tagged_field.serialize("key", obj)
+
+    assert serialized == {example_data.tag: example_data.serialized}
