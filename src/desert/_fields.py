@@ -1,3 +1,4 @@
+import functools
 import typing
 
 import attr
@@ -94,18 +95,42 @@ class OrderedIsinstanceFieldRegistry:
         return self.by_tag[tag]
 
 
-class AdjacentlyTaggedUnion(marshmallow.fields.Field):
+@attr.s(auto_attribs=True)
+class TaggedValue:
+    tag: str
+    value: typing.Any
+
+
+def from_adjacently_tagged(item: typing.Any):
+    tag = item.pop("type")
+    serialized_value = item.pop("value")
+
+    if len(item) > 0:
+        raise Exception()
+
+    return TaggedValue(tag=tag, value=serialized_value)
+
+
+def to_adjacently_tagged(tag: str, value: typing.Any):
+    return {"type": tag, "value": value}
+
+
+class TaggedUnion(marshmallow.fields.Field):
     def __init__(
         self,
         *,
         from_object: typing.Callable[[typing.Any], HintTagField],
         from_tag: typing.Callable[[str], HintTagField],
+        from_tagged: typing.Callable[[typing.Any], typing.Any],
+        to_tagged: typing.Callable[[str, typing.Any], TaggedValue],
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.from_object = from_object
         self.from_tag = from_tag
+        self.from_tagged = from_tagged
+        self.to_tagged = to_tagged
 
     def _deserialize(
         self,
@@ -114,16 +139,12 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
         data: typing.Optional[typing.Mapping[str, typing.Any]],
         **kwargs,
     ) -> typing.Any:
-        tag = value.pop("type")
-        serialized_value = value.pop("value")
+        tagged_value = self.from_tagged(item=value)
 
-        if len(value) > 0:
-            raise Exception()
-
-        type_tag_field = self.from_tag(tag)
+        type_tag_field = self.from_tag(tagged_value.tag)
         field = type_tag_field.field
 
-        return field.deserialize(serialized_value)
+        return field.deserialize(tagged_value.value)
 
     def _serialize(
         self, value: typing.Any, attr: str, obj: typing.Any, **kwargs,
@@ -133,4 +154,14 @@ class AdjacentlyTaggedUnion(marshmallow.fields.Field):
         tag = type_tag_field.tag
         serialized_value = field.serialize(attr, obj)
 
-        return {"type": tag, "value": serialized_value}
+        return self.to_tagged(tag=tag, value=serialized_value)
+
+
+@functools.wraps(TaggedUnion)
+def adjacently_tagged_union(*args, **kwargs):
+    return TaggedUnion(
+        *args,
+        from_tagged=from_adjacently_tagged,
+        to_tagged=to_adjacently_tagged,
+        **kwargs,
+    )

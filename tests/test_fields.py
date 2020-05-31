@@ -168,7 +168,7 @@ def _registry(request):
 
 @pytest.fixture(name="adjacently_tagged_field")
 def _adjacently_tagged_field(registry):
-    return desert._fields.AdjacentlyTaggedUnion(
+    return desert._fields.adjacently_tagged_union(
         from_object=registry.from_object, from_tag=registry.from_tag,
     )
 
