@@ -78,6 +78,8 @@ class OrderedIsinstanceFieldRegistry:
     #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
 
     def from_object(self, value: typing.Any) -> HintTagField:
+        potential = set()
+
         for type_tag_field in self.the_list:
             # if pytypes.is_of_type(value, type_tag_field.hint):
             try:
@@ -87,9 +89,18 @@ class OrderedIsinstanceFieldRegistry:
             except TypeError:
                 continue
 
-            return type_tag_field
+            potential.add(type_tag_field)
 
-        raise Exception()
+        if len(potential) != 1:
+            raise Exception(
+                "Unique matching type hint not found: {}".format(
+                    {p.hint for p in potential},
+                )
+            )
+
+        [type_tag_field] = potential
+
+        return type_tag_field
 
     def from_tag(self, tag: str) -> HintTagField:
         return self.by_tag[tag]
