@@ -1,3 +1,4 @@
+import collections
 import functools
 import typing
 
@@ -78,23 +79,44 @@ class OrderedIsinstanceFieldRegistry:
     #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
 
     def from_object(self, value: typing.Any) -> HintTagField:
-        potential = set()
+        scores = {}
 
         for type_tag_field in self.the_list:
+            score = 0
+
             # if pytypes.is_of_type(value, type_tag_field.hint):
             try:
                 typeguard.check_type(
                     argname="", value=value, expected_type=type_tag_field.hint,
                 )
             except TypeError:
-                continue
+                pass
+            else:
+                score = max(1, score)
 
-            potential.add(type_tag_field)
+            try:
+                if isinstance(value, type_tag_field.hint):
+                    score = max(2, score)
+            except TypeError:
+                pass
+
+            scores[type_tag_field] = score
+
+        high_score = max(scores.values())
+
+        if high_score == 0:
+            raise Exception("No matching type hints found")
+
+        potential = [
+            ttf
+            for ttf, score in scores.items()
+            if score == high_score
+        ]
 
         if len(potential) != 1:
             raise Exception(
                 "Unique matching type hint not found: {}".format(
-                    {p.hint for p in potential},
+                    ', '.join(str(p.hint) for p in potential),
                 )
             )
 
