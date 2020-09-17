@@ -202,7 +202,9 @@ def test_nested_unknown(module):
     class B:
         y: A
 
-    data = desert.schema_class(B, meta={"unknown": marshmallow.EXCLUDE})().load({"y": {"x": 5, "z": 3}})
+    data = desert.schema_class(B, meta={"unknown": marshmallow.EXCLUDE})().load(
+        {"y": {"x": 5, "z": 3}}
+    )
 
     assert data == B(A(5))
 
