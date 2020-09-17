@@ -1,0 +1,1 @@
+Nested fields will now inherit their parent dataclass' metadata params so that `marshmallow.EXCLUDE` will propagate to child dataclasses.
