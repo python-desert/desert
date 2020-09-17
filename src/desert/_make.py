@@ -130,7 +130,7 @@ def class_schema(
             attributes[field.name] = field_for_schema(
                 hints.get(field.name, field.type),
                 _get_field_default(field),
-                field.metadata,
+                {**meta, **field.metadata},
             )
 
     cls_schema = type(
@@ -289,7 +289,8 @@ def field_for_schema(
 
     if field is None:
         nested = forward_reference or class_schema(typ)
-        field = marshmallow.fields.Nested(nested)
+        params = {k: v for k, v in metadata.items() if type(k) is str}
+        field = marshmallow.fields.Nested(nested, **params)
 
     field.metadata.update(metadata)
 

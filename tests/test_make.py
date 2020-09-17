@@ -191,6 +191,22 @@ def test_nested(module):
     assert data == B(A(5))
 
 
+def test_nested_unknown(module):
+    """Schemas will propagate meta to Nested dataclasses."""
+
+    @module.dataclass
+    class A:
+        x: int
+
+    @module.dataclass
+    class B:
+        y: A
+
+    data = desert.schema_class(B, meta={"unknown": marshmallow.EXCLUDE})().load({"y": {"x": 5, "z": 3}})
+
+    assert data == B(A(5))
+
+
 def test_optional(module):
     """Setting an optional type makes the default None."""
 
