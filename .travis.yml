@@ -88,7 +88,8 @@ install:
   - |
     set -ex
     if [[ $TOXENV == 'check' ]]; then
-        (gem install travis --no-rdoc --no-ri
+        echo "gem: --no-document" >> ~/.gemrc
+        (gem install travis
          travis lint --no-interactive --exit-code)
     fi
     set +x
