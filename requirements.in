@@ -1,4 +1,4 @@
 marshmallow>=3.0
 attrs
 typing_inspect
-dataclasses
+dataclasses; python_version < "3.7"
