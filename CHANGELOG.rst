@@ -1,3 +1,17 @@
+2020.11.18 (2020-11-18)
+-----------------------
+
+
+Changes
+^^^^^^^
+
+- Schemas no longer copy non-field dataclass attributes. Thanks to @sveinse for report and test.
+  `#79 <https://github.com/python-desert/desert/issues/79>`_
+
+
+----
+
+
 2020.01.06 (2020-01-06)
 -----------------------
 
