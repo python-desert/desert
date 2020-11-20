@@ -30,3 +30,4 @@ graft  changelog.d
 
 
 global-exclude *.py[cod] __pycache__ *.so *.dylib
+exclude .readthedocs.yml
