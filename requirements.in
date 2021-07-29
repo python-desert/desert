@@ -1,6 +1,6 @@
 marshmallow>=3.0
 attrs
 typing_inspect
-dataclasses
+dataclasses; python_version < "3.7"
 #https://github.com/Stewori/pytypes/archive/b7271ec654d3553894febc6e0d8ad1b0e1ac570a.zip
 typeguard
