@@ -27,12 +27,16 @@ class HintTagField:
 
 @attr.s(auto_attribs=True)
 class TypeDictFieldRegistry:
-    the_dict: typing.Dict[typing.Union[type, str], marshmallow.fields.Field,] = attr.ib(
-        factory=dict
-    )
+    the_dict: typing.Dict[
+        typing.Union[type, str],
+        marshmallow.fields.Field,
+    ] = attr.ib(factory=dict)
 
     def register(
-        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
+        self,
+        hint: typing.Any,
+        tag: str,
+        field: marshmallow.fields.Field,
     ) -> None:
         # TODO: just disabling for now to show more interesting test results
         # if any(key in self.the_dict for key in [cls, tag]):
@@ -62,7 +66,10 @@ class OrderedIsinstanceFieldRegistry:
 
     # TODO: but type bans from-scratch metatypes...  and protocols
     def register(
-        self, hint: typing.Any, tag: str, field: marshmallow.fields.Field,
+        self,
+        hint: typing.Any,
+        tag: str,
+        field: marshmallow.fields.Field,
     ) -> None:
         # TODO: just disabling for now to show more interesting test results
         # if any(key in self.the_dict for key in [cls, tag]):
@@ -87,7 +94,9 @@ class OrderedIsinstanceFieldRegistry:
             # if pytypes.is_of_type(value, type_tag_field.hint):
             try:
                 typeguard.check_type(
-                    argname="", value=value, expected_type=type_tag_field.hint,
+                    argname="",
+                    value=value,
+                    expected_type=type_tag_field.hint,
                 )
             except TypeError:
                 pass
@@ -107,16 +116,12 @@ class OrderedIsinstanceFieldRegistry:
         if high_score == 0:
             raise Exception("No matching type hints found")
 
-        potential = [
-            ttf
-            for ttf, score in scores.items()
-            if score == high_score
-        ]
+        potential = [ttf for ttf, score in scores.items() if score == high_score]
 
         if len(potential) != 1:
             raise Exception(
                 "Unique matching type hint not found: {}".format(
-                    ', '.join(str(p.hint) for p in potential),
+                    ", ".join(str(p.hint) for p in potential),
                 )
             )
 
@@ -166,7 +171,11 @@ class TaggedUnion(marshmallow.fields.Field):
         return field.deserialize(tagged_value.value)
 
     def _serialize(
-        self, value: typing.Any, attr: str, obj: typing.Any, **kwargs,
+        self,
+        value: typing.Any,
+        attr: str,
+        obj: typing.Any,
+        **kwargs,
     ) -> typing.Any:
         type_tag_field = self.from_object(value)
         field = type_tag_field.field
