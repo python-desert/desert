@@ -54,8 +54,6 @@ Full example::
       Schema: t.ClassVar[Type[Schema]] = Schema # For the type checker
 """
 
-__all__ = ("schema_class", "schema")
-
 import dataclasses
 import datetime
 import decimal
@@ -99,7 +97,7 @@ def class_schema(
     ``marshmallow_field`` key in the metadata dictionary.
     """
 
-    fields: t.Union[t.Tuple[dataclasses.Field], t.Tuple[attr.Attribute]]
+    fields: t.Union[t.Tuple[dataclasses.Field, ...], t.Tuple[attr.Attribute, ...]]
 
     if not isinstance(clazz, type):
         raise desert.exceptions.UnknownType(
@@ -119,9 +117,9 @@ def class_schema(
         raise desert.exceptions.NotAnAttrsClassOrDataclass(clazz)
 
     # Copy all public fields of the dataclass to the schema
-    attributes = {
-        field.name: field for field in fields if not field.name.startswith("_")
-    }
+    attributes: t.Dict[
+        str, t.Union[dataclasses.Field, attr.Attribute, marshmallow.fields.Field]
+    ] = {field.name: field for field in fields if not field.name.startswith("_")}
 
     # Update the schema members to contain marshmallow fields instead of dataclass fields.
     hints = t.get_type_hints(clazz)
@@ -133,16 +131,23 @@ def class_schema(
                 field.metadata,
             )
 
+    class_attributes: t.Dict[str, t.Any] = {
+        **attributes,
+        "Meta": type("Meta", (), meta),
+    }
+
     cls_schema = type(
         clazz.__name__,
         (_base_schema(clazz),),
-        {**attributes, "Meta": type("Meta", (), meta)},
+        class_attributes,
     )
 
     return t.cast(t.Type[marshmallow.Schema], cls_schema)
 
 
-_native_to_marshmallow: t.Dict[type, t.Type[marshmallow.fields.Field]] = {
+_native_to_marshmallow: t.Dict[
+    t.Union[type, t.Any], t.Type[marshmallow.fields.Field]
+] = {
     int: marshmallow.fields.Integer,
     float: marshmallow.fields.Float,
     str: marshmallow.fields.String,
@@ -171,7 +176,7 @@ def only(items: t.Iterable[T]) -> T:
 
 
 def field_for_schema(
-    typ: type, default=marshmallow.missing, metadata: t.Mapping[str, t.Any] = None
+    typ: type, default=marshmallow.missing, metadata: t.Mapping[t.Any, t.Any] = None
 ) -> marshmallow.fields.Field:
     """
     Get a marshmallow Field corresponding to the given python type.
@@ -319,7 +324,8 @@ def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
     <marshmallow.missing>
     """
     if isinstance(field, dataclasses.Field):
-        if field.default_factory != dataclasses.MISSING:
+        # https://github.com/python/mypy/issues/10750
+        if field.default_factory != dataclasses.MISSING:  # type: ignore[misc]
             return dataclasses.MISSING
         if field.default is dataclasses.MISSING:
             return marshmallow.missing
@@ -327,17 +333,21 @@ def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
     elif isinstance(field, attr.Attribute):
         if field.default == attr.NOTHING:
             return marshmallow.missing
-        if isinstance(field.default, attr.Factory):
-            if field.default.takes_self:
+        if isinstance(field.default, attr.Factory):  # type: ignore[arg-type]
+            # attrs specifically doesn't support this so as to support the
+            # primary use case.
+            # https://github.com/python-attrs/attrs/blob/38580632ceac1cd6e477db71e1d190a4130beed4/src/attr/__init__.pyi#L63-L65
+            if field.default.takes_self:  # type: ignore[union-attr]
                 return attr.NOTHING
-            return field.default.factory
+            return field.default.factory  # type: ignore[union-attr]
         return field.default
     else:
         raise TypeError(field)
 
 
-def sentinel(name):
-    return attr.make_class(name, [], frozen=True)()
+@attr.frozen
+class _DesertSentinel:
+    pass
 
 
-_DESERT_SENTINEL = sentinel("_DesertSentinel")
+_DESERT_SENTINEL = _DesertSentinel()

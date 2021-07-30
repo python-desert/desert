@@ -8,6 +8,10 @@ import desert._make
 import desert._version
 
 
+if t.TYPE_CHECKING:
+    import attr._make
+
+
 def schema(
     cls: t.Type, many: bool = False, meta: t.Dict[str, t.Any] = {}
 ) -> marshmallow.Schema:
@@ -63,7 +67,10 @@ def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Fiel
     """
     meta = metadata(marshmallow_field)
     meta.update(kw.pop("metadata", {}))
-    return dataclasses.field(**kw, metadata=meta)
+    # typeshed hints it as Mapping[str, Any] without any obvious reason
+    # https://github.com/python/typeshed/blob/95a45eb4abd0c25849268983cb614e3bf6b9b264/stdlib/dataclasses.pyi#L81
+    # https://github.com/python/typeshed/pull/5823
+    return dataclasses.field(**kw, metadata=meta)  # type: ignore[arg-type]
 
 
 def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._CountingAttr:
