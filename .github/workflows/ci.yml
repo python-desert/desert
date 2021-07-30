@@ -13,6 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     container: docker://altendky/hydra:ubuntu-3-minors
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
