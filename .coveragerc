@@ -14,3 +14,9 @@ parallel = true
 show_missing = true
 precision = 2
 omit = *migrations*
+exclude_lines =
+  pragma: no cover
+  abc\.abstractmethod
+  typing\.overload
+  ^\s*\.\.\.\s*$
+  if typing.TYPE_CHECKING:
