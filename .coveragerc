@@ -15,10 +15,23 @@ show_missing = true
 precision = 2
 omit = *migrations*
 exclude_lines =
+  # Lines matching these regexes don't need to be covered
+  # https://coverage.readthedocs.io/en/coverage-5.5/excluding.html?highlight=exclude_lines#advanced-exclusion
+  
+  # this is the default but must be explicitly specified since
+  # we are overriding exclude_lines
   pragma: no cover
+
+  # abstract methods won't ever be run
   abc\.abstractmethod
+
+  # overloads won't ever be run
   typing\.overload
+
+  # ellipses (...) are often used in type-hint related stub code
   ^\s*\.\.\.\s*$
+
+  # TYPE_CHECKING guarded code won't be run
   if typing.TYPE_CHECKING:
   if t.TYPE_CHECKING:
   if TYPE_CHECKING:
