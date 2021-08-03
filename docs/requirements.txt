@@ -1,4 +1,6 @@
 sphinx~=4.1
+# docutils is only specified due to https://github.com/readthedocs/sphinx_rtd_theme/issues/1115
+docutils < 0.17
 sphinx-rtd-theme
 sphinx-autodoc-typehints
 -e .[dev]
