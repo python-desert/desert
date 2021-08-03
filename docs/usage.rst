@@ -12,7 +12,7 @@ Basics
     :end-before: end-basic-usage
 
 
-Desert can be used with :mod:`dataclasses` or :mod:`attr`. With either module,
+Desert can be used with :mod:`dataclasses` or :mod:`attrs`. With either module,
 Desert is able to infer the appropriate :mod:`marshmallow` field
 for any of these types:
 
