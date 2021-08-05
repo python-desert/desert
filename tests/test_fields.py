@@ -15,7 +15,7 @@ import desert._fields
 _NOTHING = object()
 
 
-@attr.s(auto_attribs=True)
+@attr.frozen
 class ExampleData:
     to_serialize: typing.Any
     serialized: typing.Any
@@ -82,7 +82,7 @@ basic_example_data_list = [
 ]
 
 
-@attr.s(auto_attribs=True)
+@attr.frozen
 class CustomExampleClass:
     a: int
     b: str
