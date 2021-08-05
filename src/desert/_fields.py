@@ -101,13 +101,23 @@ class OrderedIsinstanceFieldRegistry:
             except TypeError:
                 pass
             else:
-                score = max(1, score)
+                score += 2
 
             try:
                 if isinstance(value, type_tag_field.hint):
-                    score = max(2, score)
+                    score += 3
             except TypeError:
                 pass
+
+            if score > 0:
+                # Only use this to disambiguate between already selected options such
+                # as ["a", "b"] matching both typing.List[str] and typing.Sequence[str].
+                # This only works properly on 3.7+.
+                try:
+                    if type(value) == type_tag_field.hint.__origin__:
+                        score += 1
+                except (AttributeError, TypeError):
+                    pass
 
             scores[type_tag_field] = score
 
