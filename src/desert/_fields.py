@@ -29,7 +29,7 @@ class HintTagField:
 class TypeDictFieldRegistry:
     the_dict: typing.Dict[
         typing.Union[type, str],
-        marshmallow.fields.Field,
+        HintTagField,
     ] = attr.ib(factory=dict)
 
     def register(
@@ -52,10 +52,10 @@ class TypeDictFieldRegistry:
     # def __call__(self, tag: str, field: marshmallow.fields) -> typing.Callable[[T], T]:
     #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
 
-    def from_object(self, value: typing.Any) -> marshmallow.fields.Field:
+    def from_object(self, value: typing.Any) -> HintTagField:
         return self.the_dict[type(value)]
 
-    def from_tag(self, tag: str) -> marshmallow.fields.Field:
+    def from_tag(self, tag: str) -> HintTagField:
         return self.the_dict[tag]
 
 
@@ -149,14 +149,34 @@ class TaggedValue:
     value: typing.Any
 
 
+class FromObjectProtocol(typing.Protocol):
+    def __call__(self, value: object) -> HintTagField:
+        ...
+
+
+class FromTagProtocol(typing.Protocol):
+    def __call__(self, tag: str) -> HintTagField:
+        ...
+
+
+class FromTaggedProtocol(typing.Protocol):
+    def __call__(self, item: object) -> TaggedValue:
+        ...
+
+
+class ToTaggedProtocol(typing.Protocol):
+    def __call__(self, tag: object, value: object) -> object:
+        ...
+
+
 class TaggedUnion(marshmallow.fields.Field):
     def __init__(
         self,
         *,
-        from_object: typing.Callable[[typing.Any], HintTagField],
-        from_tag: typing.Callable[[str], HintTagField],
-        from_tagged: typing.Callable[[typing.Any], TaggedValue],
-        to_tagged: typing.Callable[[str, typing.Any], typing.Any],
+        from_object: FromObjectProtocol,
+        from_tag: FromTagProtocol,
+        from_tagged: FromTaggedProtocol,
+        to_tagged: ToTaggedProtocol,
         **kwargs,
     ):
         super().__init__(**kwargs)
