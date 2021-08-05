@@ -36,7 +36,9 @@ bleach==3.3.1 \
 build==0.5.1 \
     --hash=sha256:0281eeec2697ee43114eb4fe3ba6e54c111ee2c4ef287b5cd24f82cb24cc1bdb \
     --hash=sha256:16897cac845b50cca04f3c92cf8d3e9e0868b21b29b96b577333c14473baa916
-    # via check-manifest
+    # via
+    #   -r dev-requirements.in
+    #   check-manifest
 bump2version==1.0.1 \
     --hash=sha256:37f927ea17cde7ae2d7baf832f8e80ce3777624554a653006c9144f8017fe410 \
     --hash=sha256:762cb2bfad61f4ec8e2bdf452c7c267416f8c70dd9ecb1653fd0bbb01fa936e6

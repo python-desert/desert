@@ -57,6 +57,7 @@ setup(
         ),
         re.sub(":[a-z]+:`~?(.*?)`", r"``\1``", read("CHANGELOG.rst")),
     ),
+    long_description_content_type="text/x-rst",
     author="Desert contributors",
     author_email="python-desert@users.noreply.github.com",
     url="https://github.com/python-desert/desert",

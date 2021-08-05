@@ -1,5 +1,6 @@
 versioneer
 black
+build
 pylint
 pex
 bump2version
