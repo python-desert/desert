@@ -14,17 +14,17 @@ import desert
 
 for module in [dataclasses, attr]:
 
-    @module.dataclass
+    @module.dataclass  # type: ignore[attr-defined]
     class A:
         x: "B"
 
-    @module.dataclass
+    @module.dataclass  # type: ignore[attr-defined]
     class B:
         y: int
 
     schema = desert.schema_class(A)()
     dumped = {"x": {"y": 1}}
-    loaded = A((B(1)))
+    loaded = A((B(1)))  # type:ignore[call-arg]
 
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
