@@ -13,18 +13,20 @@ import desert
 
 
 for module in [dataclasses, attr]:
+    # Type ignores are just here for now instead of figuring out how to
+    # handle these properly.
 
-    @module.dataclass
+    @module.dataclass  # type: ignore[attr-defined]
     class A:
         x: "B"
 
-    @module.dataclass
+    @module.dataclass  # type: ignore[attr-defined]
     class B:
         y: int
 
     schema = desert.schema_class(A)()
     dumped = {"x": {"y": 1}}
-    loaded = A((B(1)))
+    loaded = A((B(1)))  # type:ignore[call-arg]
 
     assert schema.load(dumped) == loaded
     assert schema.dump(loaded) == dumped
