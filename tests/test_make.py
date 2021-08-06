@@ -42,25 +42,25 @@ def dataclass_param(request):
 
 
 def _assert_load(
-    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.load(dumped) == loaded
 
 
 def _assert_dump(
-    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.dump(loaded) == dumped
 
 
 def _assert_dump_load(
-    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.loads(schema.dumps(loaded)) == loaded
 
 
 def _assert_load_dump(
-    schema: t.Type[marshmallow.Schema], loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.dump(schema.load(dumped)) == dumped
 
@@ -68,7 +68,7 @@ def _assert_load_dump(
 def fixture_from_dict(
     name: str,
     id_to_value: t.Mapping[
-        str, t.Callable[[t.Type[marshmallow.Schema], t.Dict[t.Any, t.Any], t.Any], None]
+        str, t.Callable[[marshmallow.Schema, t.Dict[t.Any, t.Any], t.Any], None]
     ],
 ):
     """
@@ -434,7 +434,8 @@ def test_forward_reference(module, assert_dump_load):  # pragma: no cover
 
 
 @pytest.mark.xfail(
-    condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2),
+    # type ignored due to foss.heptapod.net/pypy/pypy/-/issues/3129
+    condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2),  # type: ignore[attr-defined]
     reason="Forward references and string annotations are broken in PyPy3 < 7.2",
     strict=True,
 )
