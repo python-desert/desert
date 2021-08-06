@@ -172,33 +172,6 @@ def build_order_isinstance_registry(examples):
     return registry
 
 
-# class NonStringSequence(abc.ABC):
-#     @classmethod
-#     def __subclasshook__(cls, maybe_subclass):
-#         return isinstance(maybe_subclass, collections.abc.Sequence) and not isinstance(
-#             maybe_subclass, str
-#         )
-
-
-def build_order_isinstance_registry(examples):
-    registry = desert._fields.OrderedIsinstanceFieldRegistry()
-
-    # registry.register(
-    #     hint=typing.Sequence,
-    #     tag="sequence_abc",
-    #     field=marshmallow.fields.List(marshmallow.fields.String()),
-    # )
-
-    for example in examples:
-        registry.register(
-            hint=example.hint,
-            tag=example.tag,
-            field=example.field,
-        )
-
-    return registry
-
-
 registries = [
     # build_type_dict_registry(example_data_list),
     build_order_isinstance_registry(all_example_data_list),
