@@ -7,8 +7,9 @@ import attr
 import marshmallow
 import pytest
 
-import desert.exceptions
 import desert._fields
+import desert.exceptions
+
 
 # TODO: test that field constructor doesn't tromple Field parameters
 
