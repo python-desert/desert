@@ -5,7 +5,7 @@ import typing
 import attr
 import marshmallow.fields
 import typeguard
-
+import typing_extensions
 
 T = typing.TypeVar("T")
 
@@ -17,7 +17,7 @@ class HintTagField:
     field: marshmallow.fields.Field
 
 
-# class FieldRegistry(typing.Protocol):
+# class FieldRegistry(typing_extensions.Protocol):
 #     def from_object(self, value: typing.Any) -> marshmallow.fields.Field:
 #         ...
 #
@@ -149,22 +149,22 @@ class TaggedValue:
     value: typing.Any
 
 
-class FromObjectProtocol(typing.Protocol):
+class FromObjectProtocol(typing_extensions.Protocol):
     def __call__(self, value: object) -> HintTagField:
         ...
 
 
-class FromTagProtocol(typing.Protocol):
+class FromTagProtocol(typing_extensions.Protocol):
     def __call__(self, tag: str) -> HintTagField:
         ...
 
 
-class FromTaggedProtocol(typing.Protocol):
+class FromTaggedProtocol(typing_extensions.Protocol):
     def __call__(self, item: object) -> TaggedValue:
         ...
 
 
-class ToTaggedProtocol(typing.Protocol):
+class ToTaggedProtocol(typing_extensions.Protocol):
     def __call__(self, tag: object, value: object) -> object:
         ...
 
