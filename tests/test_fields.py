@@ -27,7 +27,13 @@ class ExampleData:
 
     @classmethod
     def build(
-        cls, hint, to_serialize, tag, field, serialized=_NOTHING, deserialized=_NOTHING,
+        cls,
+        hint,
+        to_serialize,
+        tag,
+        field,
+        serialized=_NOTHING,
+        deserialized=_NOTHING,
     ):
         if serialized is _NOTHING:
             serialized = to_serialize
@@ -47,10 +53,16 @@ class ExampleData:
 
 basic_example_data_list = [
     ExampleData.build(
-        hint=float, to_serialize=3.7, tag="float_tag", field=marshmallow.fields.Float(),
+        hint=float,
+        to_serialize=3.7,
+        tag="float_tag",
+        field=marshmallow.fields.Float(),
     ),
     ExampleData.build(
-        hint=str, to_serialize="29", tag="str_tag", field=marshmallow.fields.String(),
+        hint=str,
+        to_serialize="29",
+        tag="str_tag",
+        field=marshmallow.fields.String(),
     ),
     ExampleData.build(
         hint=decimal.Decimal,
@@ -125,7 +137,9 @@ def build_type_dict_registry(examples):
 
     for example in examples:
         registry.register(
-            hint=example.hint, tag=example.tag, field=example.field,
+            hint=example.hint,
+            tag=example.tag,
+            field=example.field,
         )
 
     return registry
@@ -150,7 +164,9 @@ def build_order_isinstance_registry(examples):
 
     for example in examples:
         registry.register(
-            hint=example.hint, tag=example.tag, field=example.field,
+            hint=example.hint,
+            tag=example.tag,
+            field=example.field,
         )
 
     return registry
@@ -175,7 +191,9 @@ def build_order_isinstance_registry(examples):
 
     for example in examples:
         registry.register(
-            hint=example.hint, tag=example.tag, field=example.field,
+            hint=example.hint,
+            tag=example.tag,
+            field=example.field,
         )
 
     return registry
@@ -189,7 +207,9 @@ registry_ids = [type(registry).__name__ for registry in registries]
 
 
 @pytest.fixture(
-    name="registry", params=registries, ids=registry_ids,
+    name="registry",
+    params=registries,
+    ids=registry_ids,
 )
 def _registry(request):
     return request.param
@@ -198,7 +218,8 @@ def _registry(request):
 @pytest.fixture(name="externally_tagged_field")
 def _externally_tagged_field(registry):
     return desert._fields.externally_tagged_union(
-        from_object=registry.from_object, from_tag=registry.from_tag,
+        from_object=registry.from_object,
+        from_tag=registry.from_tag,
     )
 
 
@@ -213,10 +234,14 @@ def test_externally_tagged_deserialize(example_data, externally_tagged_field):
 
 
 def test_externally_tagged_deserialize_extra_key_raises(
-    example_data, externally_tagged_field,
+    example_data,
+    externally_tagged_field,
 ):
     serialized = {
-        example_data.tag: {"#value": example_data.serialized, "extra": 29,},
+        example_data.tag: {
+            "#value": example_data.serialized,
+            "extra": 29,
+        },
     }
 
     with pytest.raises(expected_exception=Exception):
@@ -234,7 +259,8 @@ def test_externally_tagged_serialize(example_data, externally_tagged_field):
 @pytest.fixture(name="internally_tagged_field")
 def _internally_tagged_field(registry):
     return desert._fields.internally_tagged_union(
-        from_object=registry.from_object, from_tag=registry.from_tag,
+        from_object=registry.from_object,
+        from_tag=registry.from_tag,
     )
 
 
@@ -262,7 +288,8 @@ def test_internally_tagged_serialize(custom_example_data, internally_tagged_fiel
 @pytest.fixture(name="adjacently_tagged_field")
 def _adjacently_tagged_field(registry):
     return desert._fields.adjacently_tagged_union(
-        from_object=registry.from_object, from_tag=registry.from_tag,
+        from_object=registry.from_object,
+        from_tag=registry.from_tag,
     )
 
 
@@ -277,7 +304,8 @@ def test_adjacently_tagged_deserialize(example_data, adjacently_tagged_field):
 
 
 def test_adjacently_tagged_deserialize_extra_key_raises(
-    example_data, adjacently_tagged_field,
+    example_data,
+    adjacently_tagged_field,
 ):
     serialized = {
         "#type": example_data.tag,
