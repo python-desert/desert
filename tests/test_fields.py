@@ -7,8 +7,8 @@ import attr
 import marshmallow
 import pytest
 
+import desert.exceptions
 import desert._fields
-
 
 # TODO: test that field constructor doesn't tromple Field parameters
 
@@ -132,17 +132,17 @@ def _custom_example_data(request):
     return request.param
 
 
-def build_type_dict_registry(examples):
-    registry = desert._fields.TypeDictFieldRegistry()
-
-    for example in examples:
-        registry.register(
-            hint=example.hint,
-            tag=example.tag,
-            field=example.field,
-        )
-
-    return registry
+# def build_type_dict_registry(examples):
+#     registry = desert._fields.TypeDictFieldRegistry()
+#
+#     for example in examples:
+#         registry.register(
+#             hint=example.hint,
+#             tag=example.tag,
+#             field=example.field,
+#         )
+#
+#     return registry
 
 
 # class NonStringSequence(abc.ABC):
@@ -186,6 +186,35 @@ registry_ids = [type(registry).__name__ for registry in registries]
 )
 def _registry(request):
     return request.param
+
+
+def test_registry_raises_for_no_match(registry):
+    class C:
+        pass
+
+    c = C()
+
+    with pytest.raises(desert.exceptions.NoMatchingHintFound):
+        registry.from_object(value=c)
+
+
+def test_registry_raises_for_multiple_matches():
+    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+
+    registry.register(
+        hint=typing.Sequence,
+        tag="sequence",
+        field=marshmallow.fields.List(marshmallow.fields.Field()),
+    )
+
+    registry.register(
+        hint=typing.Collection,
+        tag="collection",
+        field=marshmallow.fields.List(marshmallow.fields.Field()),
+    )
+
+    with pytest.raises(desert.exceptions.MultipleMatchingHintsFound):
+        registry.from_object(value=[])
 
 
 @pytest.fixture(name="externally_tagged_field")
@@ -235,6 +264,13 @@ def _internally_tagged_field(registry):
         from_object=registry.from_object,
         from_tag=registry.from_tag,
     )
+
+
+def test_to_internally_tagged_raises_for_tag_collision():
+    with pytest.raises(desert.exceptions.TypeKeyCollision):
+        desert._fields.to_internally_tagged(
+            tag="C", value={"collide": True}, type_key="collide"
+        )
 
 
 def test_internally_tagged_deserialize(custom_example_data, internally_tagged_field):

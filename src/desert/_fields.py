@@ -7,6 +7,8 @@ import marshmallow.fields
 import typeguard
 import typing_extensions
 
+import desert.exceptions
+
 
 T = typing.TypeVar("T")
 
@@ -26,38 +28,38 @@ class HintTagField:
 #         ...
 
 
-@attr.s(auto_attribs=True)
-class TypeDictFieldRegistry:
-    the_dict: typing.Dict[
-        typing.Union[type, str],
-        HintTagField,
-    ] = attr.ib(factory=dict)
-
-    def register(
-        self,
-        hint: typing.Any,
-        tag: str,
-        field: marshmallow.fields.Field,
-    ) -> None:
-        # TODO: just disabling for now to show more interesting test results
-        # if any(key in self.the_dict for key in [cls, tag]):
-        #     raise Exception()
-
-        type_tag_field = HintTagField(hint=hint, tag=tag, field=field)
-
-        self.the_dict[hint] = type_tag_field
-        self.the_dict[tag] = type_tag_field
-
-    # # TODO: this type hinting...  doesn't help much as it could return
-    # #       another cls
-    # def __call__(self, tag: str, field: marshmallow.fields) -> typing.Callable[[T], T]:
-    #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
-
-    def from_object(self, value: typing.Any) -> HintTagField:
-        return self.the_dict[type(value)]
-
-    def from_tag(self, tag: str) -> HintTagField:
-        return self.the_dict[tag]
+# @attr.s(auto_attribs=True)
+# class TypeDictFieldRegistry:
+#     the_dict: typing.Dict[
+#         typing.Union[type, str],
+#         HintTagField,
+#     ] = attr.ib(factory=dict)
+#
+#     def register(
+#         self,
+#         hint: typing.Any,
+#         tag: str,
+#         field: marshmallow.fields.Field,
+#     ) -> None:
+#         # TODO: just disabling for now to show more interesting test results
+#         # if any(key in self.the_dict for key in [cls, tag]):
+#         #     raise Exception()
+#
+#         type_tag_field = HintTagField(hint=hint, tag=tag, field=field)
+#
+#         self.the_dict[hint] = type_tag_field
+#         self.the_dict[tag] = type_tag_field
+#
+#     # # TODO: this type hinting...  doesn't help much as it could return
+#     # #       another cls
+#     # def __call__(self, tag: str, field: marshmallow.fields) -> typing.Callable[[T], T]:
+#     #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
+#
+#     def from_object(self, value: typing.Any) -> HintTagField:
+#         return self.the_dict[type(value)]
+#
+#     def from_tag(self, tag: str) -> HintTagField:
+#         return self.the_dict[tag]
 
 
 @attr.s(auto_attribs=True)
@@ -125,15 +127,15 @@ class OrderedIsinstanceFieldRegistry:
         high_score = max(scores.values())
 
         if high_score == 0:
-            raise Exception("No matching type hints found")
+            raise desert.exceptions.NoMatchingHintFound(
+                hints=[ttf.hint for ttf in self.the_list], value=value
+            )
 
         potential = [ttf for ttf, score in scores.items() if score == high_score]
 
         if len(potential) != 1:
-            raise Exception(
-                "Unique matching type hint not found: {}".format(
-                    ", ".join(str(p.hint) for p in potential),
-                )
+            raise desert.exceptions.MultipleMatchingHintsFound(
+                hints=[ttf.hint for ttf in potential], value=value
             )
 
         [type_tag_field] = potential
@@ -248,7 +250,7 @@ def from_internally_tagged(item: typing.Any, type_key: str):
 
 def to_internally_tagged(tag: str, value: typing.Any, type_key: str):
     if type_key in value:
-        raise Exception()
+        raise desert.exceptions.TypeKeyCollision(type_key=type_key, value=value)
 
     return {type_key: tag, **value}
 
