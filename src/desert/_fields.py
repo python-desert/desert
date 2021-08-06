@@ -245,36 +245,43 @@ def to_externally_tagged(tag: str, value: typing.Any):
     return {tag: value}
 
 
-@functools.wraps(TaggedUnion)
-def externally_tagged_union(*args, **kwargs):
+def externally_tagged_union(
+    from_object: FromObjectProtocol,
+    from_tag: FromTagProtocol,
+):
+    # TODO: allow the pass through kwargs to the field
+
     return TaggedUnion(
-        *args,
+        from_object=from_object,
+        from_tag=from_tag,
         from_tagged=from_externally_tagged,
         to_tagged=to_externally_tagged,
-        **kwargs,
     )
 
 
-def from_internally_tagged(item: typing.Any, type_key: str):
+def from_internally_tagged(item: typing.Any, type_key: str) -> TaggedValue:
     return TaggedValue(
         tag=item[type_key], value={k: v for k, v in item.items() if k != type_key}
     )
 
 
-def to_internally_tagged(tag: str, value: typing.Any, type_key: str):
+def to_internally_tagged(tag: str, value: typing.Any, type_key: str) -> typing.Any:
     if type_key in value:
         raise desert.exceptions.TypeKeyCollision(type_key=type_key, value=value)
 
     return {type_key: tag, **value}
 
 
-@functools.wraps(TaggedUnion)
-def internally_tagged_union(*args, type_key=default_tagged_type_key, **kwargs):
+def internally_tagged_union(
+    from_object: FromObjectProtocol,
+    from_tag: FromTagProtocol,
+    type_key=default_tagged_type_key,
+):
     return TaggedUnion(
-        *args,
+        from_object=from_object,
+        from_tag=from_tag,
         from_tagged=functools.partial(from_internally_tagged, type_key=type_key),
         to_tagged=functools.partial(to_internally_tagged, type_key=type_key),
-        **kwargs,
     )
 
 
@@ -292,20 +299,19 @@ def to_adjacently_tagged(tag: str, value: typing.Any, type_key: str, value_key: 
     return {type_key: tag, value_key: value}
 
 
-@functools.wraps(TaggedUnion)
 def adjacently_tagged_union(
-    *args,
+    from_object: FromObjectProtocol,
+    from_tag: FromTagProtocol,
     type_key=default_tagged_type_key,
     value_key=default_tagged_value_key,
-    **kwargs,
 ):
     return TaggedUnion(
-        *args,
+        from_object=from_object,
+        from_tag=from_tag,
         from_tagged=functools.partial(
             from_adjacently_tagged, type_key=type_key, value_key=value_key
         ),
         to_tagged=functools.partial(
             to_adjacently_tagged, type_key=type_key, value_key=value_key
         ),
-        **kwargs,
     )
