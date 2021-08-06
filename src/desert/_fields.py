@@ -166,7 +166,7 @@ class TaggedValue:
 
 
 class FromObjectProtocol(typing_extensions.Protocol):
-    def __call__(self, value: object) -> HintTagField:
+    def __call__(self, value: typing.Any) -> HintTagField:
         ...
 
 
@@ -176,12 +176,12 @@ class FromTagProtocol(typing_extensions.Protocol):
 
 
 class FromTaggedProtocol(typing_extensions.Protocol):
-    def __call__(self, item: object) -> TaggedValue:
+    def __call__(self, item: typing.Any) -> TaggedValue:
         ...
 
 
 class ToTaggedProtocol(typing_extensions.Protocol):
-    def __call__(self, tag: object, value: object) -> object:
+    def __call__(self, tag: typing.Any, value: typing.Any) -> typing.Any:
         ...
 
 
