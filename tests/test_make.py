@@ -434,6 +434,7 @@ def test_forward_reference(module, assert_dump_load):  # pragma: no cover
 
 
 @pytest.mark.xfail(
+    # type ignored due to foss.heptapod.net/pypy/pypy/-/issues/3129
     condition=sys.implementation.name == "pypy" and sys.pypy_version_info < (7, 2),  # type: ignore[attr-defined]
     reason="Forward references and string annotations are broken in PyPy3 < 7.2",
     strict=True,
