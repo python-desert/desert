@@ -7,6 +7,7 @@ import marshmallow.fields
 import typeguard
 import typing_extensions
 
+import desert._util
 import desert.exceptions
 
 
@@ -20,12 +21,23 @@ class HintTagField:
     field: marshmallow.fields.Field
 
 
-# class FieldRegistry(typing_extensions.Protocol):
-#     def from_object(self, value: typing.Any) -> marshmallow.fields.Field:
-#         ...
-#
-#     def from_tag(self, tag: str) -> marshmallow.fields.Field:
-#         ...
+class FieldRegistry(typing_extensions.Protocol):
+    def register(
+        self,
+        hint: typing.Any,
+        tag: str,
+        field: marshmallow.fields.Field,
+    ) -> None:
+        ...
+
+    def from_object(self, value: typing.Any) -> HintTagField:
+        ...
+
+    def from_tag(self, tag: str) -> HintTagField:
+        ...
+
+
+check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistry]()
 
 
 # @attr.s(auto_attribs=True)
@@ -62,6 +74,7 @@ class HintTagField:
 #         return self.the_dict[tag]
 
 
+@check_field_registry_protocol
 @attr.s(auto_attribs=True)
 class OrderedIsinstanceFieldRegistry:
     the_list: typing.List[HintTagField] = attr.ib(factory=list)
