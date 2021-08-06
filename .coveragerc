@@ -17,7 +17,7 @@ omit = *migrations*
 exclude_lines =
   # Lines matching these regexes don't need to be covered
   # https://coverage.readthedocs.io/en/coverage-5.5/excluding.html?highlight=exclude_lines#advanced-exclusion
-  
+
   # this is the default but must be explicitly specified since
   # we are overriding exclude_lines
   pragma: no cover

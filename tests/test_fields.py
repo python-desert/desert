@@ -83,7 +83,7 @@ basic_example_data_list = [
         tag="string_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.String()),
     ),
-    ExampleData(
+    ExampleData.build(
         hint=typing.Sequence[str],
         to_serialize=("def", "13"),
         serialized=["def", "13"],
