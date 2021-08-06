@@ -1,6 +1,7 @@
 import abc
 import collections.abc
 import decimal
+import json
 import typing
 
 import attr
@@ -333,3 +334,27 @@ def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
     serialized = adjacently_tagged_field.serialize("key", obj)
 
     assert serialized == {"#type": example_data.tag, "#value": example_data.serialized}
+
+
+def test_actual_example():
+    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+    registry.register(hint=str, tag="str", field=marshmallow.fields.String())
+    registry.register(hint=int, tag="int", field=marshmallow.fields.Integer())
+
+    field = desert._fields.adjacently_tagged_union(
+        from_object=registry.from_object, from_tag=registry.from_tag
+    )
+
+    @attr.frozen
+    class C:
+        # TODO: desert.ib() shouldn't be needed for many cases
+        union: typing.Union[str, int] = desert.ib(marshmallow_field=field)
+
+    schema = desert.schema(C)
+
+    objects = C(union="3")
+    marshalled = {"union": {"#type": "str", "#value": "3"}}
+    serialized = json.dumps(marshalled)
+
+    assert schema.dumps(objects) == serialized
+    assert schema.loads(serialized) == objects
