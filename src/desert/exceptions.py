@@ -36,6 +36,13 @@ class NotAnAttrsClassOrDataclass(DesertException):
     """Raised for dataclass operations on non-dataclasses."""
 
 
+class TagAlreadyRegistered(DesertException):
+    """Raised when registering a tag that has already been registered."""
+
+    def __init__(self, tag: str):
+        super().__init__(f"Tag already registered: {tag!r}")
+
+
 class TypeKeyCollision(DesertException):
     """Raised when a tag key collides with a data value."""
 

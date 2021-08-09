@@ -90,7 +90,7 @@ basic_example_data_list = [
         to_serialize=("def", "13"),
         serialized=["def", "13"],
         deserialized=["def", "13"],
-        tag="string_list_tag",
+        tag="string_sequence_tag",
         field=marshmallow.fields.List(marshmallow.fields.String()),
     ),
 ]
@@ -156,7 +156,7 @@ def _custom_example_data(request):
 
 
 def build_order_isinstance_registry(examples):
-    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+    registry = desert._fields.TypeAndHintFieldRegistry()
 
     # registry.register(
     #     hint=typing.List[],
@@ -201,7 +201,7 @@ def test_registry_raises_for_no_match(registry):
 
 
 def test_registry_raises_for_multiple_matches():
-    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+    registry = desert._fields.TypeAndHintFieldRegistry()
 
     registry.register(
         hint=typing.Sequence,
@@ -337,13 +337,11 @@ def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
 
 
 def test_actual_example():
-    registry = desert._fields.OrderedIsinstanceFieldRegistry()
+    registry = desert._fields.TypeAndHintFieldRegistry()
     registry.register(hint=str, tag="str", field=marshmallow.fields.String())
     registry.register(hint=int, tag="int", field=marshmallow.fields.Integer())
 
-    field = desert._fields.adjacently_tagged_union(
-        from_object=registry.from_object, from_tag=registry.from_tag
-    )
+    field = desert._fields.adjacently_tagged_union_from_registry(registry=registry)
 
     @attr.frozen
     class C:
@@ -358,3 +356,13 @@ def test_actual_example():
 
     assert schema.dumps(objects) == serialized
     assert schema.loads(serialized) == objects
+
+
+def test_raises_for_tag_reregistration():
+    registry = desert._fields.TypeAndHintFieldRegistry()
+    registry.register(hint=str, tag="duplicate_tag", field=marshmallow.fields.String())
+
+    with pytest.raises(desert.exceptions.TagAlreadyRegistered):
+        registry.register(
+            hint=int, tag="duplicate_tag", field=marshmallow.fields.Integer()
+        )
