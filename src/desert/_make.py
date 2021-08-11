@@ -320,7 +320,8 @@ def _base_schema(clazz: type) -> t.Type[marshmallow.Schema]:
 
 
 def _get_field_default(
-    field: t.Union[dataclasses.Field[object], "attr.Attribute[object]"],
+    # field: t.Union[dataclasses.Field[object], "attr.Attribute[object]"],
+    field: t.Union["dataclasses.Field[object]", "attr.Attribute[object]"],
 ) -> object:
     """
     Return a marshmallow default value given a dataclass default value
