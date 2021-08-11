@@ -7,12 +7,11 @@ import sys
 import types
 import typing as t
 
+# https://github.com/pytest-dev/pytest/issues/7469
+import _pytest.fixtures
 import attr
 import marshmallow
 import marshmallow.fields
-
-# https://github.com/pytest-dev/pytest/issues/7469
-import _pytest.fixtures
 import pytest
 import typing_extensions
 
