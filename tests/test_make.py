@@ -443,7 +443,8 @@ def test_newtype(
     ),
 )
 def test_forward_reference(
-    module: DataclassModule, assert_dump_load: AssertLoadDumpProtocol,
+    module: DataclassModule,
+    assert_dump_load: AssertLoadDumpProtocol,
 ) -> None:  # pragma: no cover
     """Build schemas from classes that are defined below their containing class."""
 
