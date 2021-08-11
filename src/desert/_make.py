@@ -97,7 +97,9 @@ def class_schema(
     ``marshmallow_field`` key in the metadata dictionary.
     """
 
-    fields: t.Union[t.Tuple[dataclasses.Field, ...], t.Tuple[attr.Attribute, ...]]
+    fields: t.Union[
+        t.Tuple[dataclasses.Field[object], ...], t.Tuple[attr.Attribute[object], ...]
+    ]
 
     if not isinstance(clazz, type):
         raise desert.exceptions.UnknownType(
@@ -161,7 +163,7 @@ _native_to_marshmallow: t.Dict[
 class VariadicTuple(marshmallow.fields.List):
     """Homogenous tuple with variable number of entries."""
 
-    def _deserialize(self, *args, **kwargs):
+    def _deserialize(self, *args: object, **kwargs: object) -> t.Tuple[object, ...]:  # type: ignore[override]
         return tuple(super()._deserialize(*args, **kwargs))
 
 
@@ -172,7 +174,9 @@ def only(items: t.Iterable[T]) -> T:
 
 
 def field_for_schema(
-    typ: type, default=marshmallow.missing, metadata: t.Mapping[t.Any, t.Any] = None
+    typ: type,
+    default: object = marshmallow.missing,
+    metadata: t.Optional[t.Mapping[t.Any, t.Any]] = None,
 ) -> marshmallow.fields.Field:
     """
     Get a marshmallow Field corresponding to the given python type.
@@ -221,7 +225,9 @@ def field_for_schema(
     field = None
 
     # If the field was already defined by the user
-    predefined_field = desert_metadata.get("marshmallow_field")
+    predefined_field = t.cast(
+        marshmallow.fields.Field, desert_metadata.get("marshmallow_field")
+    )
 
     if predefined_field:
         field = predefined_field
@@ -242,7 +248,7 @@ def field_for_schema(
             field = marshmallow.fields.List(field_for_schema(arguments[0]))
 
         if origin in (tuple, t.Tuple) and Ellipsis not in arguments:
-            field = marshmallow.fields.Tuple(
+            field = marshmallow.fields.Tuple(  # type: ignore[no-untyped-call]
                 tuple(field_for_schema(arg) for arg in arguments)
             )
         elif origin in (tuple, t.Tuple) and Ellipsis in arguments:
@@ -307,21 +313,24 @@ def field_for_schema(
 def _base_schema(clazz: type) -> t.Type[marshmallow.Schema]:
     class BaseSchema(marshmallow.Schema):
         @marshmallow.post_load
-        def make_data_class(self, data, **_):
+        def make_data_class(self, data: t.Mapping[str, object], **_: object) -> object:
             return clazz(**data)
 
     return BaseSchema
 
 
-def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
+def _get_field_default(
+    field: t.Union[dataclasses.Field[object], "attr.Attribute[object]"],
+) -> object:
     """
     Return a marshmallow default value given a dataclass default value
     >>> _get_field_default(dataclasses.field())
     <marshmallow.missing>
     """
     if isinstance(field, dataclasses.Field):
-        # https://github.com/python/mypy/issues/10750
-        if field.default_factory != dataclasses.MISSING:  # type: ignore[misc]
+        # misc: https://github.com/python/mypy/issues/10750
+        # comparison-overlap: https://github.com/python/typeshed/pull/5900
+        if field.default_factory != dataclasses.MISSING:  # type: ignore[misc,comparison-overlap]
             return dataclasses.MISSING
         if field.default is dataclasses.MISSING:
             return marshmallow.missing
@@ -333,9 +342,9 @@ def _get_field_default(field: t.Union[dataclasses.Field, attr.Attribute]):
             # attrs specifically doesn't support this so as to support the
             # primary use case.
             # https://github.com/python-attrs/attrs/blob/38580632ceac1cd6e477db71e1d190a4130beed4/src/attr/__init__.pyi#L63-L65
-            if field.default.takes_self:  # type: ignore[union-attr]
+            if field.default.takes_self:  # type: ignore[attr-defined]
                 return attr.NOTHING
-            return field.default.factory  # type: ignore[union-attr]
+            return field.default.factory  # type: ignore[attr-defined]
         return field.default
     else:
         raise TypeError(field)

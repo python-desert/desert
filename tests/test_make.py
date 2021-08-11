@@ -10,18 +10,22 @@ import typing as t
 import attr
 import marshmallow
 import marshmallow.fields
+
+# https://github.com/pytest-dev/pytest/issues/7469
+import _pytest.fixtures
 import pytest
+import typing_extensions
 
 import desert
 
 
-@attr.s(frozen=True, order=False)
+@attr.frozen(order=False)
 class DataclassModule:
     """Implementation of a dataclass module like attr or dataclasses."""
 
-    dataclass = attr.ib()
-    field = attr.ib()
-    fields = attr.ib()
+    dataclass: t.Callable[[type], type]
+    field: t.Callable[..., t.Any] = attr.ib()
+    fields: t.Callable[[type], object] = attr.ib()
 
 
 @pytest.fixture(
@@ -36,21 +40,29 @@ class DataclassModule:
     ],
     ids=["attrs", "dataclasses"],
 )
-def dataclass_param(request):
+def dataclass_param(request: _pytest.fixtures.SubRequest) -> DataclassModule:
     """Parametrize over both implementations of the @dataclass decorator."""
-    return request.param
+    module = t.cast(DataclassModule, request.param)
+    return module
 
 
-def _assert_load(
-    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
-) -> None:
-    assert schema.load(dumped) == loaded
+class AssertLoadDumpProtocol(typing_extensions.Protocol):
+    def __call__(
+        self, schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+    ) -> None:
+        ...
 
 
 def _assert_dump(
     schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
 ) -> None:
     assert schema.dump(loaded) == dumped
+
+
+def _assert_load(
+    schema: marshmallow.Schema, loaded: t.Any, dumped: t.Dict[t.Any, t.Any]
+) -> None:
+    assert schema.load(dumped) == loaded
 
 
 def _assert_dump_load(
@@ -70,7 +82,7 @@ def fixture_from_dict(
     id_to_value: t.Mapping[
         str, t.Callable[[marshmallow.Schema, t.Dict[t.Any, t.Any], t.Any], None]
     ],
-):
+) -> _pytest.fixtures._FixtureFunction:
     """
     Create fixture parametrized to yield each value and labeled with the
     corresponding ID.
@@ -84,10 +96,12 @@ def fixture_from_dict(
     """
 
     @pytest.fixture(name=name, params=id_to_value.values(), ids=id_to_value.keys())
-    def fixture(request):
+    def fixture(request: _pytest.fixtures.SubRequest) -> object:
         return request.param
 
-    return fixture
+    # This looks right to me but mypy says:
+    #   error: Incompatible return value type (got "Callable[[SubRequest], object]", expected "_pytest.fixtures._FixtureFunction")  [return-value]
+    return fixture  # type: ignore[return-value]
 
 
 _assert_dump_load = fixture_from_dict(
@@ -101,7 +115,7 @@ _assert_dump_load = fixture_from_dict(
 )
 
 
-def test_simple(module):
+def test_simple(module: DataclassModule) -> None:
     """Load dict into a dataclass instance."""
 
     @module.dataclass
@@ -110,10 +124,10 @@ def test_simple(module):
 
     data = desert.schema_class(A)().load(data={"x": 5})
 
-    assert data == A(x=5)
+    assert data == A(x=5)  # type: ignore[call-arg]
 
 
-def test_validation(module):
+def test_validation(module: DataclassModule) -> None:
     """Passing the wrong keys will raise ValidationError."""
 
     @module.dataclass
@@ -125,7 +139,7 @@ def test_validation(module):
         schema.load({"y": 5})
 
 
-def test_not_a_dataclass(module):
+def test_not_a_dataclass(module: DataclassModule) -> None:
     """Raises when object is not a dataclass."""
 
     class A:
@@ -135,7 +149,7 @@ def test_not_a_dataclass(module):
         desert.schema_class(A)
 
 
-def test_set_default(module):
+def test_set_default(module: DataclassModule) -> None:
     """Setting a default value in the dataclass makes passing it optional."""
 
     @module.dataclass
@@ -144,13 +158,13 @@ def test_set_default(module):
 
     schema = desert.schema_class(A)()
     data = schema.load({"x": 1})
-    assert data == A(1)
+    assert data == A(1)  # type: ignore[call-arg]
 
     data = schema.load({})
-    assert data == A(1)
+    assert data == A(1)  # type: ignore[call-arg]
 
 
-def test_list(module):
+def test_list(module: DataclassModule) -> None:
     """Build a generic list *without* setting a factory on the dataclass."""
 
     @module.dataclass
@@ -159,10 +173,10 @@ def test_list(module):
 
     schema = desert.schema_class(A)()
     data = schema.load({"y": [1]})
-    assert data == A([1])
+    assert data == A([1])  # type: ignore[call-arg]
 
 
-def test_dict(module):
+def test_dict(module: DataclassModule) -> None:
     """Build a dict without setting a factory on the dataclass."""
 
     @module.dataclass
@@ -172,10 +186,10 @@ def test_dict(module):
     schema = desert.schema_class(A)()
     data = schema.load({"y": {1: 2, 3: 4}})
 
-    assert data == A({1: 2, 3: 4})
+    assert data == A({1: 2, 3: 4})  # type: ignore[call-arg]
 
 
-def test_nested(module):
+def test_nested(module: DataclassModule) -> None:
     """One object can hold instances of another."""
 
     @module.dataclass
@@ -188,10 +202,10 @@ def test_nested(module):
 
     data = desert.schema_class(B)().load({"y": {"x": 5}})
 
-    assert data == B(A(5))
+    assert data == B(A(5))  # type: ignore[call-arg]
 
 
-def test_optional(module):
+def test_optional(module: DataclassModule) -> None:
     """Setting an optional type makes the default None."""
 
     @module.dataclass
@@ -199,10 +213,10 @@ def test_optional(module):
         x: t.Optional[int]
 
     data = desert.schema_class(A)().load({})
-    assert data == A(None)
+    assert data == A(None)  # type: ignore[call-arg]
 
 
-def test_optional_present(module):
+def test_optional_present(module: DataclassModule) -> None:
     """Setting an optional type allows passing None."""
 
     @module.dataclass
@@ -210,10 +224,10 @@ def test_optional_present(module):
         x: t.Optional[int]
 
     data = desert.schema_class(A)().load({"x": None})
-    assert data == A(None)
+    assert data == A(None)  # type: ignore[call-arg]
 
 
-def test_custom_field(module):
+def test_custom_field(module: DataclassModule) -> None:
     @module.dataclass
     class A:
         x: str = module.field(
@@ -224,15 +238,15 @@ def test_custom_field(module):
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
     schema = desert.schema(A)
 
-    assert schema.load({"x": timestring}) == A(x=dt)
+    assert schema.load({"x": timestring}) == A(x=dt)  # type: ignore[call-arg]
 
 
-def test_concise_dataclasses_field():
+def test_concise_dataclasses_field() -> None:
     """Concisely create a dataclasses.Field."""
 
     @dataclasses.dataclass
     class A:
-        x: str = desert.field(marshmallow.fields.NaiveDateTime())
+        x: datetime.datetime = desert.field(marshmallow.fields.NaiveDateTime())  # type: ignore[assignment]
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
@@ -241,12 +255,12 @@ def test_concise_dataclasses_field():
     assert schema.load({"x": timestring}) == A(x=dt)
 
 
-def test_concise_attrib():
+def test_concise_attrib() -> None:
     """Concisely create an attr.ib()"""
 
     @attr.dataclass
     class A:
-        x: str = desert.ib(marshmallow.fields.NaiveDateTime())
+        x: datetime.datetime = desert.ib(marshmallow.fields.NaiveDateTime())  # type: ignore[assignment]
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
@@ -255,12 +269,12 @@ def test_concise_attrib():
     assert schema.load({"x": timestring}) == A(x=dt)
 
 
-def test_concise_field_metadata():
+def test_concise_field_metadata() -> None:
     """Concisely create a dataclasses.Field with metadata."""
 
     @dataclasses.dataclass
     class A:
-        x: str = desert.field(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})
+        x: datetime.datetime = desert.field(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})  # type: ignore[assignment]
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
@@ -270,12 +284,12 @@ def test_concise_field_metadata():
     assert dataclasses.fields(A)[0].metadata["foo"] == 1
 
 
-def test_concise_attrib_metadata():
+def test_concise_attrib_metadata() -> None:
     """Concisely create an attr.ib() with metadata."""
 
     @attr.dataclass
     class A:
-        x: str = desert.ib(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})
+        x: datetime.datetime = desert.ib(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})  # type: ignore[assignment]
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
@@ -285,7 +299,7 @@ def test_concise_attrib_metadata():
     assert attr.fields(A).x.metadata["foo"] == 1
 
 
-def test_non_init(module):
+def test_non_init(module: DataclassModule) -> None:
     """Non-init attributes are not included in schema"""
 
     @module.dataclass
@@ -298,7 +312,7 @@ def test_non_init(module):
     assert "y" not in schema.fields
 
 
-def test_metadata_marshmallow_field_loads(module):
+def test_metadata_marshmallow_field_loads(module: DataclassModule) -> None:
     """Marshmallow field can be specified via metadata dict"""
 
     @module.dataclass
@@ -309,18 +323,22 @@ def test_metadata_marshmallow_field_loads(module):
 
     schema = desert.schema_class(A)()
 
-    assert schema.loads('{"x": "1.3"}') == A(decimal.Decimal("1.3"))
+    assert schema.loads('{"x": "1.3"}') == A(decimal.Decimal("1.3"))  # type: ignore[call-arg]
 
 
-def test_get_field_default_raises_for_non_field():
+def test_get_field_default_raises_for_non_field() -> None:
     """Not attrs and not dataclasses field raises"""
 
     with pytest.raises(TypeError, match=re.escape("None")):
-        desert._make._get_field_default(field=None)
+        desert._make._get_field_default(field=None)  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(argnames=["value"], argvalues=[["X"], [5]])
-def test_union(module, value, assert_dump_load):
+def test_union(
+    module: DataclassModule,
+    value: t.List[object],
+    assert_dump_load: AssertLoadDumpProtocol,
+) -> None:
     """Deserialize one of several types."""
 
     @module.dataclass
@@ -330,12 +348,15 @@ def test_union(module, value, assert_dump_load):
     schema = desert.schema_class(A)()
 
     dumped = {"x": value}
-    loaded = A(value)
+    loaded = A(value)  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_enum(module, assert_dump_load):
+def test_enum(
+    module: DataclassModule,
+    assert_dump_load: AssertLoadDumpProtocol,
+) -> None:
     """Deserialize an enum object."""
 
     class Color(enum.Enum):
@@ -348,12 +369,15 @@ def test_enum(module, assert_dump_load):
 
     schema = desert.schema_class(A)()
     dumped = {"x": "RED"}
-    loaded = A(Color.RED)
+    loaded = A(Color.RED)  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_tuple(module, assert_dump_load):
+def test_tuple(
+    module: DataclassModule,
+    assert_dump_load: AssertLoadDumpProtocol,
+) -> None:
     """Round trip a tuple.
 
     The tuple is converted to list only for dumps(), not during dump().
@@ -365,12 +389,12 @@ def test_tuple(module, assert_dump_load):
 
     schema = desert.schema_class(A)()
     dumped = {"x": (1, False)}
-    loaded = A(x=(1, False))
+    loaded = A(x=(1, False))  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
 
-def test_attr_factory():
+def test_attr_factory() -> None:
     """Attrs default factory instantiates the factory type if no value is passed."""
 
     @attr.dataclass
@@ -381,7 +405,7 @@ def test_attr_factory():
     assert data == A([])
 
 
-def test_dataclasses_factory():
+def test_dataclasses_factory() -> None:
     """Dataclasses default factory instantiates the factory type if no value is passed."""
 
     @dataclasses.dataclass
@@ -392,7 +416,10 @@ def test_dataclasses_factory():
     assert data == A([])
 
 
-def test_newtype(module, assert_dump_load):
+def test_newtype(
+    module: DataclassModule,
+    assert_dump_load: AssertLoadDumpProtocol,
+) -> None:
     """An instance of NewType delegates to its supertype."""
 
     MyInt = t.NewType("MyInt", int)
@@ -403,7 +430,7 @@ def test_newtype(module, assert_dump_load):
 
     schema = desert.schema_class(A)()
     dumped = {"x": 1}
-    loaded = A(x=1)
+    loaded = A(x=1)  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
@@ -415,7 +442,9 @@ def test_newtype(module, assert_dump_load):
         + "See https://github.com/lovasoa/marshmallow_dataclass/issues/13"
     ),
 )
-def test_forward_reference(module, assert_dump_load):  # pragma: no cover
+def test_forward_reference(
+    module: DataclassModule, assert_dump_load: AssertLoadDumpProtocol,
+) -> None:  # pragma: no cover
     """Build schemas from classes that are defined below their containing class."""
 
     @module.dataclass
@@ -428,7 +457,7 @@ def test_forward_reference(module, assert_dump_load):  # pragma: no cover
 
     schema = desert.schema_class(A)()
     dumped = {"x": {"y": 1}}
-    loaded = A((B(1)))
+    loaded = A((B(1)))  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 
@@ -439,13 +468,13 @@ def test_forward_reference(module, assert_dump_load):  # pragma: no cover
     reason="Forward references and string annotations are broken in PyPy3 < 7.2",
     strict=True,
 )
-def test_forward_reference_module_scope():
+def test_forward_reference_module_scope() -> None:
     """Run the forward reference test at global scope."""
 
     import tests.cases.forward_reference  # pylint disable=unused-import,import-outside-toplevel
 
 
-def test_non_string_metadata_key(module):
+def test_non_string_metadata_key(module: DataclassModule) -> None:
     """A non-string key in the attrib metadata comes through in the mm field."""
 
     @module.dataclass
@@ -456,7 +485,7 @@ def test_non_string_metadata_key(module):
     assert field.metadata == {1: 2, desert._make._DESERT_SENTINEL: {}}
 
 
-def test_non_optional_means_required(module):
+def test_non_optional_means_required(module: DataclassModule) -> None:
     """Non-optional fields are required."""
 
     @module.dataclass
@@ -469,7 +498,7 @@ def test_non_optional_means_required(module):
         schema.load({})
 
 
-def test_ignore_unknown_fields(module):
+def test_ignore_unknown_fields(module: DataclassModule) -> None:
     """Enable unknown fields with meta argument."""
 
     @module.dataclass
@@ -479,15 +508,15 @@ def test_ignore_unknown_fields(module):
     schema_class = desert.schema_class(A, meta={"unknown": marshmallow.EXCLUDE})
     schema = schema_class()
     data = schema.load({"x": 1, "y": 2})
-    assert data == A(x=1)
+    assert data == A(x=1)  # type: ignore[call-arg]
 
 
-def test_raise_unknown_type(module):
+def test_raise_unknown_type(module: DataclassModule) -> None:
     """Raise UnknownType for failed inferences."""
 
     @module.dataclass
     class A:
-        x: list
+        x: list  # type: ignore[type-arg]
 
     with pytest.raises(desert.exceptions.UnknownType):
         desert.schema_class(A)
@@ -496,7 +525,7 @@ def test_raise_unknown_type(module):
 @pytest.mark.skipif(
     sys.version_info[:2] <= (3, 6), reason="3.6 has isinstance(t.Sequence[int], type)."
 )
-def test_raise_unknown_generic(module):
+def test_raise_unknown_generic(module: DataclassModule) -> None:
     """Raise UnknownType for unknown generics."""
 
     @module.dataclass
@@ -507,7 +536,7 @@ def test_raise_unknown_generic(module):
         desert.schema_class(A)
 
 
-def test_tuple_ellipsis(module):
+def test_tuple_ellipsis(module: DataclassModule) -> None:
     """Tuple with ellipsis allows variable length tuple.
 
     See :class:`typing.Tuple`.
@@ -519,7 +548,7 @@ def test_tuple_ellipsis(module):
 
     schema = desert.schema_class(A)()
     dumped = {"x": (1, 2, 3)}
-    loaded = A(x=(1, 2, 3))
+    loaded = A(x=(1, 2, 3))  # type: ignore[call-arg]
 
     actually_dumped = {"x": [1, 2, 3]}
 
@@ -530,12 +559,12 @@ def test_tuple_ellipsis(module):
     assert schema.dump(schema.load(actually_dumped)) == actually_dumped
 
 
-def test_only():
+def test_only() -> None:
     """only() extracts the only item in an iterable."""
     assert desert._make.only([1]) == 1
 
 
-def test_only_raises():
+def test_only_raises() -> None:
     """only() raises if the iterable has an unexpected number of entries.'"""
     with pytest.raises(ValueError):
         desert._make.only([])
@@ -544,7 +573,7 @@ def test_only_raises():
         desert._make.only([1, 2])
 
 
-def test_takes_self():
+def test_takes_self() -> None:
     """Attrs default factories are constructed after instance creation."""
 
     @attr.s
@@ -553,14 +582,14 @@ def test_takes_self():
         y: int = attr.ib()
 
         @y.default
-        def _(self):
+        def _(self) -> int:
             return self.x + 1
 
     schema = desert.schema(C)
     assert schema.load({"x": 1}) == C(x=1, y=2)
 
 
-def test_methods_not_on_schema(module):
+def test_methods_not_on_schema(module: DataclassModule) -> None:
     """Dataclass methods are not copied to the schema."""
 
     @module.dataclass
