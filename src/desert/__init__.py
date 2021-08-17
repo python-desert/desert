@@ -70,7 +70,7 @@ def field(
     marshmallow_field: marshmallow.fields.Field,
     *,
     default: T,
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> T:
     ...
@@ -81,7 +81,7 @@ def field(
     marshmallow_field: marshmallow.fields.Field,
     *,
     default_factory: t.Callable[[], T],
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> T:
     ...
@@ -91,7 +91,7 @@ def field(
 def field(
     marshmallow_field: marshmallow.fields.Field,
     *,
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> object:
     ...
@@ -103,7 +103,7 @@ def field(
 # plugin that indicates the actual type.
 def field(
     marshmallow_field: marshmallow.fields.Field,
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> object:
     """Specify a marshmallow field in the metadata for a ``dataclasses.dataclass``.
@@ -114,9 +114,6 @@ def field(
         class A:
             x: int = desert.field(marshmallow.fields.Int())
     """
-    if metadata is None:
-        metadata = {}
-
     meta: t.Dict[object, object] = create_metadata(marshmallow_field)
     meta.update(metadata)
 
@@ -133,7 +130,7 @@ def ib(
     marshmallow_field: marshmallow.fields.Field,
     *,
     default: t.Union[T, t.Callable[[], T]],
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> T:
     ...
@@ -144,7 +141,7 @@ def ib(
     marshmallow_field: marshmallow.fields.Field,
     *,
     factory: t.Callable[[], T],
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> T:
     ...
@@ -154,7 +151,7 @@ def ib(
 def ib(
     marshmallow_field: marshmallow.fields.Field,
     *,
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> object:
     ...
@@ -166,7 +163,7 @@ def ib(
 # plugin that indicates the actual type.
 def ib(
     marshmallow_field: marshmallow.fields.Field,
-    metadata: t.Optional[t.Mapping[object, object]] = None,
+    metadata: t.Mapping[object, object] = {},
     **kw: object,
 ) -> object:
     """Specify a marshmallow field in the metadata for an ``attr.dataclass``.
@@ -177,9 +174,6 @@ def ib(
         class A:
             x: int = desert.ib(marshmallow.fields.Int())
     """
-    if metadata is None:
-        metadata = {}
-
     meta: t.Dict[object, object] = create_metadata(marshmallow_field)
     meta.update(metadata)
     new_field: attr._make._CountingAttr = attr.ib(**kw, metadata=meta)  # type: ignore[call-overload]
