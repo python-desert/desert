@@ -5,6 +5,7 @@ import attr
 import marshmallow.fields
 import typeguard
 import typing_extensions
+import typing_inspect
 
 import desert._util
 import desert.exceptions
@@ -133,11 +134,8 @@ class TypeAndHintFieldRegistry:
                 # Only use this to disambiguate between already selected options such
                 # as ["a", "b"] matching both typing.List[str] and typing.Sequence[str].
                 # This only works properly on 3.7+.
-                try:
-                    if type(value) == type_tag_field.hint.__origin__:
-                        score += 1
-                except (AttributeError, TypeError):
-                    pass
+                if type(value) == typing_inspect.get_origin(type_tag_field.hint):
+                    score += 1
 
             scores[type_tag_field] = score
 
