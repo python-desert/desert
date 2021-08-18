@@ -12,8 +12,11 @@ if t.TYPE_CHECKING:
     import attr._make
 
 
+T = t.TypeVar("T")
+
+
 def schema(
-    cls: t.Type, many: bool = False, meta: t.Dict[str, t.Any] = {}
+    cls: type, many: bool = False, meta: t.Dict[str, t.Any] = {}
 ) -> marshmallow.Schema:
     """Build a marshmallow schema *instance* for the class.
 
@@ -29,7 +32,7 @@ def schema(
 
 
 def schema_class(
-    cls: t.Type, meta: t.Dict[str, t.Any] = {}
+    cls: type, meta: t.Dict[str, t.Any] = {}
 ) -> t.Type[marshmallow.Schema]:
     """Build a marshmallow schema *class* for the class.
 
@@ -46,7 +49,7 @@ def schema_class(
 
 def metadata(
     field: marshmallow.fields.Field,
-) -> t.Dict["desert._make._DesertSentinel", t.Dict[t.Any, marshmallow.fields.Field]]:
+) -> t.Dict[object, object]:
     """Specify a marshmallow field in the field metadata.
 
     .. code-block:: python
@@ -56,7 +59,53 @@ def metadata(
     return {desert._make._DESERT_SENTINEL: {"marshmallow_field": field}}
 
 
-def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Field:
+# TODO: maybe deprecate and rename metadata()
+create_metadata = metadata
+
+
+# These overloads lie about their return type just as both attrs and dataclasses
+# do so as to support the normal usage of `attribute: int = field()`
+@t.overload
+def field(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    default: T,
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> T:
+    ...
+
+
+@t.overload
+def field(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    default_factory: t.Callable[[], T],
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> T:
+    ...
+
+
+@t.overload
+def field(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> object:
+    ...
+
+
+# The return type hint of object is certainly a lie but fits a lot better with
+# the normal use of `x: int = desert.field()`.  Both dataclasses and attrs
+# prioritize hinting for this usage as well.  Perhaps someday we'll have a
+# plugin that indicates the actual type.
+def field(
+    marshmallow_field: marshmallow.fields.Field,
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> object:
     """Specify a marshmallow field in the metadata for a ``dataclasses.dataclass``.
 
     .. code-block:: python
@@ -65,15 +114,58 @@ def field(marshmallow_field: marshmallow.fields.Field, **kw) -> dataclasses.Fiel
         class A:
             x: int = desert.field(marshmallow.fields.Int())
     """
-    meta = metadata(marshmallow_field)
-    meta.update(kw.pop("metadata", {}))
-    # typeshed hints it as Mapping[str, Any] without any obvious reason
-    # https://github.com/python/typeshed/blob/95a45eb4abd0c25849268983cb614e3bf6b9b264/stdlib/dataclasses.pyi#L81
-    # https://github.com/python/typeshed/pull/5823
-    return dataclasses.field(**kw, metadata=meta)  # type: ignore[arg-type]
+    meta: t.Dict[object, object] = create_metadata(marshmallow_field)
+    meta.update(metadata)
+
+    # call-overload and new_field intermediary:
+    #   https://github.com/python/typeshed/pull/5823
+    new_field: dataclasses.Field[object] = dataclasses.field(**kw, metadata=meta)  # type: ignore[call-overload]
+    return new_field
 
 
-def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._CountingAttr:
+# These overloads lie about their return type just as both attrs and dataclasses
+# do so as to support the normal usage of `attribute: int = field()`
+@t.overload
+def ib(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    default: t.Union[T, t.Callable[[], T]],
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> T:
+    ...
+
+
+@t.overload
+def ib(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    factory: t.Callable[[], T],
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> T:
+    ...
+
+
+@t.overload
+def ib(
+    marshmallow_field: marshmallow.fields.Field,
+    *,
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> object:
+    ...
+
+
+# The return type hint of object is certainly a lie but fits a lot better with
+# the normal use of `x: int = desert.ib()`.  Both dataclasses and attrs
+# prioritize hinting for this usage as well.  Perhaps someday we'll have a
+# plugin that indicates the actual type.
+def ib(
+    marshmallow_field: marshmallow.fields.Field,
+    metadata: t.Mapping[object, object] = {},
+    **kw: object,
+) -> object:
     """Specify a marshmallow field in the metadata for an ``attr.dataclass``.
 
     .. code-block:: python
@@ -82,9 +174,10 @@ def ib(marshmallow_field: marshmallow.fields.Field, **kw) -> attr._make._Countin
         class A:
             x: int = desert.ib(marshmallow.fields.Int())
     """
-    meta = metadata(marshmallow_field)
-    meta.update(kw.pop("metadata", {}))
-    return attr.ib(**kw, metadata=meta)
+    meta: t.Dict[object, object] = create_metadata(marshmallow_field)
+    meta.update(metadata)
+    new_field: attr._make._CountingAttr = attr.ib(**kw, metadata=meta)  # type: ignore[call-overload]
+    return new_field
 
 
 __version__ = desert._version.__version__
