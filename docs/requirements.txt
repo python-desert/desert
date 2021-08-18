@@ -1,5 +1,4 @@
 sphinx~=4.1
-docutils
 sphinx-rtd-theme >= 1.0.0rc1
 sphinx-autodoc-typehints
 -e .[dev]
