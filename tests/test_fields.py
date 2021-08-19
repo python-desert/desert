@@ -2,8 +2,10 @@ import abc
 import collections.abc
 import decimal
 import json
-import typing
+import typing as t
 
+# https://github.com/pytest-dev/pytest/issues/7469
+import _pytest.fixtures
 import attr
 import marshmallow
 import pytest
@@ -19,24 +21,24 @@ _NOTHING = object()
 
 @attr.frozen
 class ExampleData:
-    to_serialize: typing.Any
-    serialized: typing.Any
-    deserialized: typing.Any
+    to_serialize: t.Any
+    serialized: t.Any
+    deserialized: t.Any
     tag: str
     field: marshmallow.fields.Field
     # TODO: can we be more specific?
-    hint: typing.Any
+    hint: t.Any
 
     @classmethod
     def build(
         cls,
-        hint,
-        to_serialize,
-        tag,
-        field,
-        serialized=_NOTHING,
-        deserialized=_NOTHING,
-    ):
+        hint: object,
+        to_serialize: object,
+        tag: str,
+        field: marshmallow.fields.Field,
+        serialized: object = _NOTHING,
+        deserialized: object = _NOTHING,
+    ) -> "ExampleData":
         if serialized is _NOTHING:
             serialized = to_serialize
 
@@ -74,19 +76,19 @@ basic_example_data_list = [
         field=marshmallow.fields.Decimal(as_string=True),
     ),
     ExampleData.build(
-        hint=typing.List[int],
+        hint=t.List[int],
         to_serialize=[1, 2, 3],
         tag="integer_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.Integer()),
     ),
     ExampleData.build(
-        hint=typing.List[str],
+        hint=t.List[str],
         to_serialize=["abc", "2", "mno"],
         tag="string_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.String()),
     ),
     ExampleData.build(
-        hint=typing.Sequence[str],
+        hint=t.Sequence[str],
         to_serialize=("def", "13"),
         serialized=["def", "13"],
         deserialized=["def", "13"],
@@ -121,8 +123,8 @@ all_example_data_list = basic_example_data_list + custom_example_data_list
     params=all_example_data_list,
     ids=[str(example) for example in all_example_data_list],
 )
-def _example_data(request):
-    return request.param
+def _example_data(request: _pytest.fixtures.SubRequest) -> ExampleData:
+    return request.param  # type: ignore[no-any-return]
 
 
 @pytest.fixture(
@@ -130,8 +132,8 @@ def _example_data(request):
     params=custom_example_data_list,
     ids=[str(example) for example in custom_example_data_list],
 )
-def _custom_example_data(request):
-    return request.param
+def _custom_example_data(request: _pytest.fixtures.SubRequest) -> ExampleData:
+    return request.param  # type: ignore[no-any-return]
 
 
 # def build_type_dict_registry(examples):
@@ -155,11 +157,13 @@ def _custom_example_data(request):
 #         )
 
 
-def build_order_isinstance_registry(examples):
+def build_order_isinstance_registry(
+    examples: t.List[ExampleData],
+) -> desert._fields.TypeAndHintFieldRegistry:
     registry = desert._fields.TypeAndHintFieldRegistry()
 
     # registry.register(
-    #     hint=typing.List[],
+    #     hint=t.List[],
     #     tag="sequence_abc",
     #     field=marshmallow.fields.List(marshmallow.fields.String()),
     # )
@@ -186,11 +190,15 @@ registry_ids = [type(registry).__name__ for registry in registries]
     params=registries,
     ids=registry_ids,
 )
-def _registry(request):
-    return request.param
+def _registry(
+    request: _pytest.fixtures.SubRequest,
+) -> desert._fields.TypeAndHintFieldRegistry:
+    return request.param  # type: ignore[no-any-return]
 
 
-def test_registry_raises_for_no_match(registry):
+def test_registry_raises_for_no_match(
+    registry: desert._fields.FieldRegistry,
+) -> None:
     class C:
         pass
 
@@ -200,17 +208,17 @@ def test_registry_raises_for_no_match(registry):
         registry.from_object(value=c)
 
 
-def test_registry_raises_for_multiple_matches():
+def test_registry_raises_for_multiple_matches() -> None:
     registry = desert._fields.TypeAndHintFieldRegistry()
 
     registry.register(
-        hint=typing.Sequence,
+        hint=t.Sequence,
         tag="sequence",
         field=marshmallow.fields.List(marshmallow.fields.Field()),
     )
 
     registry.register(
-        hint=typing.Collection,
+        hint=t.Collection,
         tag="collection",
         field=marshmallow.fields.List(marshmallow.fields.Field()),
     )
@@ -220,14 +228,18 @@ def test_registry_raises_for_multiple_matches():
 
 
 @pytest.fixture(name="externally_tagged_field")
-def _externally_tagged_field(registry):
+def _externally_tagged_field(
+    registry: desert._fields.FieldRegistry,
+) -> desert._fields.TaggedUnionField:
     return desert._fields.externally_tagged_union(
         from_object=registry.from_object,
         from_tag=registry.from_tag,
     )
 
 
-def test_externally_tagged_deserialize(example_data, externally_tagged_field):
+def test_externally_tagged_deserialize(
+    example_data: ExampleData, externally_tagged_field: desert._fields.TaggedUnionField
+) -> None:
     serialized = {example_data.tag: example_data.serialized}
 
     deserialized = externally_tagged_field.deserialize(serialized)
@@ -238,9 +250,9 @@ def test_externally_tagged_deserialize(example_data, externally_tagged_field):
 
 
 def test_externally_tagged_deserialize_extra_key_raises(
-    example_data,
-    externally_tagged_field,
-):
+    example_data: ExampleData,
+    externally_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     serialized = {
         example_data.tag: {
             "#value": example_data.serialized,
@@ -252,7 +264,10 @@ def test_externally_tagged_deserialize_extra_key_raises(
         externally_tagged_field.deserialize(serialized)
 
 
-def test_externally_tagged_serialize(example_data, externally_tagged_field):
+def test_externally_tagged_serialize(
+    example_data: ExampleData,
+    externally_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     obj = {"key": example_data.to_serialize}
 
     serialized = externally_tagged_field.serialize("key", obj)
@@ -261,21 +276,26 @@ def test_externally_tagged_serialize(example_data, externally_tagged_field):
 
 
 @pytest.fixture(name="internally_tagged_field")
-def _internally_tagged_field(registry):
+def _internally_tagged_field(
+    registry: desert._fields.FieldRegistry,
+) -> desert._fields.TaggedUnionField:
     return desert._fields.internally_tagged_union(
         from_object=registry.from_object,
         from_tag=registry.from_tag,
     )
 
 
-def test_to_internally_tagged_raises_for_tag_collision():
+def test_to_internally_tagged_raises_for_tag_collision() -> None:
     with pytest.raises(desert.exceptions.TypeKeyCollision):
         desert._fields.to_internally_tagged(
             tag="C", value={"collide": True}, type_key="collide"
         )
 
 
-def test_internally_tagged_deserialize(custom_example_data, internally_tagged_field):
+def test_internally_tagged_deserialize(
+    custom_example_data: ExampleData,
+    internally_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     serialized = {"#type": custom_example_data.tag, **custom_example_data.serialized}
 
     deserialized = internally_tagged_field.deserialize(serialized)
@@ -285,7 +305,10 @@ def test_internally_tagged_deserialize(custom_example_data, internally_tagged_fi
     assert (type(deserialized) == type(expected)) and (deserialized == expected)
 
 
-def test_internally_tagged_serialize(custom_example_data, internally_tagged_field):
+def test_internally_tagged_serialize(
+    custom_example_data: ExampleData,
+    internally_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     obj = {"key": custom_example_data.to_serialize}
 
     serialized = internally_tagged_field.serialize("key", obj)
@@ -297,14 +320,19 @@ def test_internally_tagged_serialize(custom_example_data, internally_tagged_fiel
 
 
 @pytest.fixture(name="adjacently_tagged_field")
-def _adjacently_tagged_field(registry):
+def _adjacently_tagged_field(
+    registry: desert._fields.FieldRegistry,
+) -> desert._fields.TaggedUnionField:
     return desert._fields.adjacently_tagged_union(
         from_object=registry.from_object,
         from_tag=registry.from_tag,
     )
 
 
-def test_adjacently_tagged_deserialize(example_data, adjacently_tagged_field):
+def test_adjacently_tagged_deserialize(
+    example_data: ExampleData,
+    adjacently_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     serialized = {"#type": example_data.tag, "#value": example_data.serialized}
 
     deserialized = adjacently_tagged_field.deserialize(serialized)
@@ -315,9 +343,9 @@ def test_adjacently_tagged_deserialize(example_data, adjacently_tagged_field):
 
 
 def test_adjacently_tagged_deserialize_extra_key_raises(
-    example_data,
-    adjacently_tagged_field,
-):
+    example_data: ExampleData,
+    adjacently_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     serialized = {
         "#type": example_data.tag,
         "#value": example_data.serialized,
@@ -328,7 +356,10 @@ def test_adjacently_tagged_deserialize_extra_key_raises(
         adjacently_tagged_field.deserialize(serialized)
 
 
-def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
+def test_adjacently_tagged_serialize(
+    example_data: ExampleData,
+    adjacently_tagged_field: desert._fields.TaggedUnionField,
+) -> None:
     obj = {"key": example_data.to_serialize}
 
     serialized = adjacently_tagged_field.serialize("key", obj)
@@ -336,7 +367,7 @@ def test_adjacently_tagged_serialize(example_data, adjacently_tagged_field):
     assert serialized == {"#type": example_data.tag, "#value": example_data.serialized}
 
 
-def test_actual_example():
+def test_actual_example() -> None:
     registry = desert._fields.TypeAndHintFieldRegistry()
     registry.register(hint=str, tag="str", field=marshmallow.fields.String())
     registry.register(hint=int, tag="int", field=marshmallow.fields.Integer())
@@ -346,7 +377,7 @@ def test_actual_example():
     @attr.frozen
     class C:
         # TODO: desert.ib() shouldn't be needed for many cases
-        union: typing.Union[str, int] = desert.ib(marshmallow_field=field)
+        union: t.Union[str, int] = desert.ib(marshmallow_field=field)
 
     schema = desert.schema(C)
 
@@ -358,7 +389,7 @@ def test_actual_example():
     assert schema.loads(serialized) == objects
 
 
-def test_raises_for_tag_reregistration():
+def test_raises_for_tag_reregistration() -> None:
     registry = desert._fields.TypeAndHintFieldRegistry()
     registry.register(hint=str, tag="duplicate_tag", field=marshmallow.fields.String())
 

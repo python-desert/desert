@@ -153,7 +153,7 @@ def ib(
     *,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     ...
 
 

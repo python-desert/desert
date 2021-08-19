@@ -1,5 +1,5 @@
 import functools
-import typing
+import typing as t
 
 import attr
 import marshmallow.fields
@@ -11,7 +11,7 @@ import desert._util
 import desert.exceptions
 
 
-T = typing.TypeVar("T")
+T = t.TypeVar("T")
 
 
 @attr.s(frozen=True, auto_attribs=True)
@@ -23,7 +23,7 @@ class HintTagField:
     must be a better name.
     """
 
-    hint: typing.Any
+    hint: t.Any
     tag: str
     field: marshmallow.fields.Field
 
@@ -31,7 +31,7 @@ class HintTagField:
 class FieldRegistry(typing_extensions.Protocol):
     def register(
         self,
-        hint: typing.Any,
+        hint: t.Any,
         tag: str,
         field: marshmallow.fields.Field,
     ) -> None:
@@ -51,14 +51,14 @@ check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistry]()
 
 # @attr.s(auto_attribs=True)
 # class TypeDictFieldRegistry:
-#     the_dict: typing.Dict[
-#         typing.Union[type, str],
+#     the_dict: t.Dict[
+#         t.Union[type, str],
 #         HintTagField,
 #     ] = attr.ib(factory=dict)
 #
 #     def register(
 #         self,
-#         hint: typing.Any,
+#         hint: t.Any,
 #         tag: str,
 #         field: marshmallow.fields.Field,
 #     ) -> None:
@@ -73,10 +73,10 @@ check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistry]()
 #
 #     # # TODO: this type hinting...  doesn't help much as it could return
 #     # #       another cls
-#     # def __call__(self, tag: str, field: marshmallow.fields) -> typing.Callable[[T], T]:
+#     # def __call__(self, tag: str, field: marshmallow.fields) -> t.Callable[[T], T]:
 #     #     return lambda cls: self.register(cls=cls, tag=tag, field=field)
 #
-#     def from_object(self, value: typing.Any) -> HintTagField:
+#     def from_object(self, value: t.Any) -> HintTagField:
 #         return self.the_dict[type(value)]
 #
 #     def from_tag(self, tag: str) -> HintTagField:
@@ -89,12 +89,12 @@ class TypeAndHintFieldRegistry:
     """This registry uses type hint and type checks to decide what field to use for
     serialization.  The deserialization field is chosen directly from the tag."""
 
-    by_tag: typing.Dict[str, HintTagField] = attr.ib(factory=dict)
+    by_tag: t.Dict[str, HintTagField] = attr.ib(factory=dict)
 
     # TODO: but type bans from-scratch metatypes...  and protocols
     def register(
         self,
-        hint: typing.Any,
+        hint: t.Any,
         tag: str,
         field: marshmallow.fields.Field,
     ) -> None:
@@ -105,7 +105,7 @@ class TypeAndHintFieldRegistry:
 
         self.by_tag[tag] = type_tag_field
 
-    def from_object(self, value: typing.Any) -> HintTagField:
+    def from_object(self, value: object) -> HintTagField:
         scores = {}
 
         # for type_tag_field in self.the_list:
@@ -132,7 +132,7 @@ class TypeAndHintFieldRegistry:
 
             if score > 0:
                 # Only use this to disambiguate between already selected options such
-                # as ["a", "b"] matching both typing.List[str] and typing.Sequence[str].
+                # as ["a", "b"] matching both t.List[str] and t.Sequence[str].
                 # This only works properly on 3.7+.
                 if type(value) == typing_inspect.get_origin(type_tag_field.hint):
                     score += 1
@@ -164,11 +164,11 @@ class TypeAndHintFieldRegistry:
 @attr.s(auto_attribs=True)
 class TaggedValue:
     tag: str
-    value: typing.Any
+    value: object
 
 
 class FromObjectProtocol(typing_extensions.Protocol):
-    def __call__(self, value: typing.Any) -> HintTagField:
+    def __call__(self, value: object) -> HintTagField:
         ...
 
 
@@ -178,12 +178,12 @@ class FromTagProtocol(typing_extensions.Protocol):
 
 
 class FromTaggedProtocol(typing_extensions.Protocol):
-    def __call__(self, item: typing.Any) -> TaggedValue:
+    def __call__(self, item: t.Any) -> TaggedValue:
         ...
 
 
 class ToTaggedProtocol(typing_extensions.Protocol):
-    def __call__(self, tag: typing.Any, value: typing.Any) -> typing.Any:
+    def __call__(self, tag: str, value: t.Any) -> object:
         ...
 
 
@@ -200,8 +200,10 @@ class TaggedUnionField(marshmallow.fields.Field):
         from_tag: FromTagProtocol,
         from_tagged: FromTaggedProtocol,
         to_tagged: ToTaggedProtocol,
-        **kwargs,
-    ):
+        # object results in the super() call complaining about types
+        # https://github.com/python/mypy/issues/5382
+        **kwargs: t.Any,
+    ) -> None:
         super().__init__(**kwargs)
 
         self.from_object = from_object
@@ -211,11 +213,13 @@ class TaggedUnionField(marshmallow.fields.Field):
 
     def _deserialize(
         self,
-        value: typing.Any,
-        attr: typing.Optional[str],
-        data: typing.Optional[typing.Mapping[str, typing.Any]],
-        **kwargs,
-    ) -> typing.Any:
+        value: object,
+        attr: t.Optional[str],
+        data: t.Optional[t.Mapping[str, object]],
+        # object results in the super() call complaining about types
+        # https://github.com/python/mypy/issues/5382
+        **kwargs: t.Any,
+    ) -> object:
         tagged_value = self.from_tagged(item=value)
 
         type_tag_field = self.from_tag(tagged_value.tag)
@@ -225,11 +229,13 @@ class TaggedUnionField(marshmallow.fields.Field):
 
     def _serialize(
         self,
-        value: typing.Any,
+        value: object,
         attr: str,
-        obj: typing.Any,
-        **kwargs,
-    ) -> typing.Any:
+        obj: object,
+        # object results in the super() call complaining about types
+        # https://github.com/python/mypy/issues/5382
+        **kwargs: t.Any,
+    ) -> object:
         type_tag_field = self.from_object(value)
         field = type_tag_field.field
         tag = type_tag_field.tag
@@ -242,7 +248,7 @@ default_tagged_type_key = "#type"
 default_tagged_value_key = "#value"
 
 
-def from_externally_tagged(item: typing.Any) -> TaggedValue:
+def from_externally_tagged(item: t.Mapping[str, object]) -> TaggedValue:
     """Process externally tagged data into a :class:`TaggedValue`."""
 
     [[tag, serialized_value]] = item.items()
@@ -250,7 +256,7 @@ def from_externally_tagged(item: typing.Any) -> TaggedValue:
     return TaggedValue(tag=tag, value=serialized_value)
 
 
-def to_externally_tagged(tag: str, value: typing.Any):
+def to_externally_tagged(tag: str, value: object) -> t.Dict[str, object]:
     """Process untagged data to the externally tagged form."""
 
     return {tag: value}
@@ -259,7 +265,7 @@ def to_externally_tagged(tag: str, value: typing.Any):
 def externally_tagged_union(
     from_object: FromObjectProtocol,
     from_tag: FromTagProtocol,
-):
+) -> TaggedUnionField:
     """Create a :class:`TaggedUnionField` that supports the externally tagged form."""
 
     # TODO: allow the pass through kwargs to the field
@@ -272,15 +278,23 @@ def externally_tagged_union(
     )
 
 
-def from_internally_tagged(item: typing.Any, type_key: str) -> TaggedValue:
+def from_internally_tagged(item: t.Mapping[str, object], type_key: str) -> TaggedValue:
     """Process internally tagged data into a :class:`TaggedValue`."""
 
+    # it just kind of has to be a string...
+    type_string: str = item[type_key]  # type: ignore[assignment]
+
     return TaggedValue(
-        tag=item[type_key], value={k: v for k, v in item.items() if k != type_key}
+        tag=type_string,
+        value={k: v for k, v in item.items() if k != type_key},
     )
 
 
-def to_internally_tagged(tag: str, value: typing.Any, type_key: str) -> typing.Any:
+def to_internally_tagged(
+    tag: str,
+    value: t.Mapping[str, object],
+    type_key: str,
+) -> t.Mapping[str, object]:
     """Process untagged data to the internally tagged form."""
 
     if type_key in value:
@@ -292,8 +306,8 @@ def to_internally_tagged(tag: str, value: typing.Any, type_key: str) -> typing.A
 def internally_tagged_union(
     from_object: FromObjectProtocol,
     from_tag: FromTagProtocol,
-    type_key=default_tagged_type_key,
-):
+    type_key: str = default_tagged_type_key,
+) -> TaggedUnionField:
     """Create a :class:`TaggedUnionField` that supports the internally tagged form."""
 
     return TaggedUnionField(
@@ -304,10 +318,12 @@ def internally_tagged_union(
     )
 
 
-def from_adjacently_tagged(item: typing.Any, type_key: str, value_key: str):
+def from_adjacently_tagged(
+    item: t.Dict[str, object], type_key: str, value_key: str
+) -> TaggedValue:
     """Process adjacently tagged data into a :class:`TaggedValue`."""
 
-    tag = item.pop(type_key)
+    tag: str = item.pop(type_key)  # type: ignore[assignment]
     serialized_value = item.pop(value_key)
 
     if len(item) > 0:
@@ -316,7 +332,9 @@ def from_adjacently_tagged(item: typing.Any, type_key: str, value_key: str):
     return TaggedValue(tag=tag, value=serialized_value)
 
 
-def to_adjacently_tagged(tag: str, value: typing.Any, type_key: str, value_key: str):
+def to_adjacently_tagged(
+    tag: str, value: object, type_key: str, value_key: str
+) -> t.Dict[str, object]:
     """Process untagged data to the adjacently tagged form."""
 
     return {type_key: tag, value_key: value}
@@ -325,9 +343,9 @@ def to_adjacently_tagged(tag: str, value: typing.Any, type_key: str, value_key: 
 def adjacently_tagged_union(
     from_object: FromObjectProtocol,
     from_tag: FromTagProtocol,
-    type_key=default_tagged_type_key,
-    value_key=default_tagged_value_key,
-):
+    type_key: str = default_tagged_type_key,
+    value_key: str = default_tagged_value_key,
+) -> TaggedUnionField:
     """Create a :class:`TaggedUnionField` that supports the adjacently tagged form."""
 
     return TaggedUnionField(
@@ -344,8 +362,8 @@ def adjacently_tagged_union(
 
 def adjacently_tagged_union_from_registry(
     registry: FieldRegistry,
-    type_key=default_tagged_type_key,
-    value_key=default_tagged_value_key,
+    type_key: str = default_tagged_type_key,
+    value_key: str = default_tagged_value_key,
 ) -> TaggedUnionField:
     """Create a :class:`TaggedUnionField` that supports the adjacently tagged form
     from a :class:`FieldRegistry`.
