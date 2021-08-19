@@ -153,7 +153,7 @@ def ib(
     *,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     ...
 
 
@@ -165,7 +165,7 @@ def ib(
     marshmallow_field: marshmallow.fields.Field,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     """Specify a marshmallow field in the metadata for an ``attr.dataclass``.
 
     .. code-block:: python
