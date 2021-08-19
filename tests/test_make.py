@@ -245,7 +245,7 @@ def test_concise_dataclasses_field() -> None:
 
     @dataclasses.dataclass
     class A:
-        x: datetime.datetime = desert.field(marshmallow.fields.NaiveDateTime())  # type: ignore[assignment]
+        x: datetime.datetime = desert.field(marshmallow.fields.NaiveDateTime())
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
@@ -273,7 +273,10 @@ def test_concise_field_metadata() -> None:
 
     @dataclasses.dataclass
     class A:
-        x: datetime.datetime = desert.field(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})  # type: ignore[assignment]
+        x: datetime.datetime = desert.field(
+            marshmallow.fields.NaiveDateTime(),
+            metadata={"foo": 1},
+        )
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)

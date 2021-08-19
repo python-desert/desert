@@ -93,11 +93,11 @@ def field(
     *,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     ...
 
 
-# The return type hint of object is certainly a lie but fits a lot better with
+# The return type hint of Any is certainly a lie but fits a lot better with
 # the normal use of `x: int = desert.field()`.  Both dataclasses and attrs
 # prioritize hinting for this usage as well.  Perhaps someday we'll have a
 # plugin that indicates the actual type.
@@ -105,7 +105,7 @@ def field(
     marshmallow_field: marshmallow.fields.Field,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     """Specify a marshmallow field in the metadata for a ``dataclasses.dataclass``.
 
     .. code-block:: python
@@ -157,7 +157,7 @@ def ib(
     ...
 
 
-# The return type hint of object is certainly a lie but fits a lot better with
+# The return type hint of Any is certainly a lie but fits a lot better with
 # the normal use of `x: int = desert.ib()`.  Both dataclasses and attrs
 # prioritize hinting for this usage as well.  Perhaps someday we'll have a
 # plugin that indicates the actual type.
@@ -165,7 +165,7 @@ def ib(
     marshmallow_field: marshmallow.fields.Field,
     metadata: t.Mapping[object, object] = {},
     **kw: object,
-) -> object:
+) -> t.Any:
     """Specify a marshmallow field in the metadata for an ``attr.dataclass``.
 
     .. code-block:: python
