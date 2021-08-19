@@ -288,7 +288,9 @@ def test_concise_attrib_metadata() -> None:
 
     @attr.dataclass
     class A:
-        x: datetime.datetime = desert.ib(marshmallow.fields.NaiveDateTime(), metadata={"foo": 1})
+        x: datetime.datetime = desert.ib(
+            marshmallow.fields.NaiveDateTime(), metadata={"foo": 1}
+        )
 
     timestring = "2019-10-21T10:25:00"
     dt = datetime.datetime(year=2019, month=10, day=21, hour=10, minute=25, second=00)
