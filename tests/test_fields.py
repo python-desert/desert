@@ -197,7 +197,7 @@ def _registry(
 
 
 def test_registry_raises_for_no_match(
-    registry: desert._fields.FieldRegistry,
+    registry: desert._fields.FieldRegistryProtocol,
 ) -> None:
     class C:
         pass
@@ -229,7 +229,7 @@ def test_registry_raises_for_multiple_matches() -> None:
 
 @pytest.fixture(name="externally_tagged_field")
 def _externally_tagged_field(
-    registry: desert._fields.FieldRegistry,
+    registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
     return desert._fields.externally_tagged_union(
         from_object=registry.from_object,
@@ -277,7 +277,7 @@ def test_externally_tagged_serialize(
 
 @pytest.fixture(name="internally_tagged_field")
 def _internally_tagged_field(
-    registry: desert._fields.FieldRegistry,
+    registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
     return desert._fields.internally_tagged_union(
         from_object=registry.from_object,
@@ -321,7 +321,7 @@ def test_internally_tagged_serialize(
 
 @pytest.fixture(name="adjacently_tagged_field")
 def _adjacently_tagged_field(
-    registry: desert._fields.FieldRegistry,
+    registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
     return desert._fields.adjacently_tagged_union(
         from_object=registry.from_object,
@@ -367,6 +367,7 @@ def test_adjacently_tagged_serialize(
     assert serialized == {"#type": example_data.tag, "#value": example_data.serialized}
 
 
+# start tagged_union_example
 def test_actual_example() -> None:
     registry = desert._fields.TypeAndHintFieldRegistry()
     registry.register(hint=str, tag="str", field=marshmallow.fields.String())
@@ -387,6 +388,7 @@ def test_actual_example() -> None:
 
     assert schema.dumps(objects) == serialized
     assert schema.loads(serialized) == objects
+# end tagged_union_example
 
 
 def test_raises_for_tag_reregistration() -> None:

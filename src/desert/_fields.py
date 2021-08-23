@@ -14,6 +14,7 @@ import desert.exceptions
 T = t.TypeVar("T")
 
 
+# TODO: there must be a better name
 @attr.s(frozen=True, auto_attribs=True)
 class HintTagField:
     """Serializing and deserializing a given piece of data requires a group of
@@ -28,25 +29,39 @@ class HintTagField:
     field: marshmallow.fields.Field
 
 
-class FieldRegistry(typing_extensions.Protocol):
+class FieldRegistryProtocol(typing_extensions.Protocol):
+    """This protocol encourages registries to provide a common interface.  The actual
+    implementation of the mapping from objects to be serialized to their Marshmallow
+    fields, and likewise from the serialized data, can take any form.
+    """
+
     def register(
         self,
         hint: t.Any,
         tag: str,
         field: marshmallow.fields.Field,
     ) -> None:
+        """Inform the registry of the relationship between the passed hint, tag, and
+        field.
+        """
         ...
 
     @property
     def from_object(self) -> "FromObjectProtocol":
+        """This is a funny way of writing that the registry's `.from_object()` method
+        should satisfy :class:`FromObjectProtocol`.
+        """
         ...
 
     @property
     def from_tag(self) -> "FromTagProtocol":
+        """This is a funny way of writing that the registry's `.from_tag()` method
+        should satisfy :class:`FromTagProtocol`.
+        """
         ...
 
 
-check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistry]()
+check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistryProtocol]()
 
 
 # @attr.s(auto_attribs=True)
@@ -86,8 +101,9 @@ check_field_registry_protocol = desert._util.ProtocolChecker[FieldRegistry]()
 @check_field_registry_protocol
 @attr.s(auto_attribs=True)
 class TypeAndHintFieldRegistry:
-    """This registry uses type hint and type checks to decide what field to use for
-    serialization.  The deserialization field is chosen directly from the tag."""
+    """This registry uses type and type hint checks to decide what field to use for
+    serialization.  The deserialization field is chosen directly from the tag.
+    """
 
     by_tag: t.Dict[str, HintTagField] = attr.ib(factory=dict)
 
@@ -191,6 +207,21 @@ class TaggedUnionField(marshmallow.fields.Field):
     """A Marshmallow field to handle unions where the data may not always be of a
     single type.  Usually this field would not be created directly but rather by
     using helper functions to fill out the needed functions in a consistent manner.
+
+    Helpers are provided both to directly create various forms of this field as well
+    as to create the same from a :class:`FieldRegistry`.
+
+    - From a registry
+
+      - :func:`externally_tagged_union_from_registry`
+      - :func:`internally_tagged_union_from_registry`
+      - :func:`adjacently_tagged_union_from_registry`
+
+    - Direct
+
+      - :func:`externally_tagged_union`
+      - :func:`internally_tagged_union`
+      - :func:`adjacently_tagged_union`
     """
 
     def __init__(
@@ -278,6 +309,21 @@ def externally_tagged_union(
     )
 
 
+def externally_tagged_union_from_registry(
+    registry: FieldRegistryProtocol,
+) -> TaggedUnionField:
+    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    the externally tagged form.  Externally tagged data has the following form.
+
+    ..  include:: ../snippets/tag_forms/external.rst
+    """
+
+    return externally_tagged_union(
+        from_object=registry.from_object,
+        from_tag=registry.from_tag,
+    )
+
+
 def from_internally_tagged(item: t.Mapping[str, object], type_key: str) -> TaggedValue:
     """Process internally tagged data into a :class:`TaggedValue`."""
 
@@ -315,6 +361,23 @@ def internally_tagged_union(
         from_tag=from_tag,
         from_tagged=functools.partial(from_internally_tagged, type_key=type_key),
         to_tagged=functools.partial(to_internally_tagged, type_key=type_key),
+    )
+
+
+def internally_tagged_union_from_registry(
+    registry: FieldRegistryProtocol,
+    type_key: str = default_tagged_type_key,
+) -> TaggedUnionField:
+    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    the internally tagged form.  Internally tagged data has the following form.
+
+    ..  include:: ../snippets/tag_forms/internal.rst
+    """
+
+    return internally_tagged_union(
+        from_object=registry.from_object,
+        from_tag=registry.from_tag,
+        type_key=type_key,
     )
 
 
@@ -361,12 +424,14 @@ def adjacently_tagged_union(
 
 
 def adjacently_tagged_union_from_registry(
-    registry: FieldRegistry,
+    registry: FieldRegistryProtocol,
     type_key: str = default_tagged_type_key,
     value_key: str = default_tagged_value_key,
 ) -> TaggedUnionField:
-    """Create a :class:`TaggedUnionField` that supports the adjacently tagged form
-    from a :class:`FieldRegistry`.
+    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    the adjacently tagged form.  Adjacently tagged data has the following form.
+
+    ..  include:: ../snippets/tag_forms/adjacent.rst
     """
 
     return adjacently_tagged_union(
