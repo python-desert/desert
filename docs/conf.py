@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import os
 
 
@@ -10,6 +8,18 @@ def read(*names, **kwargs):
         encoding=kwargs.get("encoding", "utf8"),
     ) as fh:
         return fh.read()
+
+
+# Warn about all references to unknown targets
+nitpicky = True
+# Except for these ones, which we expect to point to unknown targets:
+nitpick_ignore = [
+    # Perhaps this is "obvious" to those that know type hints.  Perhaps we should
+    # explain briefly with a link to the typing docs.
+    ("py:class", "desert.T"),
+    # TODO: get around to adding .. py:module to attrs somewhere
+    ("py:mod", "attrs"),
+]
 
 
 extensions = [
@@ -72,8 +82,8 @@ autoapi_dirs = ["../src/desert"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "marshmallow": ("https://marshmallow.readthedocs.io/en/latest/", None),
-    "attrs": ("https://attrs.readthedocs.io/en/latest/", None),
-    "attr": ("https://attrs.readthedocs.io/en/latest/", None),
+    "attrs": ("https://www.attrs.org/en/latest/", None),
+    "attr": ("https://www.attrs.org/en/latest/", None),
     "marshmallow_union": (
         "https://python-marshmallow-union.readthedocs.io/en/latest/",
         None,
