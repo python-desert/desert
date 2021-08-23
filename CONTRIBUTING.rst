@@ -73,8 +73,8 @@ For merging, you should:
 3. Add a file in ``changelog.d/`` describing the changes. The filename should be ``{id}.{type}.rst``, where ``{id}`` is the number of the GitHub issue or pull request and ``{type}`` is one of ``breaking`` (for breaking changes), ``deprecation`` (for deprecations), or ``change`` (for non-breaking changes). For example, to add a new feature requested in GitHub issue #1234, add a file called ``changelog.d/1234.change.rst`` describing the change.
 4. Add yourself to ``AUTHORS.rst``.
 
-.. [1] If you don't have all the necessary python versions available locally you can rely on Travis - it will
-       `run the tests <https://travis-ci.org/python-desert/desert/pull_requests>`_ for each change you add in the pull request.
+.. [1] If you don't have all the necessary python versions available locally you can rely on GitHub Actions - it will
+       `run the tests <https://github.com/python-desert/desert/actions>`_ for each change you add in the pull request.
 
        It will be slower though ...
 
