@@ -12,7 +12,7 @@ Basics
     :end-before: end-basic-usage
 
 
-Desert can be used with :mod:`dataclasses` or :mod:`attr`. With either module,
+Desert can be used with :mod:`dataclasses` or :mod:`attrs`. With either module,
 Desert is able to infer the appropriate :mod:`marshmallow` field
 for any of these types:
 
@@ -33,7 +33,7 @@ for any of these types:
 There are two syntaxes for
 specifying a field.
 
-In the more concise form, :func:`desert.field()` wraps :mod:`dataclasses.field()` and
+In the more concise form, :func:`desert.field()` wraps :func:`dataclasses.field()` and
 :func:`desert.ib()` wraps :func:`attr.ib()`. These functions take a
 :class:`marshmallow.fields.Field` as the first argument, and the remaining arguments are
 forwarded to the corresponding wrapped function.
