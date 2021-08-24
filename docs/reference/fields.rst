@@ -76,6 +76,22 @@ The helpers below create :class:`desert._fields.TaggedUnionField` instances that
    :undoc-members:
    :show-inheritance:
 
+The fields can be created from :class:`desert._fields.FromObjectProtocol` and :class:`desert._fields.FromTagProtocol` instead of registries, if need.
+
+.. autofunction:: desert._fields.adjacently_tagged_union
+.. autofunction:: desert._fields.internally_tagged_union
+.. autofunction:: desert._fields.externally_tagged_union
+
+.. autoclass:: desert._fields.FromObjectProtocol
+   :members: __call__
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: desert._fields.FromTagProtocol
+   :members: __call__
+   :undoc-members:
+   :show-inheritance:
+
 
 .. _tagged_union_registries:
 
@@ -98,6 +114,11 @@ As an example, you might register a custom class ``Cat`` by providing a hint of 
    :show-inheritance:
 
 .. autoclass:: desert._fields.TypeAndHintFieldRegistry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: desert._fields.HintTagField
    :members:
    :undoc-members:
    :show-inheritance:

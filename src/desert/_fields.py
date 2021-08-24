@@ -209,19 +209,19 @@ class TaggedUnionField(marshmallow.fields.Field):
     using helper functions to fill out the needed functions in a consistent manner.
 
     Helpers are provided both to directly create various forms of this field as well
-    as to create the same from a :class:`FieldRegistry`.
+    as to create the same from a :class:`FieldRegistryProtocol`.
 
     - From a registry
 
-      - :func:`externally_tagged_union_from_registry`
-      - :func:`internally_tagged_union_from_registry`
       - :func:`adjacently_tagged_union_from_registry`
+      - :func:`internally_tagged_union_from_registry`
+      - :func:`externally_tagged_union_from_registry`
 
     - Direct
 
-      - :func:`externally_tagged_union`
-      - :func:`internally_tagged_union`
       - :func:`adjacently_tagged_union`
+      - :func:`internally_tagged_union`
+      - :func:`externally_tagged_union`
     """
 
     def __init__(
@@ -312,7 +312,7 @@ def externally_tagged_union(
 def externally_tagged_union_from_registry(
     registry: FieldRegistryProtocol,
 ) -> TaggedUnionField:
-    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the externally tagged form.  Externally tagged data has the following form.
 
     ..  include:: ../snippets/tag_forms/external.rst
@@ -368,7 +368,7 @@ def internally_tagged_union_from_registry(
     registry: FieldRegistryProtocol,
     type_key: str = default_tagged_type_key,
 ) -> TaggedUnionField:
-    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the internally tagged form.  Internally tagged data has the following form.
 
     ..  include:: ../snippets/tag_forms/internal.rst
@@ -428,7 +428,7 @@ def adjacently_tagged_union_from_registry(
     type_key: str = default_tagged_type_key,
     value_key: str = default_tagged_value_key,
 ) -> TaggedUnionField:
-    """Use a :class:`FieldRegistry` to create a :class:`TaggedUnionField` that supports
+    """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the adjacently tagged form.  Adjacently tagged data has the following form.
 
     ..  include:: ../snippets/tag_forms/adjacent.rst
