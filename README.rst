@@ -12,7 +12,7 @@ Desert: DRY deserialization
     * - code
       - | |latest-commit|
     * - tests
-      - | |travis|
+      - | |actions|
         | |codecov|
     * - package
       - | |version|
@@ -26,9 +26,9 @@ Desert: DRY deserialization
     :alt: Documentation Status
 
 
-.. |travis| image:: https://img.shields.io/travis/com/python-desert/desert/master
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.com/python-desert/desert
+.. |actions| image:: https://github.com/python-desert/desert/actions/workflows/ci.yml/badge.svg?branch=main
+    :alt: GitHub Actions Build Status
+    :target: https://github.com/python-desert/desert/actions?query=branch%3Amain
 
 .. |codecov| image:: https://codecov.io/github/python-desert/desert/coverage.svg?branch=master
     :alt: Coverage Status
