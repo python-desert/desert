@@ -388,9 +388,7 @@ def test_actual_example() -> None:
 
     assert schema.dumps(objects) == serialized
     assert schema.loads(serialized) == objects
-
-
-# end tagged_union_example
+    # end tagged_union_example
 
 
 def test_raises_for_tag_reregistration() -> None:
