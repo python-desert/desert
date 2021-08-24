@@ -388,6 +388,8 @@ def test_actual_example() -> None:
 
     assert schema.dumps(objects) == serialized
     assert schema.loads(serialized) == objects
+
+
 # end tagged_union_example
 
 
