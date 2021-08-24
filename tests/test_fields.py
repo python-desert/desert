@@ -2,6 +2,7 @@ import abc
 import collections.abc
 import decimal
 import json
+import sys
 import typing as t
 
 # https://github.com/pytest-dev/pytest/issues/7469
@@ -28,6 +29,7 @@ class ExampleData:
     field: marshmallow.fields.Field
     # TODO: can we be more specific?
     hint: t.Any
+    requires_origin: bool = False
 
     @classmethod
     def build(
@@ -36,6 +38,7 @@ class ExampleData:
         to_serialize: object,
         tag: str,
         field: marshmallow.fields.Field,
+        requires_origin: bool = False,
         serialized: object = _NOTHING,
         deserialized: object = _NOTHING,
     ) -> "ExampleData":
@@ -52,6 +55,7 @@ class ExampleData:
             deserialized=deserialized,
             tag=tag,
             field=field,
+            requires_origin=requires_origin,
         )
 
 
@@ -86,6 +90,7 @@ basic_example_data_list = [
         to_serialize=["abc", "2", "mno"],
         tag="string_list_tag",
         field=marshmallow.fields.List(marshmallow.fields.String()),
+        requires_origin=True,
     ),
     ExampleData.build(
         hint=t.Sequence[str],
@@ -268,6 +273,9 @@ def test_externally_tagged_serialize(
     example_data: ExampleData,
     externally_tagged_field: desert._fields.TaggedUnionField,
 ) -> None:
+    if example_data.requires_origin and sys.version_info < (3, 7):
+        pytest.xfail()
+
     obj = {"key": example_data.to_serialize}
 
     serialized = externally_tagged_field.serialize("key", obj)
@@ -360,6 +368,9 @@ def test_adjacently_tagged_serialize(
     example_data: ExampleData,
     adjacently_tagged_field: desert._fields.TaggedUnionField,
 ) -> None:
+    if example_data.requires_origin and sys.version_info < (3, 7):
+        pytest.xfail()
+
     obj = {"key": example_data.to_serialize}
 
     serialized = adjacently_tagged_field.serialize("key", obj)
