@@ -232,14 +232,22 @@ def test_registry_raises_for_multiple_matches() -> None:
         registry.from_object(value=[])
 
 
-@pytest.fixture(name="externally_tagged_field")
+@pytest.fixture(name="externally_tagged_field", params=[False, True])
 def _externally_tagged_field(
+    request: _pytest.fixtures.SubRequest,
     registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
-    return desert._fields.externally_tagged_union(
-        from_object=registry.from_object,
-        from_tag=registry.from_tag,
-    )
+    field: desert._fields.TaggedUnionField
+
+    if request.param:
+        field = desert._fields.externally_tagged_union_from_registry(registry=registry)
+    else:
+        field = desert._fields.externally_tagged_union(
+            from_object=registry.from_object,
+            from_tag=registry.from_tag,
+        )
+
+    return field
 
 
 def test_externally_tagged_deserialize(
@@ -283,14 +291,22 @@ def test_externally_tagged_serialize(
     assert serialized == {example_data.tag: example_data.serialized}
 
 
-@pytest.fixture(name="internally_tagged_field")
+@pytest.fixture(name="internally_tagged_field", params=[False, True])
 def _internally_tagged_field(
+    request: _pytest.fixtures.SubRequest,
     registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
-    return desert._fields.internally_tagged_union(
-        from_object=registry.from_object,
-        from_tag=registry.from_tag,
-    )
+    field: desert._fields.TaggedUnionField
+
+    if request.param:
+        field = desert._fields.internally_tagged_union_from_registry(registry=registry)
+    else:
+        field = desert._fields.internally_tagged_union(
+            from_object=registry.from_object,
+            from_tag=registry.from_tag,
+        )
+
+    return field
 
 
 def test_to_internally_tagged_raises_for_tag_collision() -> None:
@@ -327,14 +343,22 @@ def test_internally_tagged_serialize(
     }
 
 
-@pytest.fixture(name="adjacently_tagged_field")
+@pytest.fixture(name="adjacently_tagged_field", params=[False, True])
 def _adjacently_tagged_field(
+    request: _pytest.fixtures.SubRequest,
     registry: desert._fields.FieldRegistryProtocol,
 ) -> desert._fields.TaggedUnionField:
-    return desert._fields.adjacently_tagged_union(
-        from_object=registry.from_object,
-        from_tag=registry.from_tag,
-    )
+    field: desert._fields.TaggedUnionField
+
+    if request.param:
+        field = desert._fields.adjacently_tagged_union_from_registry(registry=registry)
+    else:
+        field = desert._fields.adjacently_tagged_union(
+            from_object=registry.from_object,
+            from_tag=registry.from_tag,
+        )
+
+    return field
 
 
 def test_adjacently_tagged_deserialize(
