@@ -100,7 +100,6 @@ importlib-metadata==4.6.1 \
     --hash=sha256:9f55f560e116f8643ecf2922d9cd3e1c7e8d52e683178fecd9d08f6aa357e11e
     # via
     #   -r test-requirements.in
-    #   backports.entry-points-selectable
     #   click
     #   pluggy
     #   pytest
@@ -109,7 +108,9 @@ importlib-metadata==4.6.1 \
 importlib-resources==5.2.2 \
     --hash=sha256:2480d8e07d1890056cb53c96e3de44fead9c62f2ba949b0f2e4c4345f4afa977 \
     --hash=sha256:a65882a4d0fe5fbf702273456ba2ce74fe44892c25e42e057aca526b702a6d4b
-    # via virtualenv
+    # via
+    #   -r test-requirements.in
+    #   virtualenv
 incremental==21.3.0 \
     --hash=sha256:02f5de5aff48f6b9f665d99d48bfc7ec03b6e3943210de7cfc88856d755d6f57 \
     --hash=sha256:92014aebc6a20b78a8084cdd5645eeaa7f74b8933f70fa3ada2cfbd1e3b54321

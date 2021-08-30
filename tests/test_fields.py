@@ -1,5 +1,6 @@
 import abc
 import collections.abc
+import dataclasses
 import decimal
 import json
 import sys
@@ -8,12 +9,15 @@ import typing as t
 # https://github.com/pytest-dev/pytest/issues/7469
 import _pytest.fixtures
 import attr
+import importlib_resources
 import marshmallow
 import pytest
+import typing_extensions
 
 import desert._fields
 import desert.exceptions
 
+import tests.example
 
 # TODO: test that field constructor doesn't tromple Field parameters
 
@@ -402,8 +406,10 @@ def test_adjacently_tagged_serialize(
     assert serialized == {"#type": example_data.tag, "#value": example_data.serialized}
 
 
-# start tagged_union_example
-def test_actual_example() -> None:
+@pytest.mark.parametrize(
+    argnames=["type_string", "value"], argvalues=[["str", "3"], ["int", 7]]
+)
+def test_actual_example(type_string: str, value: t.Union[int, str]) -> None:
     registry = desert._fields.TypeAndHintFieldRegistry()
     registry.register(hint=str, tag="str", field=marshmallow.fields.String())
     registry.register(hint=int, tag="int", field=marshmallow.fields.Integer())
@@ -417,13 +423,12 @@ def test_actual_example() -> None:
 
     schema = desert.schema(C)
 
-    objects = C(union="3")
-    marshalled = {"union": {"#type": "str", "#value": "3"}}
+    objects = C(union=value)
+    marshalled = {"union": {"#type": type_string, "#value": value}}
     serialized = json.dumps(marshalled)
 
     assert schema.dumps(objects) == serialized
     assert schema.loads(serialized) == objects
-    # end tagged_union_example
 
 
 def test_raises_for_tag_reregistration() -> None:
@@ -434,3 +439,160 @@ def test_raises_for_tag_reregistration() -> None:
         registry.register(
             hint=int, tag="duplicate_tag", field=marshmallow.fields.Integer()
         )
+
+
+# start cat_class_example
+@dataclasses.dataclass
+class Cat:
+    name: str
+    color: str
+    # end cat_class_example
+
+
+def test_untagged_serializes_like_snippet() -> None:
+    cat = Cat(name="Max", color="tuxedo")
+
+    reference = importlib_resources.read_text(tests.example, "untagged.json").strip()
+
+    schema = desert.schema(Cat, meta={"ordered": True})
+    dumped = schema.dumps(cat, indent=4)
+
+    assert dumped == reference
+
+
+# Marshmallow fields expect to serialize an attribute, not an object directly.
+# This class gives us somewhere to stick the object of interest to make the field
+# happy.
+@attr.frozen
+class CatCarrier:
+    an_object: Cat
+
+
+class FromRegistryProtocol(typing_extensions.Protocol):
+    def __call__(
+        self, registry: desert._fields.FieldRegistryProtocol
+    ) -> desert._fields.TaggedUnionField:
+        ...
+
+
+@attr.frozen
+class ResourceAndRegistryFunction:
+    resource_name: str
+    from_registry_function: FromRegistryProtocol
+
+
+@pytest.fixture(
+    name="resource_and_registry_function",
+    params=[
+        ResourceAndRegistryFunction(
+            resource_name="adjacent.json",
+            from_registry_function=desert._fields.adjacently_tagged_union_from_registry,
+        ),
+        ResourceAndRegistryFunction(
+            resource_name="internal.json",
+            from_registry_function=desert._fields.internally_tagged_union_from_registry,
+        ),
+        ResourceAndRegistryFunction(
+            resource_name="external.json",
+            from_registry_function=desert._fields.externally_tagged_union_from_registry,
+        ),
+    ],
+)
+def resource_and_registry_function_fixture(
+    request: _pytest.fixtures.SubRequest,
+) -> ResourceAndRegistryFunction:
+    return request.param  # type: ignore[no-any-return]
+
+
+def test_tagged_serializes_like_snippet(
+    resource_and_registry_function: ResourceAndRegistryFunction,
+) -> None:
+    cat = Cat(name="Max", color="tuxedo")
+
+    registry = desert._fields.TypeAndHintFieldRegistry()
+    registry.register(
+        hint=Cat,
+        tag="cat",
+        field=marshmallow.fields.Nested(desert.schema(Cat, meta={"ordered": True})),
+    )
+
+    reference = importlib_resources.read_text(
+        tests.example, resource_and_registry_function.resource_name
+    ).strip()
+
+    field = resource_and_registry_function.from_registry_function(registry=registry)
+    marshalled = field.serialize(attr="an_object", obj=CatCarrier(an_object=cat))
+    dumped = json.dumps(marshalled, indent=4)
+
+    assert dumped == reference
+
+
+def test_tagged_deserializes_from_snippet(
+    resource_and_registry_function: ResourceAndRegistryFunction,
+) -> None:
+    registry = desert._fields.TypeAndHintFieldRegistry()
+    registry.register(
+        hint=Cat,
+        tag="cat",
+        field=marshmallow.fields.Nested(desert.schema(Cat, meta={"ordered": True})),
+    )
+
+    reference = importlib_resources.read_text(
+        tests.example, resource_and_registry_function.resource_name
+    ).strip()
+
+    field = resource_and_registry_function.from_registry_function(registry=registry)
+    deserialized_cat = field.deserialize(value=json.loads(reference))
+
+    assert deserialized_cat == Cat(name="Max", color="tuxedo")
+
+
+# start tagged_union_example
+def test_tagged_union_example() -> None:
+    @dataclasses.dataclass
+    class Dog:
+        name: str
+        color: str
+
+    registry = desert._fields.TypeAndHintFieldRegistry()
+    registry.register(
+        hint=Cat,
+        tag="cat",
+        field=marshmallow.fields.Nested(desert.schema(Cat, meta={"ordered": True})),
+    )
+    registry.register(
+        hint=Dog,
+        tag="dog",
+        field=marshmallow.fields.Nested(desert.schema(Dog, meta={"ordered": True})),
+    )
+
+    field = desert._fields.adjacently_tagged_union_from_registry(registry=registry)
+
+    @dataclasses.dataclass
+    class CatsAndDogs:
+        union: t.Union[Cat, Dog] = desert.field(marshmallow_field=field)
+
+    schema = desert.schema(CatsAndDogs)
+
+    with_a_cat = CatsAndDogs(union=Cat(name="Max", color="tuxedo"))
+    with_a_dog = CatsAndDogs(union=Dog(name="Bubbles", color="black spots on white"))
+
+    marshalled_cat = {
+        "union": {"#type": "cat", "#value": {"name": "Max", "color": "tuxedo"}}
+    }
+    marshalled_dog = {
+        "union": {
+            "#type": "dog",
+            "#value": {"name": "Bubbles", "color": "black spots on white"},
+        }
+    }
+
+    dumped_cat = json.dumps(marshalled_cat)
+    dumped_dog = json.dumps(marshalled_dog)
+
+    assert dumped_cat == schema.dumps(with_a_cat)
+    assert dumped_dog == schema.dumps(with_a_dog)
+
+    assert with_a_cat == schema.loads(dumped_cat)
+    assert with_a_dog == schema.loads(dumped_dog)
+    # end tagged_union_example

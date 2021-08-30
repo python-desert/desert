@@ -315,7 +315,8 @@ def externally_tagged_union_from_registry(
     """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the externally tagged form.  Externally tagged data has the following form.
 
-    ..  include:: ../snippets/tag_forms/external.rst
+    .. literalinclude:: ../../tests/example/external.json
+       :language: json
     """
 
     return externally_tagged_union(
@@ -371,7 +372,8 @@ def internally_tagged_union_from_registry(
     """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the internally tagged form.  Internally tagged data has the following form.
 
-    ..  include:: ../snippets/tag_forms/internal.rst
+    .. literalinclude:: ../../tests/example/internal.json
+       :language: json
     """
 
     return internally_tagged_union(
@@ -431,7 +433,8 @@ def adjacently_tagged_union_from_registry(
     """Use a :class:`FieldRegistryProtocol` to create a :class:`TaggedUnionField` that supports
     the adjacently tagged form.  Adjacently tagged data has the following form.
 
-    ..  include:: ../snippets/tag_forms/adjacent.rst
+    .. literalinclude:: ../../tests/example/adjacent.json
+       :language: json
     """
 
     return adjacently_tagged_union(

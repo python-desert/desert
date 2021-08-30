@@ -22,38 +22,38 @@ A tag indicating the object's type can be applied in various ways.
 Presently three forms are implemented: adjacently tagged, internally tagged, and externally tagged.
 Adjacently tagged is the most explicit form and is the recommended default.
 You can write your own helper functions to implement your own tagging form if needed and still make use of the rest of the mechanisms implemented here.
+A code example follows the forms below and provides related reference.
 
 - A class definition and bare serialized object for reference
 
-    .. code-block:: python
+   .. literalinclude:: ../../tests/test_fields.py
+      :language: python
+      :start-after: # start cat_class_example
+      :end-before: # end cat_class_example
 
-        @dataclasses.dataclass
-        class Cat:
-            name: str
-            color: str
+   .. literalinclude:: ../../tests/example/untagged.json
+      :language: json
 
-    .. code-block:: json
-
-        {
-            "name": "Max",
-            "color": "tuxedo",
-        }
 
 - Adjacently tagged
 
-   ..  include:: ../snippets/tag_forms/adjacent.rst
+   .. literalinclude:: ../../tests/example/adjacent.json
+      :language: json
 
 - Internally tagged
 
-   ..  include:: ../snippets/tag_forms/internal.rst
+   .. literalinclude:: ../../tests/example/internal.json
+      :language: json
 
 - Externally tagged
 
-   ..  include:: ../snippets/tag_forms/external.rst
+   .. literalinclude:: ../../tests/example/external.json
+      :language: json
 
 The code below is an actual test from the Desert test suite that provides an example usage of the tools that will be covered in detail below.
 
 .. literalinclude:: ../../tests/test_fields.py
+   :language: python
    :start-after: # start tagged_union_example
    :end-before: # end tagged_union_example
 
