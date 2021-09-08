@@ -569,13 +569,13 @@ def test_tagged_union_example() -> None:
     field = desert._fields.adjacently_tagged_union_from_registry(registry=registry)
 
     @dataclasses.dataclass
-    class CatsAndDogs:
+    class CatOrDog:
         union: t.Union[Cat, Dog] = desert.field(marshmallow_field=field)
 
-    schema = desert.schema(CatsAndDogs)
+    schema = desert.schema(CatOrDog)
 
-    with_a_cat = CatsAndDogs(union=Cat(name="Max", color="tuxedo"))
-    with_a_dog = CatsAndDogs(union=Dog(name="Bubbles", color="black spots on white"))
+    with_a_cat = CatOrDog(union=Cat(name="Max", color="tuxedo"))
+    with_a_dog = CatOrDog(union=Dog(name="Bubbles", color="black spots on white"))
 
     marshalled_cat = {
         "union": {"#type": "cat", "#value": {"name": "Max", "color": "tuxedo"}}
