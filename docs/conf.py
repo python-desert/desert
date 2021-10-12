@@ -17,8 +17,6 @@ nitpick_ignore = [
     # Perhaps this is "obvious" to those that know type hints.  Perhaps we should
     # explain briefly with a link to the typing docs.
     ("py:class", "desert.T"),
-    # TODO: get around to adding .. py:module to attrs somewhere
-    ("py:mod", "attrs"),
 ]
 
 
