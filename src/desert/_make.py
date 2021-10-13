@@ -186,7 +186,7 @@ def field_for_schema(
     >>> int_field.__class__
     <class 'marshmallow.fields.Integer'>
 
-    >>> int_field.default
+    >>> int_field.dump_default
     9
     >>> field_for_schema(t.Dict[str,str]).__class__
     <class 'marshmallow.fields.Dict'>
@@ -200,7 +200,7 @@ def field_for_schema(
     <class 'marshmallow_union.Union'>
     >>> field_for_schema(t.NewType('UserId', int)).__class__
     <class 'marshmallow.fields.Integer'>
-    >>> field_for_schema(t.NewType('UserId', int), default=0).default
+    >>> field_for_schema(t.NewType('UserId', int), default=0).dump_default
     0
     >>> class Color(enum.Enum):
     ...   red = 1
@@ -219,9 +219,9 @@ def field_for_schema(
     metadata[_DESERT_SENTINEL] = desert_metadata
 
     if default is not marshmallow.missing:
-        desert_metadata.setdefault("default", default)
+        desert_metadata.setdefault("dump_default", default)
         desert_metadata.setdefault("allow_none", True)
-        desert_metadata.setdefault("missing", default)
+        desert_metadata.setdefault("load_default", default)
 
     field = None
 
@@ -237,7 +237,7 @@ def field_for_schema(
 
     # Base types
     if not field and typ in _native_to_marshmallow:
-        field = _native_to_marshmallow[typ](default=default)
+        field = _native_to_marshmallow[typ](dump_default=default)
 
     # Generic types
     origin = typing_inspect.get_origin(typ)
@@ -279,13 +279,17 @@ def field_for_schema(
         elif typing_inspect.is_optional_type(typ):
             [subtyp] = (t for t in arguments if t is not NoneType)
             # Treat optional types as types with a None default
-            metadata[_DESERT_SENTINEL]["default"] = metadata.get("default", None)
-            metadata[_DESERT_SENTINEL]["missing"] = metadata.get("missing", None)
+            metadata[_DESERT_SENTINEL]["dump_default"] = metadata.get(
+                "dump_default", None
+            )
+            metadata[_DESERT_SENTINEL]["load_default"] = metadata.get(
+                "load_default", None
+            )
             metadata[_DESERT_SENTINEL]["required"] = False
 
             field = field_for_schema(subtyp, metadata=metadata, default=None)
-            field.default = None
-            field.missing = None
+            field.dump_default = None
+            field.load_default = None
             field.allow_none = True
 
         elif typing_inspect.is_union_type(typ):
@@ -315,11 +319,11 @@ def field_for_schema(
 
     field.metadata.update(metadata)
 
-    for key in ["default", "missing", "required", "marshmallow_field"]:
+    for key in ["dump_default", "load_default", "required", "marshmallow_field"]:
         if key in metadata.keys():
             metadata[_DESERT_SENTINEL][key] = metadata.pop(key)
 
-    if field.default == field.missing == default == marshmallow.missing:
+    if field.dump_default == field.load_default == default == marshmallow.missing:
         field.required = True
 
     return field
