@@ -1,0 +1,3 @@
+It is now possible to use type-variant generics in your dataclasses, such as ``Sequence`` or ``MutableSequence`` instead of ``List``, ``Mapping`` instead of ``Dict``, etc.
+
+This doesn't change any behavior by Desert or Marshmallow. Rather, the primary benefit is getting more flexibility from type checkers. For example, by using ``Mapping`` or ``MutableMapping``, users can pass ``OrderedDict`` to an attribute without MyPy complaining.
