@@ -166,24 +166,24 @@ def test_set_default(module: DataclassModule) -> None:
 @pytest.mark.parametrize("annotation_class", (t.List, t.Sequence, t.MutableSequence))
 def test_list(module: DataclassModule, annotation_class: type) -> None:
     """Build a generic list *without* setting a factory on the dataclass."""
-    klass = type("A", (object,), {"__annotations__": {"y": annotation_class[int]}})
-    A = module.dataclass(klass)
+    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int]}})
+    A = module.dataclass(cls)
 
     schema = desert.schema_class(A)()
     data = schema.load({"y": [1]})
-    assert data == A([1])  # type: ignore[call-arg]
+    assert data == A([1])
 
 
 @pytest.mark.parametrize("annotation_class", (t.Dict, t.Mapping, t.MutableMapping))
 def test_dict(module: DataclassModule, annotation_class: type) -> None:
     """Build a dict without setting a factory on the dataclass."""
-    klass = type("A", (object,), {"__annotations__": {"y": annotation_class[int, int]}})
-    A = module.dataclass(klass)
+    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int, int]}})
+    A = module.dataclass(cls)
 
     schema = desert.schema_class(A)()
     data = schema.load({"y": {1: 2, 3: 4}})
 
-    assert data == A({1: 2, 3: 4})  # type: ignore[call-arg]
+    assert data == A({1: 2, 3: 4})
 
 
 def test_nested(module: DataclassModule) -> None:
