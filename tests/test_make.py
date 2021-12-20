@@ -525,12 +525,19 @@ def test_raise_unknown_type(module: DataclassModule) -> None:
         desert.schema_class(A)
 
 
+T = t.TypeVar("T")
+
+
+class UnknownGeneric(t.Generic[T]):
+    pass
+
+
 def test_raise_unknown_generic(module: DataclassModule) -> None:
     """Raise UnknownType for unknown generics."""
 
     @module.dataclass
     class A:
-        x: t.Iterable[int]
+        x: UnknownGeneric[int]
 
     with pytest.raises(desert.exceptions.UnknownType):
         desert.schema_class(A)
