@@ -532,6 +532,9 @@ class UnknownGeneric(t.Generic[T]):
     pass
 
 
+@pytest.mark.skipif(
+    sys.version_info[:2] <= (3, 6), reason="3.6 has isinstance(t.Sequence[int], type)."
+)
 def test_raise_unknown_generic(module: DataclassModule) -> None:
     """Raise UnknownType for unknown generics."""
 
