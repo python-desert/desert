@@ -177,7 +177,7 @@ def test_list(module: DataclassModule, annotation_class: type) -> None:
 @pytest.mark.parametrize("annotation_class", (t.Dict, t.Mapping, t.MutableMapping))
 def test_dict(module: DataclassModule, annotation_class: type) -> None:
     """Build a dict without setting a factory on the dataclass."""
-    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int, int]}})
+    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int, int]}})  # type: ignore[index]
     A = module.dataclass(cls)
 
     schema = desert.schema_class(A)()
