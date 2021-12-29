@@ -166,7 +166,7 @@ def test_set_default(module: DataclassModule) -> None:
 @pytest.mark.parametrize("annotation_class", (t.List, t.Sequence, t.MutableSequence))
 def test_list(module: DataclassModule, annotation_class: type) -> None:
     """Build a generic list *without* setting a factory on the dataclass."""
-    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int]}})
+    cls = type("A", (object,), {"__annotations__": {"y": annotation_class[int]}})  # type: ignore[index]
     A = module.dataclass(cls)
 
     schema = desert.schema_class(A)()
