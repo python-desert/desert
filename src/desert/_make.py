@@ -54,6 +54,7 @@ Full example::
       Schema: t.ClassVar[Type[Schema]] = Schema # For the type checker
 """
 
+import collections.abc
 import dataclasses
 import datetime
 import decimal
@@ -244,7 +245,14 @@ def field_for_schema(
     if origin:
         arguments = typing_inspect.get_args(typ, True)
 
-        if origin in (list, t.List):
+        if origin in (
+            list,
+            t.List,
+            t.Sequence,
+            t.MutableSequence,
+            collections.abc.Sequence,
+            collections.abc.MutableSequence,
+        ):
             field = marshmallow.fields.List(field_for_schema(arguments[0]))
 
         if origin in (tuple, t.Tuple) and Ellipsis not in arguments:
@@ -256,7 +264,14 @@ def field_for_schema(
             field = VariadicTuple(
                 field_for_schema(only(arg for arg in arguments if arg != Ellipsis))
             )
-        elif origin in (dict, t.Dict):
+        elif origin in (
+            dict,
+            t.Dict,
+            t.Mapping,
+            t.MutableMapping,
+            collections.abc.Mapping,
+            collections.abc.MutableMapping,
+        ):
             field = marshmallow.fields.Dict(
                 keys=field_for_schema(arguments[0]),
                 values=field_for_schema(arguments[1]),
