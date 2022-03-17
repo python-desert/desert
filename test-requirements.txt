@@ -100,7 +100,6 @@ importlib-metadata==4.6.1 \
     --hash=sha256:9f55f560e116f8643ecf2922d9cd3e1c7e8d52e683178fecd9d08f6aa357e11e
     # via
     #   -r test-requirements.in
-    #   backports.entry-points-selectable
     #   click
     #   pluggy
     #   pytest
@@ -109,7 +108,9 @@ importlib-metadata==4.6.1 \
 importlib-resources==5.2.2 \
     --hash=sha256:2480d8e07d1890056cb53c96e3de44fead9c62f2ba949b0f2e4c4345f4afa977 \
     --hash=sha256:a65882a4d0fe5fbf702273456ba2ce74fe44892c25e42e057aca526b702a6d4b
-    # via virtualenv
+    # via
+    #   -r test-requirements.in
+    #   virtualenv
 incremental==21.3.0 \
     --hash=sha256:02f5de5aff48f6b9f665d99d48bfc7ec03b6e3943210de7cfc88856d755d6f57 \
     --hash=sha256:92014aebc6a20b78a8084cdd5645eeaa7f74b8933f70fa3ada2cfbd1e3b54321
@@ -204,6 +205,10 @@ tox==3.24.0 \
     --hash=sha256:67636634df6569e450c4bc18fdfd8b84d7903b3902d5c65416eb6735f3d4afb8 \
     --hash=sha256:c990028355f0d0b681e3db9baa89dd9f839a6e999c320029339f6a6b36160591
     # via -r test-requirements.in
+typeguard==2.12.1 \
+    --hash=sha256:c2af8b9bdd7657f4bd27b45336e7930171aead796711bc4cfc99b4731bb9d051 \
+    --hash=sha256:cc15ef2704c9909ef9c80e19c62fb8468c01f75aad12f651922acf4dbe822e02
+    # via -r requirements.in
 typing-extensions==3.10.0.0 \
     --hash=sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497 \
     --hash=sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342 \

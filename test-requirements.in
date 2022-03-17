@@ -1,5 +1,6 @@
 coverage
 cuvner
+importlib_resources
 marshmallow-enum
 marshmallow-union
 pytest

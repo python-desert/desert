@@ -5,3 +5,4 @@ Reference
     :glob:
 
     desert*
+    fields
