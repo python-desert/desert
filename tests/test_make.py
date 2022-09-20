@@ -81,7 +81,7 @@ def fixture_from_dict(
     id_to_value: t.Mapping[
         str, t.Callable[[marshmallow.Schema, t.Dict[t.Any, t.Any], t.Any], None]
     ],
-) -> _pytest.fixtures._FixtureFunction:
+) -> _pytest.fixtures.FixtureFunction:
     """
     Create fixture parametrized to yield each value and labeled with the
     corresponding ID.

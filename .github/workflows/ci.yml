@@ -18,7 +18,6 @@ jobs:
         os:
           - ubuntu-latest
         toxenv:
-          - py36,report,codecov
           - py37,report,codecov
           - py38,report,codecov
           - py39,report,codecov
