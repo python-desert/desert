@@ -94,13 +94,13 @@ def fixture_from_dict(
         The PyTest fixture
     """
 
-    @pytest.fixture(name=name, params=id_to_value.values(), ids=id_to_value.keys())
+    @pytest.fixture(name=name, params=id_to_value.values(), ids=id_to_value.keys())  # type: ignore[call-overload, misc]
     def fixture(request: _pytest.fixtures.SubRequest) -> object:
         return request.param
 
     # This looks right to me but mypy says:
     #   error: Incompatible return value type (got "Callable[[SubRequest], object]", expected "_pytest.fixtures._FixtureFunction")  [return-value]
-    return fixture  # type: ignore[return-value]
+    return fixture  # type: ignore[no-any-return]
 
 
 _assert_dump_load = fixture_from_dict(

@@ -350,7 +350,7 @@ def _get_field_default(
     if isinstance(field, dataclasses.Field):
         # misc: https://github.com/python/mypy/issues/10750
         # comparison-overlap: https://github.com/python/typeshed/pull/5900
-        if field.default_factory != dataclasses.MISSING:  # type: ignore[misc,comparison-overlap]
+        if field.default_factory != dataclasses.MISSING:
             return dataclasses.MISSING
         if field.default is dataclasses.MISSING:
             return marshmallow.missing
