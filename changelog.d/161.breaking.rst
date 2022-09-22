@@ -1,0 +1,2 @@
+Update all project dependencies and fix all deprecated warnings. Python 3.6
+support was dropped to allow updating deprecated dependencies.
