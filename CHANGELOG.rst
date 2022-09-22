@@ -43,7 +43,8 @@ Changes
 
 
   .. _type-variant generics: https://mypy.readthedocs.io/en/stable/generics.html
-     `#140 <https://github.com/python-desert/desert/issues/140>`_
+  
+  `#140 <https://github.com/python-desert/desert/issues/140>`_
 
 
 ----
