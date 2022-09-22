@@ -16,11 +16,11 @@ for module in [dataclasses, attr]:
     # Type ignores are just here for now instead of figuring out how to
     # handle these properly.
 
-    @module.dataclass  # type: ignore[attr-defined]
+    @module.dataclass
     class A:
         x: "B"
 
-    @module.dataclass  # type: ignore[attr-defined]
+    @module.dataclass
     class B:
         y: int
 
