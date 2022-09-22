@@ -1,3 +1,54 @@
+2022.09.22 (2022-09-22)
+-----------------------
+
+
+Backward-incompatible Changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Update all project dependencies and fix all deprecated warnings. Python 3.6
+  support was dropped to allow updating deprecated dependencies.
+  `#161 <https://github.com/python-desert/desert/issues/161>`_
+
+
+Changes
+^^^^^^^
+
+- It is now possible to use `type-variant generics`_ in your dataclasses, such as ``Sequence``
+  or ``MutableSequence`` instead of ``List``, ``Mapping`` instead of ``Dict``, etc.
+
+  This allows you to hide implementation details from users of your dataclasses. If a field
+  in your dataclass works just as fine with a tuple as a list, you no longer need to force
+  your users to pass in a ``list`` just to satisfy type checkers.
+
+  For example, by using ``Mapping`` or ``MutableMapping``, users can pass ``OrderedDict`` to
+  a ``Dict`` attribute without MyPy complaining.
+
+  .. code-block:: python
+
+      @dataclass
+      class OldWay:
+          str_list: List[str]
+          num_map: Dict[str, float]
+
+
+      # MyPy will reject this even though Marshmallow works just fine. If you use
+      # type-variant generics, MyPy will accept this code.
+      instance = OldClass([], collections.ChainMap(MY_DEFAULTS))
+
+
+      @dataclass
+      class NewWay:
+          str_list: List[str]  # Type-invariants still work
+          num_map: MutableMapping[str, float]  # Now generics do too
+
+
+  .. _type-variant generics: https://mypy.readthedocs.io/en/stable/generics.html
+  `#140 <https://github.com/python-desert/desert/issues/140>`_
+
+
+----
+
+
 2020.11.18 (2020-11-18)
 -----------------------
 
