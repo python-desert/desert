@@ -18,6 +18,11 @@ import typing_extensions
 import desert
 
 
+typed_dict_classes: t.List[t.Any] = [typing_extensions.TypedDict]
+if sys.version_info >= (3, 8):
+    typed_dict_classes.append(t.TypedDict)
+
+
 @attr.frozen(order=False)
 class DataclassModule:
     """Implementation of a dataclass module like attr or dataclasses."""
@@ -43,6 +48,13 @@ def dataclass_param(request: _pytest.fixtures.SubRequest) -> DataclassModule:
     """Parametrize over both implementations of the @dataclass decorator."""
     module = t.cast(DataclassModule, request.param)
     return module
+
+
+@pytest.fixture(
+    params=typed_dict_classes, ids=[x.__module__ for x in typed_dict_classes]
+)
+def typed_dict_class(request: _pytest.fixtures.SubRequest) -> t.Any:
+    return request.param
 
 
 class AssertLoadDumpProtocol(typing_extensions.Protocol):
@@ -433,6 +445,27 @@ def test_newtype(
     schema = desert.schema_class(A)()
     dumped = {"x": 1}
     loaded = A(x=1)  # type: ignore[call-arg]
+
+    assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
+
+
+def test_typed_dict(
+    module: DataclassModule,
+    assert_dump_load: AssertLoadDumpProtocol,
+    typed_dict_class: t.Type[t.Any],
+) -> None:
+    """Test dataclasses with basic TypedDict support"""
+
+    class B(typed_dict_class):  # type: ignore[valid-type, misc]
+        x: int
+
+    @module.dataclass
+    class A:
+        x: B
+
+    schema = desert.schema_class(A)()
+    dumped = {"x": {"x": 1}}
+    loaded = A(x={"x": 1})  # type: ignore[call-arg]
 
     assert_dump_load(schema=schema, loaded=loaded, dumped=dumped)
 

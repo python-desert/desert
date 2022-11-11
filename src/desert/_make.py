@@ -60,6 +60,7 @@ import datetime
 import decimal
 import enum
 import inspect
+import sys
 import typing as t
 import uuid
 
@@ -305,10 +306,17 @@ def field_for_schema(
         field = field_for_schema(newtype_supertype, default=default)
 
     # enumerations
-    if type(typ) is enum.EnumMeta:
+    elif type(typ) is enum.EnumMeta:
         import marshmallow_enum
 
         field = marshmallow_enum.EnumField(typ, metadata=metadata)
+
+    # TypedDict
+    elif _is_typeddict(typ):
+        field = marshmallow.fields.Dict(
+            keys=marshmallow.fields.String,
+            values=marshmallow.fields.Raw,
+        )
 
     # Nested dataclasses
     forward_reference = getattr(typ, "__forward_arg__", None)
@@ -368,6 +376,21 @@ def _get_field_default(
         return field.default
     else:
         raise TypeError(field)
+
+
+def _is_typeddict(typ: t.Any) -> bool:
+    if typing_inspect.typed_dict_keys(typ) is not None:
+        return True
+
+    # typing_inspect misses some case.
+    if sys.version_info >= (3, 10):
+        return t.is_typeddict(typ)
+
+    # python>=3.8; <3.10: Reimplement t.is_typeddict
+    if sys.version_info >= (3, 8):
+        return isinstance(typ, t._TypedDictMeta)
+
+    return False
 
 
 @attr.frozen
