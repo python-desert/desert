@@ -10,22 +10,59 @@ on:
 
 jobs:
   ci:
-    runs-on: ${{ matrix.os }}
-    container: docker://altendky/hydra:ubuntu-20.04-3-minors
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-latest
+        python:
+          - version: "3.7"
+            bin: python3.7
+            tox: py37,report,codecov
+          - version: "3.8"
+            bin: python3.8
+            tox: py38,report,codecov
+          - version: "3.9"
+            bin: python3.9
+            tox: py39,report,codecov
+          - version: "3.10"
+            bin: python3.10
+            tox: py310,report,codecov
+          - version: "3.11"
+            bin: python3.11
+            tox: py311,report,codecov
+          - version: pypy-3.7
+            bin: pypy3
+            tox: pypy3,report,codecov
+    env:
+      TOXTOOLPYTHON: "${{ matrix.python.bin }}"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python.version }}
+      - name: Install
+        run: |
+          pip install tox
+      - name: Test
+        run: |
+          tox -v -e "${{ matrix.python.tox }}"
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10"]
         toxenv:
-          - py37,report,codecov
-          - py38,report,codecov
-          - py39,report,codecov
-          - pypy3,report,codecov
           - doc
           - check
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
       - name: Install
         run: |
           pip install tox
@@ -37,6 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - ci
+      - linting
     steps:
       - name: This
         shell: python

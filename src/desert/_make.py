@@ -300,7 +300,7 @@ def field_for_schema(
 
     # t.NewType returns a function with a __supertype__ attribute
     newtype_supertype = getattr(typ, "__supertype__", None)
-    if newtype_supertype and inspect.isfunction(typ):
+    if newtype_supertype and typing_inspect.is_new_type(typ):
         metadata.setdefault("description", typ.__name__)
         field = field_for_schema(newtype_supertype, default=default)
 
