@@ -81,7 +81,7 @@ def fixture_from_dict(
     id_to_value: t.Mapping[
         str, t.Callable[[marshmallow.Schema, t.Dict[t.Any, t.Any], t.Any], None]
     ],
-) -> _pytest.fixtures.FixtureFunction:
+) -> t.Callable[..., object]:
     """
     Create fixture parametrized to yield each value and labeled with the
     corresponding ID.
@@ -98,12 +98,10 @@ def fixture_from_dict(
     def fixture(request: _pytest.fixtures.SubRequest) -> object:
         return request.param
 
-    # This looks right to me but mypy says:
-    #   error: Incompatible return value type (got "Callable[[SubRequest], object]", expected "_pytest.fixtures._FixtureFunction")  [return-value]
     return fixture  # type: ignore[no-any-return]
 
 
-_assert_dump_load = fixture_from_dict(
+_assert_dump_load_fixture = fixture_from_dict(
     name="assert_dump_load",
     id_to_value={
         "load": _assert_load,
