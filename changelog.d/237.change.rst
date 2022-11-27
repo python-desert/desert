@@ -1,0 +1,1 @@
+Add `TypedDict` subclass support to fields. These are treated the same as `Dict[str, Any]`.
