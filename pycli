@@ -92,6 +92,7 @@ def lock(cfg):
             [
                 cfg.venv_path / "bin/pip-compile",
                 "--generate-hashes",
+                "--upgrade",
                 "--output-file",
                 build_requirements_name(layer, 'txt'),
                 *(
