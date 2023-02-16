@@ -59,7 +59,6 @@ import dataclasses
 import datetime
 import decimal
 import enum
-import inspect
 import typing as t
 import uuid
 
@@ -70,10 +69,20 @@ import typing_inspect
 import desert.exceptions
 
 
-__all__ = ["dataclass", "add_schema", "class_schema", "field_for_schema"]
+__all__ = ["class_schema", "field_for_schema"]
 
 NoneType = type(None)
 T = t.TypeVar("T")
+
+
+EnumField: t.Optional[type]
+try:
+    from marshmallow.fields import Enum as EnumField
+except ImportError:
+    try:
+        from marshmallow_enum import EnumField
+    except ImportError:
+        EnumField = None
 
 
 def class_schema(
@@ -306,9 +315,13 @@ def field_for_schema(
 
     # enumerations
     if type(typ) is enum.EnumMeta:
-        import marshmallow_enum
+        if EnumField is None:
+            raise desert.exceptions.UnknownType(
+                "Can't define Enum field; either upgrade Marshmallow or install the"
+                " `marshmallow_enum` package."
+            )
 
-        field = marshmallow_enum.EnumField(typ, metadata=metadata)
+        field = EnumField(typ, metadata=metadata)
 
     # Nested dataclasses
     forward_reference = getattr(typ, "__forward_arg__", None)
