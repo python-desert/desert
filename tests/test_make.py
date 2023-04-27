@@ -224,6 +224,17 @@ def test_optional_present(module: DataclassModule) -> None:
     assert data == A(None)  # type: ignore[call-arg]
 
 
+def test_optional_default(module: DataclassModule) -> None:
+    """Setting an optional type allows passing None."""
+
+    @module.dataclass
+    class A:
+        x: t.Optional[int] = 1
+
+    data = desert.schema_class(A)().load({})
+    assert data == A(1)  # type: ignore[call-arg]
+
+
 def test_custom_field(module: DataclassModule) -> None:
     @module.dataclass
     class A:
