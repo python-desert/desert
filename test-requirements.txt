@@ -10,9 +10,7 @@ ansicolors==1.0.2 \
 attrs==22.1.0 \
     --hash=sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6 \
     --hash=sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c
-    # via
-    #   -r requirements.in
-    #   pytest
+    # via pytest
 click==8.1.3 \
     --hash=sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e \
     --hash=sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48
@@ -101,7 +99,6 @@ marshmallow==3.18.0 \
     --hash=sha256:35e02a3a06899c9119b785c12a22f4cda361745d66a71ab691fd7610202ae104 \
     --hash=sha256:6804c16114f7fce1f5b4dadc31f4674af23317fcc7f075da21e35c1a35d781f7
     # via
-    #   -r requirements.in
     #   marshmallow-enum
     #   marshmallow-union
 marshmallow-enum==1.5.1 \
@@ -112,10 +109,6 @@ marshmallow-union==0.1.15.post1 \
     --hash=sha256:1e21b759c76735305f99179c1a16759ebb9629733159628241b3f2117ff55e86 \
     --hash=sha256:c08f0a87891ae73dd2b5d4a154bc7daea20c3bc0f99ca0b6a26570c927d20c8c
     # via -r test-requirements.in
-mypy-extensions==0.4.3 \
-    --hash=sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d \
-    --hash=sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8
-    # via typing-inspect
 packaging==21.3 \
     --hash=sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb \
     --hash=sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522
@@ -155,9 +148,9 @@ pytest==7.1.3 \
     #   pytest-cov
     #   pytest-sphinx
     #   pytest-travis-fold
-pytest-cov==3.0.0 \
-    --hash=sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6 \
-    --hash=sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470
+pytest-cov==4.0.0 \
+    --hash=sha256:2feb1b751d66a8bd934e5edfa2e961d11309dc37b73b0eabe73b5945fee20f6b \
+    --hash=sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470
     # via -r test-requirements.in
 pytest-sphinx==0.5.0 \
     --hash=sha256:42485af28b97649b0c16fc11fa450ae3d5a51d5ec67e3a8bc29d31c3093eb40a \
@@ -184,14 +177,6 @@ tox==3.26.0 \
     --hash=sha256:44f3c347c68c2c68799d7d44f1808f9d396fc8a1a500cbc624253375c7ae107e \
     --hash=sha256:bf037662d7c740d15c9924ba23bb3e587df20598697bb985ac2b49bdc2d847f6
     # via -r test-requirements.in
-typing-extensions==4.3.0 \
-    --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
-    --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
-    # via typing-inspect
-typing-inspect==0.8.0 \
-    --hash=sha256:5fbf9c1e65d4fa01e701fe12a5bca6c6e08a4ffd5bc60bfac028253a447c5188 \
-    --hash=sha256:8b1ff0c400943b6145df8119c41c244ca8207f1f10c9c057aeed1560e4806e3d
-    # via -r requirements.in
 unidiff==0.7.4 \
     --hash=sha256:2bbcbc986e1fb97f04b1d7b864aa6002ab02f4d8a996bf03aa6e5a81447d1fc5 \
     --hash=sha256:688622add422f84a873498cc4ff9bf50da5ea6c23dea908f19d2190fa39a8e39
